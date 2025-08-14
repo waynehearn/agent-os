@@ -23,6 +23,67 @@ Requirements
 - An AI-enabled editor (e.g., Claude Code, Cursor)
 - Optional: Atlassian MCP configured in your editor if you want Jira-driven specs
 
+Tool prerequisites
+------------------
+
+Some helper scripts and flows require jq to be available in your PATH.
+
+- Check if jq is installed
+
+```bash
+jq --version
+```
+
+- macOS (Homebrew)
+
+```bash
+brew install jq
+```
+
+- Debian/Ubuntu
+
+```bash
+sudo apt-get update
+sudo apt-get install -y jq
+```
+
+- Fedora/RHEL/CentOS (dnf or yum)
+
+```bash
+sudo dnf install -y jq
+# or
+sudo yum install -y jq
+```
+
+- Arch/Manjaro
+
+```bash
+sudo pacman -S jq
+```
+
+- Alpine
+
+```bash
+sudo apk add --no-cache jq
+```
+
+- Windows (Git Bash) — no admin required
+
+```bash
+mkdir -p "$HOME/.local/bin"
+curl -L -o "$HOME/.local/bin/jq.exe" https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-windows-amd64.exe
+chmod +x "$HOME/.local/bin/jq.exe"
+if ! grep -q 'PATH="$HOME/.local/bin' "$HOME/.bashrc" 2>/dev/null; then echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.bashrc"; fi
+exec "$SHELL" -l
+jq --version
+```
+
+Optional (Windows with MSYS2):
+
+```bash
+pacman -S --noconfirm mingw-w64-x86_64-jq
+```
+
 Recommended install (from local clone)
 --------------------------------------
 
@@ -68,31 +129,16 @@ If you prefer not to run the script, place the instructions in your home `~/.age
 
 Option A: Copy instructions (simple)
 
-```powershell
-# Windows PowerShell
-# Create the folder if it doesn't exist
-New-Item -ItemType Directory -Force -Path "$HOME/.agent-os/instructions" | Out-Null
-
-# Copy your instructions into place (adjust source path to this repo)
-Copy-Item -Recurse -Force .\instructions\* "$HOME/.agent-os/instructions/"
-```
-
 ```bash
-# macOS/Linux
+# macOS/Linux/Windows (Git Bash)
 mkdir -p "$HOME/.agent-os/instructions"
 cp -R ./instructions/* "$HOME/.agent-os/instructions/"
 ```
 
 Option B: Symlink (advanced; keeps a single source of truth)
 
-```powershell
-# Windows PowerShell (run as Administrator to permit symlink)
-New-Item -ItemType Directory -Force -Path "$HOME/.agent-os" | Out-Null
-New-Item -ItemType SymbolicLink -Path "$HOME/.agent-os/instructions" -Target "C:\\path\\to\\your\\repo\\.agent-os\\instructions" -Force
-```
-
 ```bash
-# macOS/Linux
+# macOS/Linux/Windows (Git Bash)
 mkdir -p "$HOME/.agent-os"
 ln -sfn /path/to/your/repo/.agent-os/instructions "$HOME/.agent-os/instructions"
 ```
@@ -106,8 +152,9 @@ Ensure project standards live inside your repository at:
 
 If you need to bootstrap:
 
-```powershell
-New-Item -ItemType Directory -Force -Path ".agent-os/standards" | Out-Null
+```bash
+# macOS/Linux/Windows (Git Bash)
+mkdir -p .agent-os/standards
 ```
 
 Step 3 — (Optional) Configure Atlassian MCP
@@ -155,4 +202,5 @@ bash ./tools/verify-install.sh
 # Optional checks
 bash ./tools/verify-install.sh --check-claude
 bash ./tools/verify-install.sh --check-cursor   # run inside a project with .cursor
+./tools/verify-jq.sh                             # confirm jq is on PATH
 ```

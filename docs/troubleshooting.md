@@ -77,6 +77,15 @@ Environment
 - Windows path confusion
   - Use the `@`-prefixed logical paths shown in examples; they’re normalized by the flow
 
+- jq not found
+  - Some scripts and flows require `jq`.
+  - macOS: `brew install jq`
+  - Debian/Ubuntu: `sudo apt-get install -y jq`
+  - Fedora/RHEL/CentOS: `sudo dnf install -y jq` (or `sudo yum install -y jq`)
+  - Arch/Manjaro: `sudo pacman -S jq`
+  - Alpine: `sudo apk add --no-cache jq`
+  - Windows (Git Bash): download `jq.exe` to `$HOME/.local/bin` and add to PATH; see Installation docs.
+
 Getting help
 ------------
 

@@ -89,7 +89,14 @@ Step 2 — Verify outputs
   - `sub-specs/database-schema.md` (DB required)
   - `sub-specs/api-spec.md` (API required)
   - `tasks.md`
+  - `context/` (lite-first artifacts)
+    - `facts.md` (may say “Mission (lite): N/A” — that’s OK)
+    - `manifest.json` (hashes/mtime for skip-by-hash)
+    - `meta.json` (counts/flags for fast checks)
 - `spec.md` sections in strict order: Overview, User Stories, Spec Scope, Out of Scope, Expected Deliverable
+
+Tip: See the Glossary for the roles of `spec.md` vs `spec-lite.md`.
+Tip: See the Glossary for lite-first artifacts (`facts.md`, `manifest.json`, `meta.json`).
 
 Step 3 — Execute only API and DB tasks
 -------------------------------------
@@ -105,6 +112,27 @@ specific_tasks:
   - 1   # API endpoint task (adjust)
   - 4   # DB table/migration task (adjust)
 [/execution_context]
+```
+
+Expected summary output
+-----------------------
+
+After execution, a compact summary is written to `[spec_folder_path]/context/tasks-summary.json`.
+
+Example (truncated):
+
+```json
+{
+  "run": {
+    "specFolderPath": "@.agent-os/specs/2025-08-14-add-events-post-endpoint",
+    "selectedParents": [1, 4],
+    "status": "success"
+  },
+  "tasks": [
+    { "id": "1", "title": "API: POST /api/v1/events", "status": "done" },
+    { "id": "4", "title": "DB: Create Events table migration", "status": "done" }
+  ]
+}
 ```
 
 Step 4 — Validate (optional but recommended)
@@ -139,6 +167,7 @@ Next steps
 - Glossary: [glossary.md](./glossary.md)
 - Configuration: [configuration.md](./configuration.md)
 - Installation: [installation.md](./installation.md)
+- After running execute-tasks, check `context/tasks-summary.json` for a compact run summary.
 
 External resources
 ------------------

@@ -135,11 +135,24 @@ Use the context-fetcher subagent to read @.agent-os/product/mission-lite.md and 
     SKIP this entire step
     PROCEED to step 3
   ELSE:
-    READ only files not already in context:
-      - mission-lite.md (if not in context)
-      - tech-stack.md (if not in context)
+    READ only files not already in context AND present on disk:
+      - mission-lite.md (if not in context AND file exists)
+      - tech-stack.md (if not in context AND file exists)
+    IF mission-lite.md is missing:
+      NOTE: proceed without mission-lite.md (not required when starting via analyze-product or Jira); rely on inputs and tech-stack
     CONTINUE with context analysis
 </conditional_logic>
+
+<lite_first_and_cache>
+  - NEVER load full mission.md or roadmap.md during spec creation; use mission-lite.md only.
+  - BEFORE reading a file, CHECK [spec_folder_path]/context/manifest.json:
+    - IF entry exists for the target file AND sha256 matches current file on disk:
+      SKIP reading; treat as already in context.
+    - ELSE:
+      READ only the exact sections requested by this step (avoid full-file loads when possible).
+      AFTER read, UPDATE manifest.json with new sha256 and lastModified.
+  - PREFERRED sources for alignment: mission-lite.md -> spec-lite.md (later) -> spec.md sections only when required by validation.
+</lite_first_and_cache>
 
 <context_analysis>
   <mission_lite>core product purpose and value</mission_lite>
@@ -220,6 +233,7 @@ Use kebab-case for spec name. Maximum 5 words in name.
 <paths_to_create>
   - [spec_folder_path]/
   - [spec_folder_path]/sub-specs/
+  - [spec_folder_path]/context/
 </paths_to_create>
 
 </step>
@@ -328,6 +342,66 @@ Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spe
 
 </step>
 
+<step number="6.1" subagent="file-creator" name="emit_lite_context_artifacts">
+
+### Step 6.1: Emit Lite Context Artifacts
+
+Create lightweight, cached context artifacts for fast, deterministic reuse.
+
+<targets>
+  - [spec_folder_path]/meta.json
+  - [spec_folder_path]/context/facts.md
+  - [spec_folder_path]/context/manifest.json
+  - [spec_folder_path]/context/.gitkeep (optional)
+</targets>
+
+<meta_json_template>
+{
+  "spec_key": "[CURRENT_DATE]-[SPEC_NAME]",
+  "spec_name": "[SPEC_NAME]",
+  "spec_date": "[CURRENT_DATE]",
+  "requires_db_changes": [requires_db_changes],
+  "requires_api_changes": [requires_api_changes],
+  "section_counts": {
+    "user_stories": "[COUNT_FROM_SPEC]",
+    "spec_scope": "[COUNT_FROM_SPEC]",
+    "expected_deliverables": "[COUNT_FROM_SPEC]"
+  }
+}
+</meta_json_template>
+
+<facts_md_template>
+  ## Context Facts
+
+  - Mission (lite): [ONE_SENTENCE_FROM @.agent-os/product/mission-lite.md OR N/A]
+  - Spec: [SPEC_NAME] ([CURRENT_DATE])
+  - Primary deliverables (1–3):
+    - [FROM Expected Deliverable]
+  - Constraints/assumptions:
+    - [e.g., tech constraints, out-of-scope highlights]
+  - Notes:
+    - This file is the canonical lite context for execution flows.
+</facts_md_template>
+
+<manifest_json_template>
+{
+  "docs": {
+    "mission-lite.md": { "path": "@.agent-os/product/mission-lite.md", "sha256": "[HASH]", "lastModified": "[ISO8601]" },
+    "spec.md": { "path": "@[spec_folder_path]/spec.md", "sha256": "[HASH]", "lastModified": "[ISO8601]" },
+    "spec-lite.md": { "path": "@[spec_folder_path]/spec-lite.md", "sha256": "[PENDING_UNTIL_STEP7]", "lastModified": "" },
+    "technical-spec.md": { "path": "@[spec_folder_path]/sub-specs/technical-spec.md", "sha256": "[HASH]", "lastModified": "[ISO8601]" }
+  }
+}
+</manifest_json_template>
+
+<instructions>
+  ACTION: Count sections in spec.md after validation and write meta.json
+  ACTION: Summarize mission-lite and expected deliverables into context/facts.md
+  ACTION: Compute initial doc hashes and write context/manifest.json (update spec-lite after Step 7)
+</instructions>
+
+</step>
+
 <step number="7" subagent="file-creator" name="create_spec_lite_md">
 
 ### Step 7: Create spec-lite.md
@@ -357,6 +431,14 @@ Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spe
 <example>
   Implement secure password reset via email verification to reduce support tickets and enable self-service account recovery. Users can request a reset link, receive a time-limited token via email, and set a new password following security best practices.
 </example>
+
+</step>
+
+<step number="7.1" name="update_manifest_for_spec_lite">
+
+### Step 7.1: Update Manifest for spec-lite.md
+
+After creating spec-lite.md, update its entry in [spec_folder_path]/context/manifest.json with sha256 and lastModified.
 
 </step>
 
@@ -595,6 +677,14 @@ Run tasks validation to ensure structure, numbering, and required items are pres
 
 </step>
 
+<step number="12.2" name="facts_first_task_summary">
+
+### Step 12.2: Update Facts with First Task Summary
+
+Append a short summary of Task 1 (title + 1–2 sentence description) to [spec_folder_path]/context/facts.md and update context/manifest.json hash for tasks.md and facts.md.
+
+</step>
+
 <step number="13" name="decision_documentation">
 
 ### Step 13: Decision Documentation (Conditional)
@@ -743,5 +833,8 @@ Evaluate readiness to begin implementation after completing all previous steps, 
     - [ ] tasks.md created with TDD approach
     - [ ] Cross-references added to spec.md
     - [ ] Strategic decisions evaluated
+  - [ ] context/facts.md created and populated
+  - [ ] context/manifest.json created and updated
+  - [ ] meta.json created with section counts and flags
   </verify>
 </final_checklist>

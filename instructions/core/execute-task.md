@@ -32,12 +32,13 @@ Execute a specific task along with its sub-tasks systematically following a TDD 
 
 ### Step 1: Task Understanding
 
-Read and analyze the given parent task and all its sub-tasks from tasks.md to gain complete understanding of what needs to be built.
+Read and analyze the given parent task and all its sub-tasks from tasks.md to gain complete understanding of what needs to be built, using a lite-first approach.
 
 <target>[spec_folder_path]/tasks.md</target>
 
 <task_analysis>
   <read_from_tasks_md>
+    - Extract only the current parent task block and its sub-tasks (create [spec_folder_path]/context/current-task.md optionally)
     - Parent task description
     - All sub-task descriptions
     - Task dependencies
@@ -58,7 +59,7 @@ Read and analyze the given parent task and all its sub-tasks from tasks.md to ga
 
 ### Step 2: Technical Specification Review
 
-Search and extract relevant sections from technical-spec.md to understand the technical implementation approach for this task.
+Search and extract only the relevant sections from technical-spec.md (do not load the entire file) to understand the technical implementation approach for this task. Prefer using [spec_folder_path]/context/manifest.json to skip re-reading if unchanged.
 
 <target>[spec_folder_path]/sub-specs/technical-spec.md</target>
 <conditional>
@@ -78,7 +79,7 @@ Search and extract relevant sections from technical-spec.md to understand the te
 </selective_reading>
 
 <instructions>
-  ACTION: Search technical-spec.md for task-relevant sections
+  ACTION: Search technical-spec.md for task-relevant sections (by heading or anchors)
   EXTRACT: Only implementation details for current task
   SKIP: Unrelated technical specifications
   FOCUS: Technical approach for this specific feature
@@ -90,7 +91,7 @@ Search and extract relevant sections from technical-spec.md to understand the te
 
 ### Step 3: Best Practices Review
 
-Use the context-fetcher subagent to retrieve relevant sections from @.agent-os/standards/best-practices.md that apply to the current task's technology stack and feature type.
+Use the context-fetcher subagent to retrieve only the relevant sections from @.agent-os/standards/best-practices.md that apply to the current task's technology stack and feature type. If [spec_folder_path]/context/manifest.json indicates unchanged, skip reload.
 
 <selective_reading>
   <search_best_practices>
@@ -119,7 +120,7 @@ Use the context-fetcher subagent to retrieve relevant sections from @.agent-os/s
 
 ### Step 4: Code Style Review
 
-Use the context-fetcher subagent to retrieve relevant code style rules from @.agent-os/standards/code-style.md for the languages and file types being used in this task.
+Use the context-fetcher subagent to retrieve only the relevant code style rules from @.agent-os/standards/code-style.md for the languages and file types being used in this task. Use manifest-based skip when unchanged. If spec-lite.md or mission-lite.md are missing, proceed without them; rely on facts.md and spec.md sections as needed.
 
 <selective_reading>
   <search_code_style>
@@ -140,6 +141,7 @@ Use the context-fetcher subagent to retrieve relevant code style rules from @.ag
             - Testing style guidelines"
   PROCESS: Returned style rules
   APPLY: Relevant formatting and patterns
+  DO_NOT_LOAD: Full mission.md, decisions.md
 </instructions>
 
 </step>

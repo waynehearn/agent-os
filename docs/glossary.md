@@ -30,6 +30,23 @@ Core objects
 - tasks.md
   - The task breakdown for implementing the spec.
 
+Lite-first context artifacts
+----------------------------
+
+- context/facts.md
+  - A short, human-readable summary of mission/spec facts for fast context. If mission docs are absent, it will include: "Mission (lite): N/A".
+
+- context/manifest.json
+  - Tracks sha256 and lastModified for key files so execution flows can skip re-reading unchanged files.
+
+- context/meta.json
+  - Tiny JSON containing counts/flags (e.g., section counts) used for quick checks.
+
+- context/tasks-summary.json
+  - A small summary emitted by execute-tasks with high-level run info and per-task status.
+  - Example (truncated):
+    {"run":{"specFolderPath":"@.agent-os/specs/2025-08-14-add-events-post-endpoint","selectedParents":[1,4],"status":"success"},"tasks":[{"id":"1","title":"API: POST /api/v1/events","status":"done"}]}
+
 Tasks and numbering
 -------------------
 
@@ -83,6 +100,7 @@ Project docs
 
 - mission-lite.md
   - High-level product pitch for context alignment.
+  - Optional. Flows proceed without it; facts.md will note N/A.
 
 Architecture (example scenario)
 -------------------------------

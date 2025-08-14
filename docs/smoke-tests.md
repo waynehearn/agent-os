@@ -33,6 +33,10 @@ Checklist (update date as appropriate):
   - `sub-specs/database-schema.md` (because `requires_db_changes: true`)
   - `sub-specs/api-spec.md` (because `requires_api_changes: true`)
   - `tasks.md`
+  - `context/` (lite-first artifacts)
+    - `facts.md` (Mission (lite) may be N/A when starting from Jira)
+    - `manifest.json`
+    - `meta.json`
 - `spec.md` sections are in strict order:
   1) Overview
   2) User Stories
@@ -92,6 +96,7 @@ Expected:
 
 - Only the selected parent tasks (and their subtasks) are executed
 - Completion banner prints; tests pass if included in your flow
+- A compact run summary is written to `[spec_folder_path]/context/tasks-summary.json`
 
 Test 4 — Minimal subtask run + stop after tests
 -----------------------------------------------

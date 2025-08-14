@@ -14,6 +14,8 @@ encoding: UTF-8
 
 Initiate execution of one or more tasks for a given spec.
 
+Note: After execution, a compact run summary is written to [spec_folder_path]/context/tasks-summary.json.
+
 <pre_flight_check>
   EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
 </pre_flight_check>
@@ -49,25 +51,30 @@ Identify which tasks to execute from the spec (using spec_srd_reference file pat
 
 ### Step 2: Context Analysis
 
-Use the context-fetcher subagent to gather minimal context for task understanding by always loading spec tasks.md, and conditionally loading @.agent-os/product/mission-lite.md, [spec_folder_path]/spec-lite.md, and [spec_folder_path]/sub-specs/technical-spec.md if not already in context.
+Use the context-fetcher subagent to gather minimal context for task understanding using a lite-first approach:
+  - ALWAYS: load only [spec_folder_path]/tasks.md and extract the current parent task block and its subtasks into an in-memory snippet (or write to [spec_folder_path]/context/current-task.md)
+  - CONDITIONALLY: load @.agent-os/product/mission-lite.md (if file exists), [spec_folder_path]/spec-lite.md (if file exists), and [spec_folder_path]/sub-specs/technical-spec.md only if not already in context and only the sections relevant to the current task.
+  - BEFORE reading any file, CHECK [spec_folder_path]/context/manifest.json for sha256; if unchanged, SKIP loading.
 
 <instructions>
   ACTION: Use context-fetcher subagent to:
-    - REQUEST: "Get product pitch from mission-lite.md"
-    - REQUEST: "Get spec summary from spec-lite.md"
-    - REQUEST: "Get technical approach from technical-spec.md"
+  - REQUEST: "Get product pitch from mission-lite.md" (skip if manifest unchanged or file missing)
+  - REQUEST: "Get spec summary from spec-lite.md" (skip if manifest unchanged or file missing)
+    - REQUEST: "Get technical approach from technical-spec.md relevant to [CURRENT_TASK_AREA]" (selective section only)
   PROCESS: Returned information
+  UPDATE: Refresh manifest.json hashes for any files actually read
 </instructions>
 
 
 <context_gathering>
   <essential_docs>
-    - [spec_folder_path]/tasks.md for task breakdown
+    - [spec_folder_path]/tasks.md for task breakdown (extract only the current parent task subtree)
   </essential_docs>
   <conditional_docs>
-  - mission-lite.md for product alignment
-  - [spec_folder_path]/spec-lite.md for feature summary
-  - [spec_folder_path]/sub-specs/technical-spec.md for implementation details
+  - mission-lite.md for product alignment (lite only; never load mission.md); if missing, SKIP
+  - [spec_folder_path]/spec-lite.md for feature summary; if missing, prioritize context/facts.md and spec.md sections
+  - [spec_folder_path]/context/facts.md for fixed facts and first-task summary (if present)
+  - [spec_folder_path]/sub-specs/technical-spec.md for implementation details (select sections only)
   </conditional_docs>
 </context_gathering>
 
@@ -141,6 +148,7 @@ Execute all assigned parent tasks and their subtasks using @~/.agent-os/instruct
     EXECUTE instructions from execute-task.md with:
       - parent_task_number
       - all associated subtasks
+  - context snippet: current parent task subtree from tasks.md
     WAIT for task completion
     UPDATE tasks.md status
   END FOR
@@ -175,6 +183,7 @@ Execute all assigned parent tasks and their subtasks using @~/.agent-os/instruct
 <tasks_validation>
   OPTIONAL: Normalize tasks.md after updates to keep numbering, structure, and required subtasks consistent.
   EXECUTE: @~/.agent-os/instructions/core/tasks-validator.md with TASKS_PATH=@[spec_folder_path]/tasks.md
+  AFTER: Write a short summary to [spec_folder_path]/context/tasks-summary.json (normalized numbering, first/last subtask presence) and refresh manifest hash for tasks.md
 </tasks_validation>
 
 <instructions>
@@ -269,10 +278,11 @@ Check @.agent-os/product/roadmap.md (if not in context) and update roadmap progr
 </conditional_execution>
 
 <conditional_loading>
-  IF roadmap.md NOT already in context:
+  STRICT DO-NOT-LOAD: Do not load decisions.md or full mission.md during execution.
+  IF preliminary_check == YES AND roadmap.md NOT already in context AND manifest indicates file changed since last read:
     LOAD @.agent-os/product/roadmap.md
   ELSE:
-    SKIP loading (use existing context)
+    SKIP loading (use existing or prior knowledge)
 </conditional_loading>
 
 <roadmap_criteria>

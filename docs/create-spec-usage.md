@@ -25,7 +25,7 @@ Shell environment
 - Examples shown are shell-agnostic (they are instruction references, not shell commands).
 - Optional completion chime in bash-compatible shells:
   - printf '\a'  # emits BEL (audible bell if enabled)
- - Shell: examples assume a bash-like shell (git-bash on Windows, WSL, macOS Terminal, or Linux)
+- Shell: examples assume a bash-like shell (git-bash on Windows, WSL, macOS Terminal, or Linux)
 
 Outputs
 -------
@@ -42,6 +42,25 @@ With files:
 - `sub-specs/database-schema.md` (conditional)
 - `sub-specs/api-spec.md` (conditional)
 - `tasks.md`
+
+Lite-first context artifacts (new)
+---------------------------------
+
+- `context/facts.md`
+  - Summarizes mission/spec facts for quick AI context. If no mission docs exist, it will include: `Mission (lite): N/A`.
+- `context/manifest.json`
+  - Tracks sha256 + lastModified for key files. The execution flows skip re-reading files when hashes match.
+  - Example (truncated):
+    {
+      "files": {
+        "spec.md": {"sha256": "…", "lastModified": "2025-08-14T12:00:00Z"},
+        "spec-lite.md": {"sha256": "…", "lastModified": "2025-08-14T12:00:05Z"}
+      }
+    }
+- `context/meta.json`
+  - Tiny counts/flags (e.g., section counts) for quick gating.
+  - Example:
+    {"spec": {"sections": 5}, "tasks": {"parents": 4}}
 
 All paths are normalized using `[spec_folder_path]` in the instructions.
 
@@ -94,6 +113,7 @@ What happens:
 - The flow fetches Jira fields (summary, description, status, labels/components, acceptance criteria, etc.)
 - Maps them to the required inputs and prompts for any missing items
 - Asks for confirmation before proceeding
+- Proceeds even if no `mission.md` or `mission-lite.md` exists (facts.md will note N/A)
 
 Concrete Jira example: ASP.NET Core Web API new endpoint (with DB table and repo package)
 ----------------------------------------------------------------------------------------
@@ -196,6 +216,13 @@ Determinism & Validation
 - Post-write validation runs and repairs the file if needed
 - `tasks.md` is validated and normalized right after creation
 
+Skip-by-hash & selective reads
+------------------------------
+
+- During execution, the flows consult `context/manifest.json` to avoid re-loading unchanged files.
+- They prefer `spec-lite.md`, `context/facts.md`, and task-scoped snippets over full-document loads.
+- Strict do-not-load during execution: `decisions.md` and full `mission.md` (roadmap only when needed).
+
 Idempotency
 -----------
 
@@ -264,3 +291,13 @@ execution_notes: >
   Execute only subtask 1.1 (controller action + route) and stop after verifying tests for that subtask.
 [/execution_context]
 ```
+
+Helper scripts (optional)
+-------------------------
+
+- Update manifest hashes/mtime after edits:
+  - `tools/update-manifest.sh [spec_folder_path]`
+- Backfill lite-first context for existing specs:
+  - `tools/backfill-context.sh`
+- Verify jq and optionally check a spec’s manifest exists:
+  - `tools/verify-jq.sh [spec_folder_path]`
