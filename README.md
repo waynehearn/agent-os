@@ -1,31 +1,107 @@
-<img width="1280" height="640" alt="agent-os-og" src="https://github.com/user-attachments/assets/e897628e-7063-4bab-a69a-7bb6d7ac8403" />
+# Spec Agent Kibo
 
-## Your system for spec-driven agentic development.
+![Spec Agent Kibo banner](assets/specl-agent-kibo-banner.svg)
 
-[Agent OS](https://buildermethods.com/agent-os) transforms AI coding agents from confused interns into productive developers. With structured workflows that capture your standards, your stack, and the unique details of your codebase, Agent OS gives your agents the specs they need to ship quality code on the first try—not the fifth.
+Your system for spec-driven agentic development.
 
-Use it with:
+Spec Agent Kibo 😉 turns AI coding agents into productive developers by enforcing clear specs, standards, and workflows so they ship quality code the first time.
 
-✅ Claude Code, Cursor, or any other AI coding tool.
-
-✅ New products or established codebases.
-
-✅ Big features, small fixes, or anything in between.
-
-✅ Any language or framework.
+- Start here: [docs/index.md](docs/index.md)
+- Full local docs: [docs/](docs)
+- Canonical docs: [buildermethods.com/agent-os](https://buildermethods.com/agent-os)
 
 ---
 
-### Documentation & Installation
+## Install
 
-Docs, installation, useage, & best practices 👉 [It's all here](https://buildermethods.com/agent-os)
+Works on macOS, Linux, and Windows (use Git Bash on Windows).
+
+- Recommended (curl | bash):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup.sh | bash
+```
+
+- From a local clone of this repo:
+
+```bash
+bash ./setup.sh
+```
+
+Optional editor integrations:
+
+- Claude Code
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup-claude-code.sh | bash
+```
+
+- Cursor
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup-cursor.sh | bash
+```
+
+What the installer does
+
+- Creates ~/.agent-os/standards and ~/.agent-os/instructions
+- Installs standards (see standards/tech-stack.md, standards/code-style.md, standards/best-practices.md)
+- Installs core instruction flows (plan, create-spec, execute-task(s), analyze)
+- Optionally adds IDE-specific commands (Claude Code, Cursor)
 
 ---
 
-### Created by Brian Casel @ Builder Methods
+## Quickstart
 
-Created by Brian Casel, the creator of [Builder Methods](https://buildermethods.com), where Brian helps professional software developers and teams build with AI.
+1. Plan your product (generates .agent-os/product/*)
+    - Open: ~/.agent-os/instructions/core/plan-product.md
+    - Guide: [docs/quickstart.md](docs/quickstart.md)
+2. Create a spec (generates .agent-os/specs/YYYY-MM-DD-feature/*)
+    - Open: ~/.agent-os/instructions/core/create-spec.md
+    - Example flow: [docs/create-spec-usage.md](docs/create-spec-usage.md)
+3. Execute tasks (TDD loop, commits, PR)
+    - Open: ~/.agent-os/instructions/core/execute-tasks.md
+4. Analyze existing codebase (optional)
+    - Open: ~/.agent-os/instructions/core/analyze-product.md
 
-Get Brian's free resources on building with AI:
-- [Builder Briefing newsletter](https://buildermethods.com)
-- [YouTube](https://youtube.com/@briancasel)
+---
+
+## Local documentation
+
+- Start here: [docs/index.md](docs/index.md)
+- Installation: [docs/installation.md](docs/installation.md)
+- Quickstart: [docs/quickstart.md](docs/quickstart.md)
+- Configuration: [docs/configuration.md](docs/configuration.md)
+- Create Spec usage: [docs/create-spec-usage.md](docs/create-spec-usage.md)
+- Troubleshooting: [docs/troubleshooting.md](docs/troubleshooting.md)
+- Smoke tests: [docs/smoke-tests.md](docs/smoke-tests.md)
+- Glossary: [docs/glossary.md](docs/glossary.md)
+
+If something’s missing locally, see the canonical docs at [buildermethods.com/agent-os](https://buildermethods.com/agent-os).
+
+---
+
+## What’s inside
+
+- Commands: commands/
+- Core instruction flows:
+  - Plan Product: instructions/core/plan-product.md
+  - Create Spec: instructions/core/create-spec.md
+  - Execute Tasks: instructions/core/execute-tasks.md
+  - Execute Task: instructions/core/execute-task.md
+  - Analyze Product: instructions/core/analyze-product.md
+- Claude Code agents (examples):
+  - File Creator: claude-code/agents/file-creator.md
+  - Context Fetcher: claude-code/agents/context-fetcher.md
+  - Git Workflow: claude-code/agents/git-workflow.md
+
+---
+
+## Support & updates
+
+- Troubleshooting: [docs/troubleshooting.md](docs/troubleshooting.md)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
+- Project license: [LICENSE](LICENSE)
+
+Created by Brian Casel at Builder Methods — more resources at [buildermethods.com](https://buildermethods.com)
+Modified by ChatGPT5 with some prompting from [Wayne.Hearn@kiboecommerce.com](mailto:Wayne.Hearn@kiboecommerce.com)

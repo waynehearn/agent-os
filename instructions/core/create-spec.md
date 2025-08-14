@@ -1,10 +1,12 @@
 ---
-description: Spec Creation Rules for Agent OS
+description: Spec Creation Rules for Spec Agent Kibo
 globs:
 alwaysApply: false
 version: 1.1
 encoding: UTF-8
 ---
+
+<!-- markdownlint-disable MD033 MD032 MD007 MD022 MD023 -->
 
 # Spec Creation Rules
 
@@ -16,15 +18,58 @@ Generate detailed feature specifications aligned with product roadmap and missio
   EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
 </pre_flight_check>
 
+<variables>
+  <spec_name>[SPEC_NAME]</spec_name>
+  <spec_date>[CURRENT_DATE]</spec_date>
+  <spec_folder>.agent-os/specs/[CURRENT_DATE]-[SPEC_NAME]</spec_folder>
+  <spec_folder_path>@.agent-os/specs/[CURRENT_DATE]-[SPEC_NAME]</spec_folder_path>
+  <requires_db_changes>false</requires_db_changes>
+  <requires_api_changes>false</requires_api_changes>
+</variables>
+
+<determinism_rules>
+
+- All generated files MUST be placed under [spec_folder_path].
+- Section headers in spec.md MUST appear in exactly this order: Overview, User Stories, Spec Scope, Out of Scope, Expected Deliverable.
+- Counts:
+  - User Stories: 1-3
+  - Spec Scope items: 1-5
+  - Expected Deliverables: 1-3 (browser-testable)
+- Tone: concise, declarative, aligned with project style.
+- Idempotency: if any target file exists, ASK user to overwrite (yes/no). On "no", SKIP creation for that file and report in summary.
+
+</determinism_rules>
+
 <process_flow>
 
 <step number="1" subagent="context-fetcher" name="spec_initiation">
 
 ### Step 1: Spec Initiation
 
-Use the context-fetcher subagent to identify spec initiation method by either finding the next uncompleted roadmap item when user asks "what's next?" or accepting a specific spec idea from the user.
+Use the context-fetcher subagent to identify spec initiation method by either finding the next uncompleted roadmap item when user asks "what's next?" or when a user provides a Jira ticket ID or accepting a specific spec idea from the user.
 
-<option_a_flow>
+<inputs_validation>
+  <schema>
+    - main_idea: required string (1-2 sentences)
+    - initial_user_stories: required array[min=1, max=3]
+    - in_scope: required array[min=1, max=5]
+    - out_of_scope: optional array
+    - expected_deliverables: required array[min=1, max=3]
+    - tech_constraints: optional string
+  </schema>
+  <gate>
+    IF any required fields missing:
+      SHOW error_template
+      STOP before Step 2
+  </gate>
+  <error_template>
+    Missing required inputs:
+    - [LIST_MISSING_FIELDS]
+    Please provide missing fields to proceed.
+  </error_template>
+</inputs_validation>
+
+<whats_next_flow>
   <trigger_phrases>
     - "what's next?"
   </trigger_phrases>
@@ -34,13 +79,48 @@ Use the context-fetcher subagent to identify spec initiation method by either fi
     3. SUGGEST item to user
     4. WAIT for approval
   </actions>
-</option_a_flow>
+</whats_next_flow>
 
-<option_b_flow>
+<jira_ticket_id>
+  <trigger>user enters a Jira ticket ID</trigger>
+  <accept>
+    - ```regex
+      (?i)^(jira:)?[A-Z][A-Z0-9]+-\d+$
+      ```
+  </accept>
+  <mcp_integration>
+    IF jira_mcp_available:
+      USE Atlassian MCP to FETCH fields for the issue key:
+        - key, summary, description, status, assignee, labels, components, fixVersions
+        - custom fields: acceptance criteria (if present), story points (if present)
+        - comments: last 5
+        - linked issues (keys and link types)
+    ELSE:
+      FALLBACK: Ask user to paste the issue summary/description
+  </mcp_integration>
+  <jira_to_inputs_mapping>
+    - main_idea := summary (1–2 sentences)
+    - initial_user_stories := acceptance criteria if available, else derive 1–3 from description
+    - in_scope := derive 1–5 concrete items from description/labels/components
+    - out_of_scope := optional, derive exclusions if explicit
+    - expected_deliverables := 1–3 browser-testable outcomes derived from description/acceptance criteria
+    - tech_constraints := components/labels that imply tech constraints
+  </jira_to_inputs_mapping>
+  <actions>
+    1. FETCH issue details (via MCP if available)
+    2. DISPLAY: key, summary, status, and a brief description/acceptance criteria
+    3. CONFIRM the Jira issue matches the intended work (yes/no)
+    4. IF yes: DERIVE inputs using mapping; PROMPT for any missing required fields per Step 1 schema
+    5. WAIT for approval
+  </actions>
+  <proceed>to context gathering</proceed>
+</jira_ticket_id>
+
+<specific_spec_idea_flow>
   <trigger>user describes specific spec idea</trigger>
   <accept>any format, length, or detail level</accept>
   <proceed>to context gathering</proceed>
-</option_b_flow>
+</specific_spec_idea_flow>
 
 </step>
 
@@ -48,7 +128,7 @@ Use the context-fetcher subagent to identify spec initiation method by either fi
 
 ### Step 2: Context Gathering (Conditional)
 
-Use the context-fetcher subagent to read @.agent-os/product/mission-lite.md and @.agent-os/product/tech-stack.md only if not already in context to ensure minimal context for spec alignment.
+Use the context-fetcher subagent to read @.agent-os/product/mission-lite.md and @.agent-os/standards/tech-stack.md only if not already in context to ensure minimal context for spec alignment.
 
 <conditional_logic>
   IF both mission-lite.md AND tech-stack.md already read in current context:
@@ -126,11 +206,21 @@ Use kebab-case for spec name. Maximum 5 words in name.
   </name_constraints>
 </folder_naming>
 
+<name_normalization>
+  EXECUTE: @~/.agent-os/instructions/core/spec-name-normalizer.md with INPUT_NAME=[USER_PROVIDED_TITLE_OR_MAIN_IDEA]
+  SET: SPEC_NAME <- [OUTPUT_SPEC_NAME]
+</name_normalization>
+
 <example_names>
   - 2025-03-15-password-reset-flow
   - 2025-03-16-user-profile-dashboard
   - 2025-03-17-api-rate-limiting
 </example_names>
+
+<paths_to_create>
+  - [spec_folder_path]/
+  - [spec_folder_path]/sub-specs/
+</paths_to_create>
 
 </step>
 
@@ -139,6 +229,8 @@ Use kebab-case for spec name. Maximum 5 words in name.
 ### Step 6: Create spec.md
 
 Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spec-name/spec.md using this template:
+
+<target>[spec_folder_path]/spec.md</target>
 
 <file_template>
   <header>
@@ -225,6 +317,15 @@ Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spe
   </constraints>
 </section>
 
+<post_write_validation>
+  VERIFY file [spec_folder_path]/spec.md contains required sections in exact order: Overview, User Stories, Spec Scope, Out of Scope, Expected Deliverable.
+  VERIFY counts: User Stories 1-3, Spec Scope 1-5, Expected Deliverable 1-3.
+  IF validation fails:
+    REWRITE sections to satisfy constraints without duplicating content.
+  THEN:
+    EXECUTE: @~/.agent-os/instructions/core/spec-validator.md with SPEC_PATH=@[spec_folder_path]/spec.md
+</post_write_validation>
+
 </step>
 
 <step number="7" subagent="file-creator" name="create_spec_lite_md">
@@ -232,6 +333,8 @@ Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spe
 ### Step 7: Create spec-lite.md
 
 Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spec-name/spec-lite.md for the purpose of establishing a condensed spec for efficient AI context usage.
+
+<target>[spec_folder_path]/spec-lite.md</target>
 
 <file_template>
   <header>
@@ -263,11 +366,13 @@ Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spe
 
 Use the file-creator subagent to create the file: sub-specs/technical-spec.md using this template:
 
+<target>[spec_folder_path]/sub-specs/technical-spec.md</target>
+
 <file_template>
   <header>
     # Technical Specification
 
-    This is the technical specification for the spec detailed in @.agent-os/specs/YYYY-MM-DD-spec-name/spec.md
+  This is the technical specification for the spec detailed in @[spec_folder_path]/spec.md
   </header>
 </file_template>
 
@@ -314,6 +419,9 @@ Use the file-creator subagent to create the file: sub-specs/technical-spec.md us
 
 Use the file-creator subagent to create the file: sub-specs/database-schema.md ONLY IF database changes needed for this task.
 
+<condition_flag>[requires_db_changes] == true</condition_flag>
+<target>[spec_folder_path]/sub-specs/database-schema.md</target>
+
 <decision_tree>
   IF spec_requires_database_changes:
     CREATE sub-specs/database-schema.md
@@ -325,7 +433,7 @@ Use the file-creator subagent to create the file: sub-specs/database-schema.md O
   <header>
     # Database Schema
 
-    This is the database schema implementation for the spec detailed in @.agent-os/specs/YYYY-MM-DD-spec-name/spec.md
+  This is the database schema implementation for the spec detailed in @[spec_folder_path]/spec.md
   </header>
 </file_template>
 
@@ -356,6 +464,9 @@ Use the file-creator subagent to create the file: sub-specs/database-schema.md O
 
 Use the file-creator subagent to create file: sub-specs/api-spec.md ONLY IF API changes needed.
 
+<condition_flag>[requires_api_changes] == true</condition_flag>
+<target>[spec_folder_path]/sub-specs/api-spec.md</target>
+
 <decision_tree>
   IF spec_requires_api_changes:
     CREATE sub-specs/api-spec.md
@@ -367,7 +478,7 @@ Use the file-creator subagent to create file: sub-specs/api-spec.md ONLY IF API 
   <header>
     # API Specification
 
-    This is the API specification for the spec detailed in @.agent-os/specs/YYYY-MM-DD-spec-name/spec.md
+  This is the API specification for the spec detailed in @[spec_folder_path]/spec.md
   </header>
 </file_template>
 
@@ -411,9 +522,9 @@ Request user review of spec.md and all sub-specs files, waiting for approval or 
 <review_request>
   I've created the spec documentation:
 
-  - Spec Requirements: @.agent-os/specs/YYYY-MM-DD-spec-name/spec.md
-  - Spec Summary: @.agent-os/specs/YYYY-MM-DD-spec-name/spec-lite.md
-  - Technical Spec: @.agent-os/specs/YYYY-MM-DD-spec-name/sub-specs/technical-spec.md
+  - Spec Requirements: @[spec_folder_path]/spec.md
+  - Spec Summary: @[spec_folder_path]/spec-lite.md
+  - Technical Spec: @[spec_folder_path]/sub-specs/technical-spec.md
   [LIST_OTHER_CREATED_SPECS]
 
   Please review and let me know if any changes are needed before I create the task breakdown.
@@ -426,6 +537,8 @@ Request user review of spec.md and all sub-specs files, waiting for approval or 
 ### Step 12: Create tasks.md
 
 Use the file-creator subagent to await user approval from step 11 and then create file: tasks.md
+
+<target>[spec_folder_path]/tasks.md</target>
 
 <file_template>
   <header>
@@ -467,6 +580,18 @@ Use the file-creator subagent to await user approval from step 11 and then creat
   - Group related functionality
   - Build incrementally
 </ordering_principles>
+
+</step>
+
+<step number="12.1" name="validate_tasks">
+
+### Step 12.1: Validate tasks.md
+
+Run tasks validation to ensure structure, numbering, and required items are present.
+
+<execute_validator>
+  EXECUTE: @~/.agent-os/instructions/core/tasks-validator.md with TASKS_PATH=@[spec_folder_path]/tasks.md
+</execute_validator>
 
 </step>
 
@@ -514,7 +639,7 @@ Evaluate strategic impact without loading decisions.md and update it only if the
   IF spec_does_NOT_significantly_deviate:
     SKIP this entire step
     STATE "Spec aligns with mission and roadmap"
-    PROCEED to step 13
+    PROCEED to step 14
   ELSE IF spec_significantly_deviates:
     EXPLAIN the significant deviation
     ASK user: "This spec significantly deviates from our mission/roadmap. Should I draft a decision entry?"
@@ -523,7 +648,7 @@ Evaluate strategic impact without loading decisions.md and update it only if the
       UPDATE decisions.md
     ELSE:
       SKIP updating decisions.md
-      PROCEED to step 13
+      PROCEED to step 14
 </decision_tree>
 
 <decision_template>
@@ -532,7 +657,7 @@ Evaluate strategic impact without loading decisions.md and update it only if the
   **ID:** DEC-[NEXT_NUMBER]
   **Status:** Accepted
   **Category:** [technical/product/business/process]
-  **Related Spec:** @.agent-os/specs/YYYY-MM-DD-spec-name/
+  **Related Spec:** @[spec_folder_path]/
 
   ### Decision
 
@@ -592,9 +717,9 @@ Evaluate readiness to begin implementation after completing all previous steps, 
 
 <standards>
   <follow>
-    - @.agent-os/product/code-style.md
-    - @.agent-os/product/dev-best-practices.md
-    - @.agent-os/product/tech-stack.md
+  - @.agent-os/standards/code-style.md
+  - @.agent-os/standards/best-practices.md
+  - @.agent-os/standards/tech-stack.md
   </follow>
   <maintain>
     - Consistency with product mission

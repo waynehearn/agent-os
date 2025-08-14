@@ -1,37 +1,89 @@
 # Changelog
 
-All notable changes to Agent OS will be documented in this file.
+All notable changes to Spec Agent Kibo will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-08-14
+
+### Added [1.4.0]
+
+- Renamed to Spec Agent Kibo
+  - Cause Kibo and Specs...😉
+- Documentation folder with local, offline-first docs:
+  - `docs/index.md`, `docs/installation.md`, `docs/quickstart.md`, `docs/configuration.md`
+  - `docs/create-spec-usage.md`, `docs/smoke-tests.md`, `docs/troubleshooting.md`, `docs/glossary.md`
+- New instruction utilities to enforce determinism and structure:
+  - `instructions/core/spec-validator.md`
+  - `instructions/core/tasks-validator.md`
+  - `instructions/core/spec-name-normalizer.md`
+- Development tooling/config:
+  - `.claude/settings.local.json`
+  - `.serena/project.yml`
+
+### Changed [1.4.0]
+
+- README reworked as installer-first entry point with links into local docs and canonical site; macOS/Linux/Windows (Git Bash) guidance added; project header updated.
+- Commands expanded with usage and examples:
+  - `commands/create-spec.md` now documents required/optional inputs plus Jira-driven and manual example blocks
+  - `commands/execute-tasks.md` now describes the task loop with examples for next, specific parents, and targeted subtasks
+  - `commands/plan-product.md` now lists input template and example
+  - `commands/analyze-product.md` now supports optional `context_notes`
+- Core instructions refined for clarity, determinism, and validation:
+  - `instructions/core/create-spec.md` adds variables, strict section/count rules, Atlassian MCP mapping, conditional sub-spec creation, and post-write validation steps
+  - `instructions/core/execute-tasks.md` adds variables, clearer context-gathering using path aliases, optional spec/tasks validation, and cross‑platform completion notification
+  - `instructions/core/execute-task.md` adds variables, explicit targets, and fixes best‑practices/code‑style path aliases
+  - `instructions/core/analyze-product.md` clarifies overview, improves wording, and fixes bare URLs
+  - `instructions/core/plan-product.md` typo fixes and lint guards
+- Standards updated toward a .NET-first stack and conventions:
+  - `standards/tech-stack.md` switched to ASP.NET Core/.NET 6+, MongoDB, Docker/Kubernetes, Jenkins, SonarQube
+  - `standards/code-style.md` updated to C# naming/formatting guidance
+  - `standards/best-practices.md` expanded (SOLID, DRY, layered architecture, .NET tips)
+  - Added `standards/code-style/csharp-style.md` with detailed architecture and patterns
+
+### Improved [1.4.0]
+
+- Deterministic spec and tasks generation with validators; clearer path aliases (`@...`) across OS/shells.
+- Cross‑platform guidance and notifications (POSIX shells and Windows Git Bash).
+- Markdown consistency (lint rules, links) across instructions and docs.
+
+### Fixed [1.4.0]
+
+- Typos and wording in multiple instruction files; replaced bare URLs with Markdown links; corrected alias paths.
+
 ## [1.3.1] - 2025-08-02
 
-### Added
+### Added [1.3.1]
+
 - **Date-Checker Subagent** - New specialized Claude Code subagent for accurate date determination using file system timestamps
   - Uses temporary file creation to extract current date in YYYY-MM-DD format
   - Includes context checking to avoid duplication
   - Provides clear validation and error handling
 
-### Changed
+### Changed [1.3.1]
+
 - **Create-Spec Instructions** - Updated `instructions/core/create-spec.md` to use the new date-checker subagent
   - Replaced complex inline date determination logic with simple subagent delegation
   - Simplified step 4 (date_determination) by removing 45 lines of validation and fallback code
   - Cleaner instruction flow with specialized agent handling date logic
 
-### Improved
+### Improved [1.3.1]
+
 - **Code Maintainability** - Date determination logic centralized in reusable subagent
 - **Instruction Clarity** - Simplified create-spec workflow with cleaner delegation pattern
 - **Error Handling** - More robust date determination with dedicated validation rules
 
 ## [1.3.0] - 2025-08-01
 
-### Added
+### Added [1.3.0]
+
 - **Pre-flight Check System** - New `meta/pre-flight.md` instruction for centralized agent detection and initialization
 - **Proactive Agent Usage** - Updated agent descriptions to encourage proactive use when appropriate
 - **Structured Instruction Organization** - New folder structure with `core/` and `meta/` subdirectories
 
-### Changed
+### Changed [1.3.0]
+
 - **Instruction File Structure** - Reorganized all instruction files into subdirectories:
   - Core instructions moved to `instructions/core/` (plan-product, create-spec, execute-tasks, execute-task, analyze-product)
   - Meta instructions in `instructions/meta/` (pre-flight, more to come)
@@ -40,19 +92,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Step Definitions** - Added `subagent` attribute to steps for clearer delegation of work to help enforce delegation and preserve main agent's context.
 - **Setup Script** - Updated to create subdirectories and download files to new locations
 
-### Improved
+### Improved [1.3.0]
+
 - **Code Clarity** - Removed redundant XML instructions in favor of descriptive step purposes
 - **Agent Efficiency** - Centralized agent detection reduces repeated checks throughout workflows
 - **Maintainability** - Cleaner instruction format with less XML boilerplate
 - **User Experience** - Clearer indication of when specialized agents will be used proactively
 
-### Removed
+### Removed [1.3.0]
+
 - **CLAUDE.md** - Removed deprecated Claude Code configuration file (functionality moved to pre-flight system, preventing over-reading instructions into context)
 - **Redundant Instructions** - Eliminated verbose ACTION/MODIFY/VERIFY instruction blocks
 
 ## [1.2.0] - 2025-07-29
 
-### Added
+### Added [1.2.0]
+
 - **Claude Code Specialized Subagents** - New agents to offload specific tasks for improved efficiency:
   - `test-runner.md` - Handles test execution and failure analysis with minimal toolset
   - `context-fetcher.md` - Retrieves information from files while checking context to avoid duplication
@@ -61,7 +116,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Agent Detection Pattern** - Single check at process start with boolean flags for efficiency
 - **Subagent Integration** across all instruction files with automatic fallback for non-Claude Code users
 
-### Changed
+### Changed [1.2.0]
+
 - **Instruction Files** - All updated to support conditional agent usage:
   - `execute-tasks.md` - Uses git-workflow (branch management, PR creation), test-runner (full suite), and context-fetcher (loading lite files)
   - `execute-task.md` - Uses context-fetcher (best practices, code style) and test-runner (task-specific tests)
@@ -72,7 +128,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Setup Scripts** - Enhanced to install Claude Code agents:
   - `setup-claude-code.sh` - Downloads all agents to `~/.claude/agents/` directory
 
-### Improved
+### Improved [1.2.0]
+
 - **Context Efficiency** - Specialized agents use minimal context for their specific tasks
 - **Code Organization** - Complex operations delegated to focused agents with clear responsibilities
 - **Error Handling** - Agents provide targeted error analysis and recovery strategies
@@ -80,14 +137,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Performance** - Reduced context checks through one-time agent detection pattern
 
 ### Technical Details
+
 - Each agent uses only necessary tools (e.g., test-runner uses only Bash, Read, Grep, Glob)
 - Automatic fallback ensures compatibility for users without Claude Code
 - Consistent `IF has_[agent_name]:` pattern reduces code complexity
-- All agents follow Agent OS conventions (branch naming, commit messages, file templates)
+- All agents follow Spec Agent Kibo conventions (branch naming, commit messages, file templates)
 
 ## [1.1.0] - 2025-07-29
 
-### Added
+### Added [1.1.0]
+
 - New `mission-lite.md` file generation in product initialization for efficient AI context usage
 - New `spec-lite.md` file generation in spec creation for condensed spec summaries
 - New `execute-task.md` instruction file for individual task execution with TDD workflow
@@ -99,7 +158,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Conditional loading blocks in `best-practices.md` and `code-style.md` to prevent duplicate context loading
 - Context-aware file loading throughout all instruction files
 
-### Changed
+### Changed [1.1.0]
+
 - Optimized `plan-product.md` to generate condensed versions of documents
 - Enhanced `create-spec.md` with conditional context loading for mission-lite and tech-stack files
 - Simplified technical specification structure by removing multiple approach options
@@ -110,14 +170,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated decision documentation to avoid loading decisions.md and use conditional checks
 - Restructured task execution to follow typical TDD pattern (tests first, implementation, verification)
 
-### Improved
+### Improved [1.1.0]
+
 - Context efficiency by 60-80% through conditional loading and lite file versions
 - Reduced duplication when files are referenced multiple times in a workflow
 - Clearer separation between task-specific and full test suite execution
 - More intelligent file loading that checks current context before reading
 - Better organization of code style rules with language-specific files
 
-### Fixed
+### Fixed [1.1.0]
+
 - Duplicate content loading when instruction files are called in loops
 - Unnecessary loading of full documentation files when condensed versions suffice
 - Redundant test suite runs between individual task execution and overall workflow
@@ -125,7 +187,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-07-21
 
 ### Added
-- Initial release of Agent OS framework
+
+- Initial release of Spec Agent Kibo framework
 - Core instruction files:
   - `plan-product.md` for product initialization
   - `create-spec.md` for feature specification
@@ -146,6 +209,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Spec creation and organization system
 
 [1.3.1]: https://github.com/buildermethods/agent-os/compare/v1.3.0...v1.3.1
+[1.4.0]: https://github.com/buildermethods/agent-os/compare/v1.3.1...v1.4.0
 [1.3.0]: https://github.com/buildermethods/agent-os/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/buildermethods/agent-os/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/buildermethods/agent-os/compare/v1.0.0...v1.1.0

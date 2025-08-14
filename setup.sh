@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Agent OS Setup Script
-# This script installs Agent OS files to your system
+# Spec Agent Kibo Setup Script
+# This script installs Spec Agent Kibo files to your system
 
 set -e  # Exit on error
 
@@ -38,7 +38,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "🚀 Agent OS Setup Script"
+echo "🚀 Spec Agent Kibo Setup Script"
 echo "========================"
 echo ""
 
@@ -217,11 +217,11 @@ else
 fi
 
 echo ""
-echo "✅ Agent OS base installation complete!"
+echo "✅ Spec Agent Kibo base installation complete!"
 echo ""
 echo "📍 Files installed to:"
 echo "   ~/.agent-os/standards/     - Your development standards"
-echo "   ~/.agent-os/instructions/  - Agent OS instructions"
+echo "   ~/.agent-os/instructions/  - Spec Agent Kibo instructions"
 echo ""
 if [ "$OVERWRITE_INSTRUCTIONS" = false ] && [ "$OVERWRITE_STANDARDS" = false ]; then
     echo "💡 Note: Existing files were skipped to preserve your customizations"

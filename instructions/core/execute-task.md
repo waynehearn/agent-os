@@ -1,10 +1,12 @@
 ---
-description: Rules to execute a task and its sub-tasks using Agent OS
+description: Rules to execute a task and its sub-tasks using Spec Agent Kibo
 globs:
 alwaysApply: false
 version: 1.0
 encoding: UTF-8
 ---
+
+<!-- markdownlint-disable MD033 MD032 MD007 MD022 MD023 -->
 
 # Task Execution Rules
 
@@ -17,6 +19,13 @@ Execute a specific task along with its sub-tasks systematically following a TDD 
 </pre_flight_check>
 
 
+<variables>
+  <spec_name>[SPEC_NAME]</spec_name>
+  <spec_folder>[SPEC_FOLDER]</spec_folder>
+  <spec_folder_path>[spec_folder_path]</spec_folder_path>
+</variables>
+
+
 <process_flow>
 
 <step number="1" name="task_understanding">
@@ -24,6 +33,8 @@ Execute a specific task along with its sub-tasks systematically following a TDD 
 ### Step 1: Task Understanding
 
 Read and analyze the given parent task and all its sub-tasks from tasks.md to gain complete understanding of what needs to be built.
+
+<target>[spec_folder_path]/tasks.md</target>
 
 <task_analysis>
   <read_from_tasks_md>
@@ -49,6 +60,13 @@ Read and analyze the given parent task and all its sub-tasks from tasks.md to ga
 
 Search and extract relevant sections from technical-spec.md to understand the technical implementation approach for this task.
 
+<target>[spec_folder_path]/sub-specs/technical-spec.md</target>
+<conditional>
+  IF file missing:
+    SKIP to Step 3
+    NOTE lack of technical-spec.md in summary
+</conditional>
+
 <selective_reading>
   <search_technical_spec>
     FIND sections in technical-spec.md related to:
@@ -72,7 +90,7 @@ Search and extract relevant sections from technical-spec.md to understand the te
 
 ### Step 3: Best Practices Review
 
-Use the context-fetcher subagent to retrieve relevant sections from @~/.agent-os/standards/best-practices.md that apply to the current task's technology stack and feature type.
+Use the context-fetcher subagent to retrieve relevant sections from @.agent-os/standards/best-practices.md that apply to the current task's technology stack and feature type.
 
 <selective_reading>
   <search_best_practices>
@@ -101,7 +119,7 @@ Use the context-fetcher subagent to retrieve relevant sections from @~/.agent-os
 
 ### Step 4: Code Style Review
 
-Use the context-fetcher subagent to retrieve relevant code style rules from @~/.agent-os/standards/code-style.md for the languages and file types being used in this task.
+Use the context-fetcher subagent to retrieve relevant code style rules from @.agent-os/standards/code-style.md for the languages and file types being used in this task.
 
 <selective_reading>
   <search_code_style>
@@ -231,6 +249,8 @@ Use the test-runner subagent to run and verify only the tests specific to this p
 ### Step 7: Task Status Updates
 
 Update the tasks.md file immediately after completing each task to track progress.
+
+<target>[spec_folder_path]/tasks.md</target>
 
 <update_format>
   <completed>- [x] Task description</completed>

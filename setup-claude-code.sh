@@ -1,19 +1,19 @@
  #!/bin/bash
 
-# Agent OS Claude Code Setup Script
-# This script installs Agent OS commands for Claude Code
+# Spec Agent Kibo Claude Code Setup Script
+# This script installs Spec Agent Kibo commands for Claude Code
 
 set -e  # Exit on error
 
-echo "🚀 Agent OS Claude Code Setup"
+echo "🚀 Spec Agent Kibo Claude Code Setup"
 echo "============================="
 echo ""
 
-# Check if Agent OS base installation is present
+# Check if Spec Agent Kibo base installation is present
 if [ ! -d "$HOME/.agent-os/instructions" ] || [ ! -d "$HOME/.agent-os/standards" ]; then
-    echo "⚠️  Agent OS base installation not found!"
+    echo "⚠️  Spec Agent Kibo base installation not found!"
     echo ""
-    echo "Please install the Agent OS base installation first:"
+    echo "Please install the Spec Agent Kibo base installation first:"
     echo ""
     echo "Option 1 - Automatic installation:"
     echo "  curl -sSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup.sh | bash"
@@ -63,7 +63,7 @@ for agent in "${agents[@]}"; do
 done
 
 echo ""
-echo "✅ Agent OS Claude Code installation complete!"
+echo "✅ Spec Agent Kibo Claude Code installation complete!"
 echo ""
 echo "📍 Files installed to:"
 echo "   ~/.claude/commands/        - Claude Code commands"
@@ -71,10 +71,10 @@ echo "   ~/.claude/agents/          - Claude Code specialized subagents"
 echo ""
 echo "Next steps:"
 echo ""
-echo "Initiate Agent OS in a new product's codebase with:"
+echo "Initiate Spec Agent Kibo in a new product's codebase with:"
 echo "  /plan-product"
 echo ""
-echo "Initiate Agent OS in an existing product's codebase with:"
+echo "Initiate Spec Agent Kibo in an existing product's codebase with:"
 echo "  /analyze-product"
 echo ""
 echo "Initiate a new feature with:"

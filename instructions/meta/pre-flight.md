@@ -1,5 +1,5 @@
 ---
-description: Common Pre-Flight Steps for Agent OS Instructions
+description: Common Pre-Flight Steps for Spec Agent Kibo Instructions
 globs:
 alwaysApply: false
 version: 1.0

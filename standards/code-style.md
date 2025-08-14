@@ -2,7 +2,7 @@
 
 ## Context
 
-Global code style rules for Agent OS projects.
+Global code style rules for Spec Agent Kibo projects.
 
 <conditional-block context-check="general-formatting">
 IF this General Formatting section already read in current context:
@@ -14,19 +14,24 @@ ELSE:
 ## General Formatting
 
 ### Indentation
-- Use 2 spaces for indentation (never tabs)
+- Use 4 spaces for indentation (never tabs) - C# standard
 - Maintain consistent indentation throughout files
 - Align nested structures for readability
+- Use braces on new lines (Allman style)
 
 ### Naming Conventions
-- **Methods and Variables**: Use snake_case (e.g., `user_profile`, `calculate_total`)
-- **Classes and Modules**: Use PascalCase (e.g., `UserProfile`, `PaymentProcessor`)
-- **Constants**: Use UPPER_SNAKE_CASE (e.g., `MAX_RETRY_COUNT`)
+- **Methods and Properties**: Use PascalCase (e.g., `GetUserProfile`, `CalculateTotal`)
+- **Variables and Parameters**: Use camelCase (e.g., `userProfile`, `totalAmount`)
+- **Classes, Interfaces, and Namespaces**: Use PascalCase (e.g., `UserProfile`, `IPaymentProcessor`)
+- **Private Fields**: Use camelCase with underscore prefix (e.g., `_userRepository`)
+- **Constants**: Use PascalCase (e.g., `MaxRetryCount`)
+- **Interfaces**: Prefix with "I" (e.g., `ILocationRepository`)
 
 ### String Formatting
-- Use single quotes for strings: `'Hello World'`
-- Use double quotes only when interpolation is needed
-- Use template literals for multi-line strings or complex interpolation
+- Use double quotes for strings: `"Hello World"`
+- Use string interpolation for dynamic content: `$"Hello {name}"`
+- Use verbatim strings for file paths: `@"C:\Path\To\File"`
+- Use raw string literals for multi-line strings in C# 11+
 
 ### Code Comments
 - Add brief comments above non-obvious business logic

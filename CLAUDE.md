@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Agent OS is a system for spec-driven agentic development that transforms AI coding agents into productive developers through structured workflows. It provides standards, tech stack definitions, and workflow instructions that help AI agents ship quality code consistently.
+Spec Agent Kibo is a system for spec-driven agentic development that transforms AI coding agents into productive developers through structured workflows. It provides standards, tech stack definitions, and workflow instructions that help AI agents ship quality code consistently.
 
 ## Installation and Setup Commands
 
-### Install Agent OS Base System
+### Install Spec Agent Kibo Base System
 ```bash
 curl -sSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup.sh | bash
 ```
@@ -36,9 +36,9 @@ curl -sSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup-c
 - **`commands/`** - Claude Code command definitions that reference instructions
 - **`claude-code/agents/`** - Specialized subagent configurations for Claude Code
 
-### Agent OS Workflow
+### Spec Agent Kibo Workflow
 
-Agent OS follows a structured workflow:
+Spec Agent Kibo follows a structured workflow:
 1. **Plan Product** (`/plan-product`) - For new projects, creates mission, tech stack, roadmap, and decisions documentation
 2. **Analyze Product** (`/analyze-product`) - For existing projects, analyzes codebase and creates documentation
 3. **Create Spec** (`/create-spec`) - Creates detailed specifications for features
@@ -53,7 +53,7 @@ Agent OS follows a structured workflow:
 
 ## Default Tech Stack
 
-When working with Agent OS projects, use these defaults unless overridden in project-specific `.agent-os/product/tech-stack.md`:
+When working with Spec Agent Kibo projects, use these defaults unless overridden in project-specific `.agent-os/product/tech-stack.md`:
 
 - **Backend**: Ruby on Rails 8.0+, Ruby 3.2+, PostgreSQL 17+
 - **Frontend**: React (latest stable), Vite build tool, Node.js 22 LTS
@@ -71,14 +71,14 @@ When working with Agent OS projects, use these defaults unless overridden in pro
 - **File Structure**: Single responsibility, consistent naming
 
 ### Workflow Integration
-- Always check for existing Agent OS documentation in `.agent-os/product/` before starting work
+- Always check for existing Spec Agent Kibo documentation in `.agent-os/product/` before starting work
 - Use the date-checker subagent when creating time-sensitive documentation
 - Use the context-fetcher subagent to gather information from existing standards
 - Use the file-creator subagent for batch file creation with proper structure
 
 ## Common Commands
 
-### Initialize Agent OS in Projects
+### Initialize Spec Agent Kibo in Projects
 - New project: `/plan-product`
 - Existing project: `/analyze-product`
 

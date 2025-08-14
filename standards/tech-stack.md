@@ -2,32 +2,35 @@
 
 ## Context
 
-Global tech stack defaults for Agent OS projects, overridable in project-specific `.agent-os/product/tech-stack.md`.
+Global tech stack defaults for Spec Agent Kibo projects, overridable in project-specific `.agent-os/product/tech-stack.md`.
 
-- App Framework: Ruby on Rails 8.0+
-- Language: Ruby 3.2+
-- Primary Database: PostgreSQL 17+
-- ORM: Active Record
-- JavaScript Framework: React latest stable
-- Build Tool: Vite
-- Import Strategy: Node.js modules
-- Package Manager: npm
-- Node Version: 22 LTS
-- CSS Framework: TailwindCSS 4.0+
-- UI Components: Instrumental Components latest
-- UI Installation: Via development gems group
-- Font Provider: Google Fonts
-- Font Loading: Self-hosted for performance
-- Icons: Lucide React components
-- Application Hosting: Digital Ocean App Platform/Droplets
-- Hosting Region: Primary region based on user base
-- Database Hosting: Digital Ocean Managed PostgreSQL
-- Database Backups: Daily automated
+- App Framework: ASP.NET Core Web API 6.0+
+- Language: C# 10.0+
+- Runtime: .NET 6.0+
+- ORM Alternative: Entity Framework Core (where applicable)
+- Object Mapping: AutoMapper
+- Validation Framework: FluentValidation
+- Messaging: MassTransit with RabbitMQ
+- Caching: Tag-based caching via Mozu Core
+- Testing Framework: NUnit with NSubstitute and FluentAssertions
+- API Documentation: Swagger/OpenAPI
+- Dependency Injection: Built-in ASP.NET Core DI with Autofac modules
+- Configuration: Mozu Core Configuration (cloud-based)
+- Build Tool: dotnet CLI
+- Package Manager: NuGet
+- Container Platform: Docker with multi-stage builds
+- Container Registry: Amazon ECR
+- Application Hosting: Kubernetes clusters
+- Hosting Region: Multi-region deployment
+- Database Hosting: MongoDB Atlas/Self-hosted
+- Database Backups: Automated via MongoDB tools
 - Asset Storage: Amazon S3
 - CDN: CloudFront
 - Asset Access: Private with signed URLs
-- CI/CD Platform: GitHub Actions
-- CI/CD Trigger: Push to main/staging branches
-- Tests: Run before deployment
+- CI/CD Platform: Jenkins Pipeline
+- CI/CD Trigger: Push to develop/main branches
+- Code Quality: SonarQube analysis
+- Tests: Unit and Integration tests with coverage
+- Health Monitoring: Custom health check endpoints (/_mzhealth)
 - Production Environment: main branch
-- Staging Environment: staging branch
+- Staging Environment: develop branch

@@ -2,7 +2,7 @@
 
 ## Context
 
-Global development guidelines for Agent OS projects.
+Global development guidelines for Spec Agent Kibo projects.
 
 <conditional-block context-check="core-principles">
 IF this Core Principles section already read in current context:
@@ -17,21 +17,38 @@ ELSE:
 - Implement code in the fewest lines possible
 - Avoid over-engineering solutions
 - Choose straightforward approaches over clever ones
+- Never create a file longer than 500 lines of code (per CLAUDE.md)
+- Functions should be under 50 lines with single responsibility
+- Classes should be under 100 lines representing single concept
 
 ### Optimize for Readability
 - Prioritize code clarity over micro-optimizations
 - Write self-documenting code with clear variable names
 - Add comments for "why" not "what"
+- Follow existing layered architecture patterns
+- Maintain consistent indentation and formatting
 
 ### DRY (Don't Repeat Yourself)
 - Extract repeated business logic to private methods
-- Extract repeated UI markup to reusable components
+- Extract repeated DTOs to reusable contracts
 - Create utility functions for common operations
+- Use AutoMapper profiles for repeated mapping logic
+- Leverage repository base classes for common data access
 
-### File Structure
+### SOLID Design Principles
+- **Single Responsibility**: Each class has one reason to change
+- **Open/Closed**: Open for extension, closed for modification
+- **Liskov Substitution**: Derived classes must be substitutable for base classes
+- **Interface Segregation**: Many client-specific interfaces are better than one general-purpose interface
+- **Dependency Inversion**: Depend on abstractions, not concretions
+
+### File Structure and Architecture
+- Follow layered architecture: WebApi → Domain → Repository
 - Keep files focused on a single responsibility
 - Group related functionality together
 - Use consistent naming conventions
+- Maximum line length: 100 characters
+- Organize code into clearly separated modules by feature
 </conditional-block>
 
 <conditional-block context-check="dependencies" task-condition="choosing-external-library">
@@ -54,4 +71,11 @@ When adding third-party dependencies:
   - Active issue resolution
   - Number of stars/downloads
   - Clear documentation
+- For .NET projects:
+  - Prefer packages that support .NET 6.0+
+  - Check NuGet package download statistics
+  - Verify compatibility with existing Mozu Core framework
+  - Consider licensing implications for commercial use
+  - Avoid packages that conflict with existing dependencies
+  - Use Mozu Core utilities when available (caching, configuration, messaging)
 </conditional-block>

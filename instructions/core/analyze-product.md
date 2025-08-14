@@ -1,16 +1,18 @@
 ---
-description: Analyze Current Product & Install Agent OS
+description: Analyze Current Product & Install Spec Agent Kibo
 globs:
 alwaysApply: false
 version: 1.0
 encoding: UTF-8
 ---
 
-# Analyze Current Product & Install Agent OS
+<!-- markdownlint-disable MD033 MD032 MD007 MD022 MD023 -->
+
+# Analyze Current Product & Install Spec Agent Kibo
 
 ## Overview
 
-Install Agent OS into an existing codebase, analyze current product state and progress.  Builds on plan-product.md
+Install Spec Agent Kibo into an existing codebase, analyze current product state and progress. Builds on @~/.agent-os/instructions/core/plan-product.md
 
 <pre_flight_check>
   EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
@@ -22,7 +24,7 @@ Install Agent OS into an existing codebase, analyze current product state and pr
 
 ### Step 1: Analyze Existing Codebase
 
-Perform a deep codebase analysis of the current codebase to understand current state before documentation purposes.
+Perform a deep analysis of the codebase to understand the current state before generating documentation.
 
 <analysis_areas>
   <project_structure>
@@ -70,7 +72,7 @@ Use the context-fetcher subagent to supplement codebase analysis with business c
 <context_questions>
   Based on my analysis of your codebase, I can see you're building [OBSERVED_PRODUCT_TYPE].
 
-  To properly set up Agent OS, I need to understand:
+  To properly set up Spec Agent Kibo, I need to understand:
 
   1. **Product Vision**: What problem does this solve? Who are the target users?
 
@@ -95,7 +97,7 @@ Use the context-fetcher subagent to supplement codebase analysis with business c
 
 ### Step 3: Execute Plan-Product with Context
 
-Execute our standard flow for installing Agent OS in existing products
+Execute our standard flow for installing Spec Agent Kibo in existing products
 
 <execution_parameters>
   <main_idea>[DERIVED_FROM_ANALYSIS_AND_USER_INPUT]</main_idea>
@@ -107,7 +109,7 @@ Execute our standard flow for installing Agent OS in existing products
 <execution_prompt>
   @~/.agent-os/instructions/core/plan-product.md
 
-  I'm installing Agent OS into an existing product. Here's what I've gathered:
+  I'm installing Spec Agent Kibo into an existing product. Here's what I've gathered:
 
   **Main Idea**: [SUMMARY_FROM_ANALYSIS_AND_CONTEXT]
 
@@ -175,7 +177,7 @@ Refine the generated documentation to ensure accuracy for the existing product b
 
 ### Step 5: Final Verification and Summary
 
-Verify installation completeness and provide clear next steps for the user to start using Agent OS with their existing codebase.
+Verify installation completeness and provide clear next steps for the user to start using Spec Agent Kibo with their existing codebase.
 
 <verification_checklist>
   - [ ] .agent-os/product/ directory created
@@ -185,9 +187,9 @@ Verify installation completeness and provide clear next steps for the user to st
 </verification_checklist>
 
 <summary_template>
-  ## ✅ Agent OS Successfully Installed
+  ## ✅ Spec Agent Kibo Successfully Installed
 
-  I've analyzed your [PRODUCT_TYPE] codebase and set up Agent OS with documentation that reflects your actual implementation.
+  I've analyzed your [PRODUCT_TYPE] codebase and set up Spec Agent Kibo with documentation that reflects your actual implementation.
 
   ### What I Found
 
@@ -206,13 +208,14 @@ Verify installation completeness and provide clear next steps for the user to st
 
   1. Review the generated documentation in `.agent-os/product/`
   2. Make any necessary adjustments to reflect your vision
-  3. See the Agent OS README for usage instructions: https://github.com/buildermethods/agent-os
-  4. Start using Agent OS for your next feature:
-     ```
+  3. See the Spec Agent Kibo README for usage instructions: [github.com/buildermethods/agent-os](https://github.com/buildermethods/agent-os)
+  4. Start using Spec Agent Kibo for your next feature:
+
+     ```text
      @~/.agent-os/instructions/core/create-spec.md
      ```
 
-  Your codebase is now Agent OS-enabled! 🚀
+  Your codebase is now Spec Agent Kibo-enabled! 🚀
 </summary_template>
 
 
@@ -245,6 +248,6 @@ Verify installation completeness and provide clear next steps for the user to st
     - [ ] User context gathered
     - [ ] plan-product.md executed with proper context
     - [ ] Documentation customized for existing product
-    - [ ] Team can adopt Agent OS workflow
+    - [ ] Team can adopt Spec Agent Kibo workflow
   </verify>
 </final_checklist>

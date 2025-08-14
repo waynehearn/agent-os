@@ -1,0 +1,87 @@
+---
+title: Spec Agent Kibo – Configuration
+version: 1.0
+lastUpdated: 2025-08-14
+---
+
+Set up environment, paths, and integrations used by the create-spec and execute-tasks flows.
+
+What this covers
+----------------
+
+- Path aliases used in instruction blocks
+- Standards and instructions folder locations
+- Atlassian MCP (optional) setup notes
+- Spec flags that control deterministic outputs
+- Editor/tooling assumptions
+
+Path aliases
+------------
+
+The docs and examples use logical, normalized paths resolved by the flow:
+
+- `@~/.agent-os/instructions/` – Your local Spec Agent Kibo instruction set
+- `@.agent-os/standards/` – Project standards (style, tech stack, best practices)
+- `@.agent-os/specs/YYYY-MM-DD-<spec-name>/` – Generated spec folder
+
+Tip: Use the `@` prefix exactly as shown in examples; the system resolves these aliases consistently across OS/shells.
+
+Standards & instructions
+------------------------
+
+- Ensure your instructions folder exists at `@~/.agent-os/instructions/`
+- Ensure project standards exist at `@.agent-os/standards/`
+- If your project prefers a different location, add a thin alias/symlink or adapt examples accordingly
+
+Atlassian MCP (optional)
+-------------------
+
+To drive spec creation from Jira tickets, configure a Atlassian MCP service in your editor.
+
+- Pass `jira_issue_key` in `[jira_inputs]`
+- Set `use_jira_mcp: true`
+- Provide overrides for any missing fields (main_idea, user stories, deliverables, etc.)
+
+Auth & connectivity
+-------------------
+
+- Use your Atlassian MCP provider’s guidance for authentication (e.g., OAuth or API token)
+- Keep credentials out of specs and tasks; rely on your editor’s secrets store or environment
+
+Spec flags (determinism)
+------------------------
+
+- `requires_db_changes: true|false`
+  - Controls creation of `sub-specs/database-schema.md`
+- `requires_api_changes: true|false`
+  - Controls creation of `sub-specs/api-spec.md`
+- `overwrite_existing: true|false`
+  - On file collisions, either ask before overwrite (`false`) or overwrite deterministically (`true`)
+
+Editor/tooling assumptions
+--------------------------
+
+- Works with Claude Code, Cursor, or similar AI-enabled editors
+- Examples are instruction references, not shell commands; they’re editor-agnostic
+- Optional completion chime may not work in all shells; completion banners always print
+
+Integration tips (project‑specific)
+-----------------------------------
+
+- Repository layers and packages
+  - When a spec references a specific package (e.g., a NuGet package for the repo layer), set the package ID and version explicitly in your spec inputs to avoid ambiguity
+
+- Database migrations
+  - Choose a migration tool consistent with your stack (e.g., EF Core Migrations). Ensure your tasks include creating and applying the migration for new tables
+
+- Git workflow
+  - The execute flow can create branches and PRs via a git-workflow subagent; ensure your Git/GitHub auth is configured in your dev environment
+
+Related docs
+------------
+
+- Quickstart: [quickstart.md](./quickstart.md)
+- Create Spec Usage: [create-spec-usage.md](./create-spec-usage.md)
+- Smoke Tests: [smoke-tests.md](./smoke-tests.md)
+- Troubleshooting: [troubleshooting.md](./troubleshooting.md)
+- Glossary: [glossary.md](./glossary.md)

@@ -1,10 +1,12 @@
 ---
-description: Rules to initiate execution of a set of tasks using Agent OS
+description: Rules to initiate execution of a set of tasks using Spec Agent Kibo
 globs:
 alwaysApply: false
 version: 1.0
 encoding: UTF-8
 ---
+
+<!-- markdownlint-disable MD033 MD032 MD007 MD022 MD023 -->
 
 # Task Execution Rules
 
@@ -15,6 +17,12 @@ Initiate execution of one or more tasks for a given spec.
 <pre_flight_check>
   EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
 </pre_flight_check>
+
+<variables>
+  <spec_name>[SPEC_NAME]</spec_name>
+  <spec_folder>[SPEC_FOLDER]</spec_folder>
+  <spec_folder_path>[spec_folder_path]</spec_folder_path>
+</variables>
 
 <process_flow>
 
@@ -41,7 +49,7 @@ Identify which tasks to execute from the spec (using spec_srd_reference file pat
 
 ### Step 2: Context Analysis
 
-Use the context-fetcher subagent to gather minimal context for task understanding by always loading spec tasks.md, and conditionally loading @.agent-os/product/mission-lite.md, spec-lite.md, and sub-specs/technical-spec.md if not already in context.
+Use the context-fetcher subagent to gather minimal context for task understanding by always loading spec tasks.md, and conditionally loading @.agent-os/product/mission-lite.md, [spec_folder_path]/spec-lite.md, and [spec_folder_path]/sub-specs/technical-spec.md if not already in context.
 
 <instructions>
   ACTION: Use context-fetcher subagent to:
@@ -54,12 +62,12 @@ Use the context-fetcher subagent to gather minimal context for task understandin
 
 <context_gathering>
   <essential_docs>
-    - tasks.md for task breakdown
+    - [spec_folder_path]/tasks.md for task breakdown
   </essential_docs>
   <conditional_docs>
-    - mission-lite.md for product alignment
-    - spec-lite.md for feature summary
-    - technical-spec.md for implementation details
+  - mission-lite.md for product alignment
+  - [spec_folder_path]/spec-lite.md for feature summary
+  - [spec_folder_path]/sub-specs/technical-spec.md for implementation details
   </conditional_docs>
 </context_gathering>
 
@@ -158,6 +166,16 @@ Execute all assigned parent tasks and their subtasks using @~/.agent-os/instruct
     ELSE:
       CONTINUE with next task
 </task_status_check>
+
+<spec_validation>
+  OPTIONAL: Run a quick validation on the spec to ensure it still adheres to required structure/counts after changes in scope or deliverables.
+  EXECUTE: @~/.agent-os/instructions/core/spec-validator.md with SPEC_PATH=@[spec_folder_path]/spec.md
+</spec_validation>
+
+<tasks_validation>
+  OPTIONAL: Normalize tasks.md after updates to keep numbering, structure, and required subtasks consistent.
+  EXECUTE: @~/.agent-os/instructions/core/tasks-validator.md with TASKS_PATH=@[spec_folder_path]/tasks.md
+</tasks_validation>
 
 <instructions>
   ACTION: Load execute-task.md instructions once at start
@@ -282,15 +300,23 @@ Check @.agent-os/product/roadmap.md (if not in context) and update roadmap progr
 
 ### Step 9: Task Completion Notification
 
-Play a system sound to alert the user that tasks are complete.
+Send a completion notification in a cross-platform way.
 
-<notification_command>
-  afplay /System/Library/Sounds/Glass.aiff
-</notification_command>
+<notification_commands>
+  TRY:
+    - If running in a POSIX-compatible shell (bash, zsh, git-bash, WSL, macOS, Linux):
+      printf '\\a'
+    - Else if PowerShell is available (optional on Windows):
+      powershell -NoProfile -Command "[console]::Beep(1000,300)"
+  ALWAYS:
+    - Print a visible banner line in the console:
+      printf '\\n============================\\n✅ Tasks complete\\n============================\\n'
+</notification_commands>
 
 <instructions>
-  ACTION: Play completion sound
-  PURPOSE: Alert user that task is complete
+  ACTION: Emit an audible bell if possible and always print a clear completion banner
+  PURPOSE: Provide a reliable, accessible notification across environments (POSIX shells, git-bash, Windows/PowerShell, headless/CI)
+  NOTE: If none of the shell-specific methods are available, the printed banner still signals completion
 </instructions>
 
 </step>
