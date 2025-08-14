@@ -1,87 +1,67 @@
- #!/bin/bash
+#!/bin/bash
 
-# Spec Agent Kibo Claude Code Setup Script
-# This script installs Spec Agent Kibo commands for Claude Code
+# Spec Agent Kibo Claude Code Setup Script (local-only)
+# Copies commands and agents from this repo into ~/.claude. No network calls.
 
-set -e  # Exit on error
+set -euo pipefail
 
-echo "🚀 Spec Agent Kibo Claude Code Setup"
-echo "============================="
-echo ""
+echo "🚀 Spec Agent Kibo Claude Code Setup (local)"
+echo "========================================="
+echo
 
 # Check if Spec Agent Kibo base installation is present
 if [ ! -d "$HOME/.agent-os/instructions" ] || [ ! -d "$HOME/.agent-os/standards" ]; then
     echo "⚠️  Spec Agent Kibo base installation not found!"
-    echo ""
-    echo "Please install the Spec Agent Kibo base installation first:"
-    echo ""
-    echo "Option 1 - Automatic installation:"
-    echo "  curl -sSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup.sh | bash"
-    echo ""
-    echo "Option 2 - Manual installation:"
-    echo "  Follow instructions at https://buildermethods.com/agent-os"
-    echo ""
+    echo "   Run: bash ./setup.sh (from the repo root)"
     exit 1
 fi
 
-# Base URL for raw GitHub content
-BASE_URL="https://raw.githubusercontent.com/buildermethods/agent-os/main"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Create directories
 echo "📁 Creating directories..."
 mkdir -p "$HOME/.claude/commands"
 mkdir -p "$HOME/.claude/agents"
 
-# Download command files for Claude Code
-echo ""
-echo "📥 Downloading Claude Code command files to ~/.claude/commands/"
-
-# Commands
+# Copy command files for Claude Code
+echo
+echo "📥 Installing Claude Code command files to ~/.claude/commands/"
 for cmd in plan-product create-spec execute-tasks analyze-product; do
-    if [ -f "$HOME/.claude/commands/${cmd}.md" ]; then
-        echo "  ⚠️  ~/.claude/commands/${cmd}.md already exists - skipping"
+    src="$script_dir/commands/${cmd}.md"
+    dest="$HOME/.claude/commands/${cmd}.md"
+    if [[ -f "$src" ]]; then
+        cp -f "$src" "$dest"
+        echo "  ✓ ${cmd}.md"
     else
-        curl -s -o "$HOME/.claude/commands/${cmd}.md" "${BASE_URL}/commands/${cmd}.md"
-        echo "  ✓ ~/.claude/commands/${cmd}.md"
+        echo "  ⚠️  Missing local file: $src (skipped)"
     fi
 done
 
-# Download Claude Code agents
-echo ""
-echo "📥 Downloading Claude Code subagents to ~/.claude/agents/"
-
-# List of agent files to download
+# Copy Claude Code agents
+echo
+echo "📥 Installing Claude Code subagents to ~/.claude/agents/"
 agents=("test-runner" "context-fetcher" "git-workflow" "file-creator" "date-checker")
-
 for agent in "${agents[@]}"; do
-    if [ -f "$HOME/.claude/agents/${agent}.md" ]; then
-        echo "  ⚠️  ~/.claude/agents/${agent}.md already exists - skipping"
+    src="$script_dir/claude-code/agents/${agent}.md"
+    dest="$HOME/.claude/agents/${agent}.md"
+    if [[ -f "$src" ]]; then
+        cp -f "$src" "$dest"
+        echo "  ✓ ${agent}.md"
     else
-        curl -s -o "$HOME/.claude/agents/${agent}.md" "${BASE_URL}/claude-code/agents/${agent}.md"
-        echo "  ✓ ~/.claude/agents/${agent}.md"
+        echo "  ⚠️  Missing local file: $src (skipped)"
     fi
 done
 
-echo ""
+echo
 echo "✅ Spec Agent Kibo Claude Code installation complete!"
-echo ""
+echo
 echo "📍 Files installed to:"
 echo "   ~/.claude/commands/        - Claude Code commands"
 echo "   ~/.claude/agents/          - Claude Code specialized subagents"
-echo ""
+echo
 echo "Next steps:"
-echo ""
-echo "Initiate Spec Agent Kibo in a new product's codebase with:"
-echo "  /plan-product"
-echo ""
-echo "Initiate Spec Agent Kibo in an existing product's codebase with:"
-echo "  /analyze-product"
-echo ""
-echo "Initiate a new feature with:"
-echo "  /create-spec (or simply ask 'what's next?')"
-echo ""
-echo "Build and ship code with:"
-echo "  /execute-task"
-echo ""
-echo "Learn more at https://buildermethods.com/agent-os"
-echo ""
+echo "  /plan-product       (new product)"
+echo "  /analyze-product    (existing codebase)"
+echo "  /create-spec        (start a new feature)"
+echo "  /execute-task       (implement a single task)"
+echo

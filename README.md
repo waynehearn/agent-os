@@ -14,32 +14,41 @@ Spec Agent Kibo 😉 turns AI coding agents into productive developers by enforc
 
 ## Install
 
-Works on macOS, Linux, and Windows (use Git Bash on Windows).
+Works on macOS, Linux, and Windows. On Windows, use Git Bash or WSL. Remote one‑liners are no longer supported; install from a local clone.
 
-- Recommended (curl | bash):
+Clone this repository:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup.sh | bash
+git clone https://github.com/waynehearn/agent-os.git
+cd agent-os
 ```
 
-- From a local clone of this repo:
+Run the local setup script:
+
+- macOS/Linux (Terminal)
 
 ```bash
 bash ./setup.sh
 ```
 
-Optional editor integrations:
+- Windows (Git Bash or WSL)
+
+```bash
+./setup.sh
+```
+
+Optional editor integrations (run from your local clone):
 
 - Claude Code
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup-claude-code.sh | bash
+bash ./setup-claude-code.sh
 ```
 
-- Cursor
+- Cursor (run inside a project repo to add .cursor rules)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup-cursor.sh | bash
+bash ./setup-cursor.sh
 ```
 
 What the installer does
@@ -47,7 +56,16 @@ What the installer does
 - Creates ~/.agent-os/standards and ~/.agent-os/instructions
 - Installs standards (see standards/tech-stack.md, standards/code-style.md, standards/best-practices.md)
 - Installs core instruction flows (plan, create-spec, execute-task(s), analyze)
-- Optionally adds IDE-specific commands (Claude Code, Cursor)
+- Optionally adds IDE-specific commands (Claude Code, Cursor) using local scripts
+
+Verify your install
+
+```bash
+bash ./tools/verify-install.sh
+# Optional checks
+bash ./tools/verify-install.sh --check-claude
+bash ./tools/verify-install.sh --check-cursor   # run inside a project with .cursor
+```
 
 ---
 

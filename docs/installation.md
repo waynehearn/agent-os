@@ -23,10 +23,48 @@ Requirements
 - An AI-enabled editor (e.g., Claude Code, Cursor)
 - Optional: Atlassian MCP configured in your editor if you want Jira-driven specs
 
-Step 1 — Prepare instructions
------------------------------
+Recommended install (from local clone)
+--------------------------------------
 
-Place the instructions in your home `~/.agent-os/instructions/` path.
+1. Clone the repository
+
+```bash
+git clone https://github.com/waynehearn/agent-os.git
+cd agent-os
+```
+
+1. Run the local setup script
+
+- macOS/Linux (Terminal)
+
+```bash
+bash ./setup.sh
+```
+
+- Windows (Git Bash)
+
+```bash
+./setup.sh
+```
+
+1. (Optional) Install editor integrations from the local clone
+
+- Claude Code
+
+```bash
+bash ./setup-claude-code.sh
+```
+
+- Cursor (run inside a project repo to add .cursor rules)
+
+```bash
+bash ./setup-cursor.sh
+```
+
+Manual alternative — copy or symlink
+------------------------------------
+
+If you prefer not to run the script, place the instructions in your home `~/.agent-os/instructions/` path.
 
 Option A: Copy instructions (simple)
 
@@ -35,14 +73,14 @@ Option A: Copy instructions (simple)
 # Create the folder if it doesn't exist
 New-Item -ItemType Directory -Force -Path "$HOME/.agent-os/instructions" | Out-Null
 
-# Copy your instructions into place (adjust source path)
-Copy-Item -Recurse -Force \\path\to\instructions\* "$HOME/.agent-os/instructions/"
+# Copy your instructions into place (adjust source path to this repo)
+Copy-Item -Recurse -Force .\instructions\* "$HOME/.agent-os/instructions/"
 ```
 
 ```bash
 # macOS/Linux
 mkdir -p "$HOME/.agent-os/instructions"
-cp -R /path/to/instructions/* "$HOME/.agent-os/instructions/"
+cp -R ./instructions/* "$HOME/.agent-os/instructions/"
 ```
 
 Option B: Symlink (advanced; keeps a single source of truth)
@@ -106,3 +144,15 @@ Next steps
 - Create Spec Usage: [create-spec-usage.md](./create-spec-usage.md)
 - Configuration: [configuration.md](./configuration.md)
 - Troubleshooting: [troubleshooting.md](./troubleshooting.md)
+
+Verify installation
+-------------------
+
+Run from the repo root:
+
+```bash
+bash ./tools/verify-install.sh
+# Optional checks
+bash ./tools/verify-install.sh --check-claude
+bash ./tools/verify-install.sh --check-cursor   # run inside a project with .cursor
+```

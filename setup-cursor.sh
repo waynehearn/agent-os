@@ -1,86 +1,63 @@
 #!/bin/bash
 
-# Spec Agent Kibo Cursor Setup Script
-# This script installs Spec Agent Kibo commands for Cursor in the current project
+# Spec Agent Kibo Cursor Setup Script (local-only)
+# Generates .cursor/rules/*.mdc from local command files. No network calls.
 
-set -e  # Exit on error
+set -euo pipefail
 
-echo "🚀 Spec Agent Kibo Cursor Setup"
-echo "========================"
-echo ""
+echo "🚀 Spec Agent Kibo Cursor Setup (local)"
+echo "====================================="
+echo
 
 # Check if Spec Agent Kibo base installation is present
 if [ ! -d "$HOME/.agent-os/instructions" ] || [ ! -d "$HOME/.agent-os/standards" ]; then
     echo "⚠️  Spec Agent Kibo base installation not found!"
-    echo ""
-    echo "Please install the Spec Agent Kibo base installation first:"
-    echo ""
-    echo "Option 1 - Automatic installation:"
-    echo "  curl -sSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup.sh | bash"
-    echo ""
-    echo "Option 2 - Manual installation:"
-    echo "  Follow instructions at https://buildermethods.com/agent-os"
-    echo ""
+    echo "   Run: bash ./setup.sh (from the repo root)"
     exit 1
 fi
 
-echo ""
+echo
 echo "📁 Creating .cursor/rules directory..."
 mkdir -p .cursor/rules
 
-# Base URL for raw GitHub content
-BASE_URL="https://raw.githubusercontent.com/buildermethods/agent-os/main"
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo ""
-echo "📥 Downloading and setting up Cursor command files..."
+echo
+echo "📥 Setting up Cursor command files..."
 
-# Function to process a command file
 process_command_file() {
     local cmd="$1"
-    local temp_file="/tmp/${cmd}.md"
+    local src="$script_dir/commands/${cmd}.md"
     local target_file=".cursor/rules/${cmd}.mdc"
 
-    # Download the file
-    if curl -s -o "$temp_file" "${BASE_URL}/commands/${cmd}.md"; then
-        # Create the front-matter and append original content
+    if [[ -f "$src" ]]; then
         cat > "$target_file" << EOF
 ---
 alwaysApply: false
 ---
 
 EOF
-
-        # Append the original content
-        cat "$temp_file" >> "$target_file"
-
-        # Clean up temp file
-        rm "$temp_file"
-
+        cat "$src" >> "$target_file"
         echo "  ✓ .cursor/rules/${cmd}.mdc"
     else
-        echo "  ❌ Failed to download ${cmd}.md"
-        return 1
+        echo "  ⚠️  Missing local file: $src (skipped)"
     fi
 }
 
-# Process each command file
 for cmd in plan-product create-spec execute-tasks analyze-product; do
     process_command_file "$cmd"
 done
 
-echo ""
+echo
 echo "✅ Spec Agent Kibo Cursor setup complete!"
-echo ""
+echo
 echo "📍 Files installed to:"
 echo "   .cursor/rules/             - Cursor command rules"
-echo ""
+echo
 echo "Next steps:"
-echo ""
 echo "Use Spec Agent Kibo commands in Cursor with @ prefix:"
-echo "  @plan-product    - Initiate Spec Agent Kibo in a new product's codebase"
-echo "  @analyze-product - Initiate Spec Agent Kibo in an existing product's codebase"
-echo "  @create-spec     - Initiate a new feature (or simply ask 'what's next?')"
-echo "  @execute-tasks    - Build and ship code"
-echo ""
-echo "Learn more at https://buildermethods.com/agent-os"
-echo ""
+echo "  @plan-product     - Initiate Spec Agent Kibo in a new product's codebase"
+echo "  @analyze-product  - Initiate Spec Agent Kibo in an existing product's codebase"
+echo "  @create-spec      - Initiate a new feature (or simply ask 'what's next?')"
+echo "  @execute-tasks     - Build and ship code"
+echo

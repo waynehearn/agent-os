@@ -6,26 +6,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Spec Agent Kibo is a system for spec-driven agentic development that transforms AI coding agents into productive developers through structured workflows. It provides standards, tech stack definitions, and workflow instructions that help AI agents ship quality code consistently.
 
-## Installation and Setup Commands
+## Installation and Setup Commands (local)
+
+Run these from the repository root in Bash (macOS/Linux or Git Bash/WSL on Windows):
 
 ### Install Spec Agent Kibo Base System
+
 ```bash
-curl -sSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup.sh | bash
+bash ./setup.sh
 ```
 
 ### Install Claude Code Integration
+
 ```bash
-curl -sSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup-claude-code.sh | bash
+bash ./setup-claude-code.sh
 ```
 
-### Install Cursor Integration
+### Install Cursor Integration (run inside the target project repo)
+
 ```bash
-curl -sSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup-cursor.sh | bash
+bash ./setup-cursor.sh
 ```
 
 ## Core Architecture
 
 ### Directory Structure
+
 - **`instructions/`** - Core workflow instructions for different development phases
   - `core/` - Main workflow files (plan-product.md, create-spec.md, execute-tasks.md, analyze-product.md)
   - `meta/` - Meta instructions like pre-flight checks
@@ -39,6 +45,7 @@ curl -sSL https://raw.githubusercontent.com/buildermethods/agent-os/main/setup-c
 ### Spec Agent Kibo Workflow
 
 Spec Agent Kibo follows a structured workflow:
+
 1. **Plan Product** (`/plan-product`) - For new projects, creates mission, tech stack, roadmap, and decisions documentation
 2. **Analyze Product** (`/analyze-product`) - For existing projects, analyzes codebase and creates documentation
 3. **Create Spec** (`/create-spec`) - Creates detailed specifications for features
@@ -65,12 +72,14 @@ When working with Spec Agent Kibo projects, use these defaults unless overridden
 ## Development Principles
 
 ### Core Principles (from standards/best-practices.md)
+
 - **Keep It Simple**: Implement in fewest lines, avoid over-engineering
 - **Optimize for Readability**: Prioritize clarity, self-documenting code
 - **DRY**: Extract repeated logic to methods/components
 - **File Structure**: Single responsibility, consistent naming
 
 ### Workflow Integration
+
 - Always check for existing Spec Agent Kibo documentation in `.agent-os/product/` before starting work
 - Use the date-checker subagent when creating time-sensitive documentation
 - Use the context-fetcher subagent to gather information from existing standards
@@ -79,25 +88,29 @@ When working with Spec Agent Kibo projects, use these defaults unless overridden
 ## Common Commands
 
 ### Initialize Spec Agent Kibo in Projects
+
 - New project: `/plan-product`
 - Existing project: `/analyze-product`
 
 ### Feature Development
+
 - Create feature spec: `/create-spec`
 - Implement feature: `/execute-tasks`
 
-### Direct Setup (without commands)
+### Direct Setup (compact)
+
 ```bash
 # Install base system
-./setup.sh
+bash ./setup.sh
 
 # Install Claude Code integration
-./setup-claude-code.sh --overwrite-instructions --overwrite-standards
+bash ./setup-claude-code.sh
 ```
 
 ## File Resolution Priority
 
 When resolving configuration or standards:
+
 1. Project-specific `.agent-os/product/` files
 2. Global `~/.agent-os/standards/` files
 3. Repository `standards/` files (this repo)
