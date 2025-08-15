@@ -3,10 +3,10 @@ title: Using create-spec from Claude Code
 version: 1.0
 lastUpdated: 2025-08-14
 ---
-This guide shows how to run the create-spec flow from Claude Code with three input sources:
+This guide shows how to run the create-spec flow from Claude Code with three input sources (with optional extensions):
 
 - Roadmap-driven ("what's next?")
-- Jira-driven (via Atlassian MCP)
+- Jira-driven (via Atlassian MCP) – via optional extension
 - Manual input (structured template)
 
 It also covers expected outputs, idempotency behavior, and common pitfalls.
@@ -16,7 +16,7 @@ Prerequisites
 
 - Spec Agent Kibo instructions folder is available at `@~/.agent-os/instructions/`
 - Standards docs are present in `@.agent-os/standards/`
-- Optional: Atlassian MCP configured if you want to pull from Jira
+- Optional: Atlassian MCP configured if you want to pull from Jira (enable by adding the Jira extension file under `@~/.agent-os/instructions/extensions/create-spec/`)
 
 Shell environment
 -----------------
@@ -83,20 +83,20 @@ What happens:
 - Suggests the next uncompleted item and asks for approval
 - Proceeds with spec creation after confirmation
 
-Jira-driven (via Atlassian MCP)
+Jira-driven (via Atlassian MCP, via extension)
 --------------------------
 
-Use this when you have a Jira issue key and a Atlassian MCP service configured.
+Use this when you have a Jira issue key and an Atlassian MCP service configured, plus the Jira extension installed.
 
 ```text
 @~/.agent-os/instructions/core/create-spec.md
 
 [jira_inputs]
-jira_issue_key: ABC-1234
-use_jira_mcp: true
+ext_jira_issue_key: ABC-1234
+ext_use_jira_mcp: true
 # Optional overrides if Jira fields are missing
-post_spec_to_jira: true
-jira_comment_mode: summary
+ext_post_spec_to_jira: true
+ext_jira_comment_mode: summary
 main_idea: ""
 initial_user_stories: []
 in_scope: []
@@ -116,10 +116,10 @@ What happens:
 - Maps them to the required inputs and prompts for any missing items
 - Asks for confirmation before proceeding
 - Proceeds even if no `mission.md` or `mission-lite.md` exists (facts.md will note N/A)
-- After `spec.md` is created, the flow posts the spec content back to the Jira issue as a comment (conditional on MCP and valid key)
+- After `spec.md` is created, the extension posts the spec content back to the Jira issue as a comment (conditional on MCP and valid key)
   - If the spec is too large for Jira, it posts only Overview and Expected Deliverable sections with a repo path reference
   - A footer includes a short hash to avoid duplicate re-posts on re-runs
-  - If `jira_comment_mode: summary`, subsequent runs post a concise summary of changes (section deltas, counts, top highlights). If set to `diff`, they post a unified diff instead. Otherwise, they post the full content or an excerpt.
+  - If `ext_jira_comment_mode: summary`, subsequent runs post a concise summary of changes (section deltas, counts, top highlights). If set to `diff`, they post a unified diff instead. Otherwise, they post the full content or an excerpt.
 
 Concrete Jira example: ASP.NET Core Web API new endpoint (with DB table and repo package)
 ----------------------------------------------------------------------------------------
@@ -130,8 +130,8 @@ Use this when you want to add a new POST endpoint to an existing controller in a
 @~/.agent-os/instructions/core/create-spec.md
 
 [jira_inputs]
-jira_issue_key: API-482
-use_jira_mcp: true
+ext_jira_issue_key: API-482
+ext_use_jira_mcp: true
 
 # Provide overrides if Jira is missing fields
 main_idea: >
@@ -284,10 +284,10 @@ See also
 - Configuration: [configuration.md](./configuration.md)
 - Installation: [installation.md](./installation.md)
 
-Manual Jira re-sync (optional)
+Manual Jira re-sync (optional, via extension)
 ------------------------------
 
-Re-sync is manual by design. To update the Jira comment after editing `spec.md`, re-run Step 6.2 of `create-spec` with the same `jira_issue_key` and your preferred `jira_comment_mode`. The flow will dedupe by hash and only post a new comment when content changes.
+Re-sync is manual by design. To update the Jira comment after editing `spec.md`, re-run Step 6.2 (extension) of `create-spec` with the same `ext_jira_issue_key` and your preferred `ext_jira_comment_mode`. The extension will dedupe by hash and only post a new comment when content changes.
 
 Run only API and DB tasks for the new endpoint spec
 ---------------------------------------------------

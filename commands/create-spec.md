@@ -2,27 +2,26 @@
 
 Create a detailed spec for a new feature with technical specifications and task breakdown
 
-IMPORTANT: Closely follow instructions located in @~/.agent-os/instructions/core/create-spec.md
+IMPORTANT: Closely follow instructions located in @~/.agent-os/instructions/core/create-spec.md. The core flow is extensible: it automatically loads any matching extension files in `@~/.agent-os/instructions/extensions/create-spec/` (and optionally `@.agent-os/instructions/extensions/create-spec/`) that declare `targets: ["create-spec"]`.
 
 Inputs (provide inline when invoking):
 
 - Required: main_idea (1–2 sentences), initial_user_stories (1–3), in_scope (1–5), expected_deliverables (1–3)
-- Optional: out_of_scope, tech_constraints, requires_db_changes, requires_api_changes, spec_name_override, overwrite_existing, post_spec_to_jira
-- Atlassian MCP: you can pass jira_issue_key; the agent will fetch fields via Atlassian MCP and map them to inputs before proceeding
-  - When started from Jira and MCP is available, the agent will post the generated spec.md as a Jira comment (deduplicated by hash)
+- Optional: out_of_scope, tech_constraints, requires_db_changes, requires_api_changes, spec_name_override, overwrite_existing
+- Extensions may add their own inputs. For Atlassian/Jira, install the optional extension at `instructions/extensions/create-spec/atlassian-jira.md` and use the `ext_*` variables shown below.
 
-Jira-driven example:
+Jira-driven example (via optional extension):
 
 ```text
 @~/.agent-os/instructions/core/create-spec.md
 
 [jira_inputs]
-jira_issue_key: ABC-1234
-use_jira_mcp: true
+ext_jira_issue_key: ABC-1234
+ext_use_jira_mcp: true
 # Optional: disable auto Jira comment if desired
-post_spec_to_jira: true
+ext_post_spec_to_jira: true
 # Optional: choose how Jira comments are posted: full | diff | summary
-jira_comment_mode: summary
+ext_jira_comment_mode: summary
 # Optional overrides if Jira fields are missing
 main_idea: ""
 initial_user_stories: []

@@ -23,6 +23,7 @@ Navigation
 - Usage guide: [create-spec-usage.md](./create-spec-usage.md)
 - Installation: [installation.md](./installation.md)
 - Configuration: [configuration.md](./configuration.md)
+- Extensions Quickstart: [extensions-quickstart.md](./extensions-quickstart.md)
 - Quickstart: [quickstart.md](./quickstart.md)
 - Smoke tests: [smoke-tests.md](./smoke-tests.md)
 - Troubleshooting: [troubleshooting.md](./troubleshooting.md)
@@ -47,3 +48,10 @@ External resources
 ------------------
 
 - Forked from Agent OS website: [buildermethods.com/agent-os](https://buildermethods.com/agent-os)
+
+Extensibility
+-------------
+
+- Extend core flows (like create-spec) with optional instruction files—no forking required. Place files under `@~/.agent-os/instructions/extensions/<flow>/` (or project scope at `@.agent-os/...`).
+- Use decimal step numbers (e.g., 1.1, 6.2). Core runs first on any collision; extensions are strictly optional.
+- See: [Extensions Quickstart](./extensions-quickstart.md) and `instructions/extensions/README.md` for conventions and an example Jira integration.

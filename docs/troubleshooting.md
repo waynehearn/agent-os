@@ -12,7 +12,7 @@ Paths/files
 - Spec folder not found after run
   - Confirm the date and normalized name (kebab-case ≤ 5 words)
   - Check `@.agent-os/specs/` for a similarly named folder
-  - If you used Jira-driven mode, ensure `jira_issue_key` was correct
+  - If you used Jira-driven mode via extension, ensure the extension file exists and `ext_jira_issue_key` was correct
 
 - Sub-specs not created
   - Confirm flags:
@@ -61,23 +61,23 @@ Idempotency & overwrites
   - This is expected when files exist and `overwrite_existing: false`
   - Set `overwrite_existing: true` to overwrite deterministically (use with care)
 
-Jira mapping
+Jira mapping (extension)
 ------------
 
 - Jira fields missing or sparse
   - Provide overrides directly in `[jira_inputs]`
   - Good Jira tickets include: summary (becomes main_idea), acceptance criteria (maps to deliverables), components/labels (tech constraints)
 
-Jira sync
+Jira sync (extension)
 ---------
 
 - Comment not posted
-  - Ensure `post_spec_to_jira: true`, `jira_issue_key` is valid (e.g., ABC-123), and Atlassian MCP is available in your editor
+  - Ensure the Jira extension is installed, `ext_post_spec_to_jira: true`, `ext_jira_issue_key` is valid (e.g., ABC-123), and Atlassian MCP is available in your editor
   - If an identical hash footer exists, the flow will skip posting by design
 - Comment too large
   - The flow automatically falls back to posting only Overview and Expected Deliverable sections with a repo path reference
 - Want changes only
-  - Set `jira_comment_mode: summary` (default) to post concise change summaries on subsequent runs; use `diff` for a unified diff
+  - Set `ext_jira_comment_mode: summary` (default) to post concise change summaries on subsequent runs; use `diff` for a unified diff
 
 Environment
 -----------

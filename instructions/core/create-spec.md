@@ -25,10 +25,35 @@ Generate detailed feature specifications aligned with product roadmap and missio
   <spec_folder_path>@.agent-os/specs/[CURRENT_DATE]-[SPEC_NAME]</spec_folder_path>
   <requires_db_changes>false</requires_db_changes>
   <requires_api_changes>false</requires_api_changes>
-  <jira_issue_key>[JIRA_ISSUE_KEY_OR_EMPTY]</jira_issue_key>
-  <post_spec_to_jira>true</post_spec_to_jira>
-  <jira_comment_mode>summary</jira_comment_mode> <!-- values: full | diff | summary -->
 </variables>
+
+<extensions_discovery>
+  PURPOSE: Allow project- or team-specific behaviors to extend this core flow without changing it.
+
+  LOOKUP PATHS (in order):
+    1. @~/.agent-os/instructions/extensions/create-spec/**/*.md
+    2. @.agent-os/instructions/extensions/create-spec/**/*.md (project-local, optional)
+
+  CONVENTION:
+    - Extension files MUST include front matter with: `targets: ["create-spec"]`.
+  - Optional front matter key `requires: ["capability"]` may declare dependencies (e.g., `mcp:atlassian`).
+    - Extensions may declare additional <variables> and <step> blocks.
+    - Steps are merged into this process by their numeric `number` attribute (e.g., 1.1, 6.2).
+    - Core steps keep their numbers; extensions should use decimal positions that don’t collide.
+    - If a collision occurs, run core step first, then the extension step.
+
+  SAFE MERGE RULES:
+    - Variable names should be distinct; extensions should prefer namespaced keys (e.g., ext_<vendor>_*).
+    - Determinism and validation rules from core always apply.
+    - Extensions MUST be optional; if no matching files are found, run core steps only.
+
+  EXECUTION:
+    - Before processing <process_flow>, DISCOVER candidate files per paths above.
+    - For each candidate, READ only front matter to check `targets` and optional `requires`.
+      - If `requires` includes a capability that is not available in the runtime (e.g., `mcp:atlassian` and no Atlassian MCP), SKIP the file without loading its body.
+    - From the remaining files, COLLECT their <step> blocks that declare `targets: ["create-spec"]`.
+    - MERGE the collected steps into the ordered flow by step number.
+</extensions_discovery>
 
 <determinism_rules>
 
@@ -49,7 +74,9 @@ Generate detailed feature specifications aligned with product roadmap and missio
 
 ### Step 1: Spec Initiation
 
-Use the context-fetcher subagent to identify spec initiation method by either finding the next uncompleted roadmap item when user asks "what's next?" or when a user provides a Jira ticket ID or accepting a specific spec idea from the user.
+Use the context-fetcher subagent to identify spec initiation method by either finding the next uncompleted roadmap item when user asks "what's next?" or accepting a specific spec idea from the user.
+
+Note: Additional initiation sources (e.g., external ticket systems) may be provided by installed extensions and will be merged into this flow automatically.
 
 <inputs_validation>
   <schema>
@@ -84,128 +111,13 @@ Use the context-fetcher subagent to identify spec initiation method by either fi
   </actions>
 </whats_next_flow>
 
-<jira_ticket_id>
-  <trigger>user enters a Jira ticket ID</trigger>
-  <accept>
-    - ```regex
-      (?i)^(jira:)?[A-Z][A-Z0-9]+-\d+$
-      ```
-  </accept>
-  <mcp_integration>
-    IF jira_mcp_available:
-      USE Atlassian MCP to FETCH fields for the issue key:
-        - key, summary, description, status, assignee, labels, components, fixVersions
-        - custom fields: acceptance criteria (if present), story points (if present)
-        - comments: last 5
-        - linked issues (keys and link types)
-    ELSE:
-      FALLBACK: Ask user to paste the issue summary/description
-  </mcp_integration>
-  <jira_to_inputs_mapping>
-    - main_idea := summary (1–2 sentences)
-    - initial_user_stories := acceptance criteria if available, else derive 1–3 from description
-    - in_scope := derive 1–5 concrete items from description/labels/components
-    - out_of_scope := optional, derive exclusions if explicit
-    - expected_deliverables := 1–3 browser-testable outcomes derived from description/acceptance criteria
-    - tech_constraints := components/labels that imply tech constraints
-  </jira_to_inputs_mapping>
-  <actions>
-    1. FETCH issue details (via MCP if available)
-    2. DISPLAY: key, summary, status, and a brief description/acceptance criteria
-    3. CONFIRM the Jira issue matches the intended work (yes/no)
-    4. IF yes: DERIVE inputs using mapping; PROMPT for any missing required fields per Step 1 schema
-    5. WAIT for approval
-  </actions>
-  <proceed>to context gathering</proceed>
-</jira_ticket_id>
+<!-- Jira/Atlassian or other ticket integrations are provided by extensions (if installed). -->
 
 <specific_spec_idea_flow>
   <trigger>user describes specific spec idea</trigger>
   <accept>any format, length, or detail level</accept>
   <proceed>to context gathering</proceed>
 </specific_spec_idea_flow>
-
-</step>
-
-<step number="6.2" subagent="context-fetcher" name="jira_comment_with_spec">
-
-### Step 6.2: Post spec.md to Jira (Conditional)
-
-If the spec creation was initiated from a Jira ticket and Atlassian MCP is available, synchronize the contents of spec.md to the Jira issue for visibility.
-
-<condition>
-  EXECUTE ONLY IF: [post_spec_to_jira] == true AND [jira_issue_key] is a non-empty valid key (e.g., ABC-123) AND jira_mcp_available == true
-  OTHERWISE: SKIP this entire step
-  SAFETY: Do not include secrets or local file paths beyond the relative spec reference
-  MODE: When [jira_comment_mode] == "summary", post a concise human-readable summary of changes; when "diff", post a unified diff; when "full", post the full content (subject to size limits)
-  SIZE LIMIT: If output exceeds Jira comment size limits, post the Overview and Expected Deliverable sections only, with a repo path reference
-  FORMAT: Use a code fence for markdown to preserve formatting inside Jira
-  RE-RUNS: If a prior identical comment exists (hash match), skip re-posting
-  AUDIT: Append a short footer with spec key and hash for deduplication
-</condition>
-
-<inputs>
-  - jira_issue_key: [jira_issue_key]
-  - spec_path: @[spec_folder_path]/spec.md
-</inputs>
-
-<actions>
-  1. READ @[spec_folder_path]/spec.md
-  2. COMPUTE sha256 of the file content as [spec_sha]
-  3. SCAN recent comments on Jira issue [jira_issue_key] for a footer line: "sha256: <hash>"
-     - IF a comment with matching [spec_sha] exists: SKIP posting (already synchronized)
-  - ELSE attempt to find the most recent footer with prefix: "Synced by Spec Agent Kibo • key: [spec_key] • sha256: <prev_sha>"
-  4. IF [jira_comment_mode] == "summary" AND a previous synced version exists:
-       - EXTRACT previous content block from that comment (between separators)
-       - COMPUTE a change summary:
-         - sections added/removed/renamed
-         - counts deltas (user stories, scope items, deliverables)
-         - up to 5 bullet highlights of notable edits (first changed lines in each section)
-       - POST a Jira comment with content:
-         """
-         Spec update (summary) for [SPEC_NAME]
-
-         Repository path: @[spec_folder_path]/spec.md
-
-         Changes since last sync:
-         - Sections: [SECTION_CHANGES]
-         - Counts: stories [S1->S2], scope [S1->S2], deliverables [D1->D2]
-
-         Highlights:
-         - [BULLET_1]
-         - [BULLET_2]
-         - [BULLET_3]
-         - [BULLET_4]
-         - [BULLET_5]
-
-         ---
-         Synced by Spec Agent Kibo • key: [spec_key] • sha256: [spec_sha]
-         """
-     ELSE IF [jira_comment_mode] == "diff" AND a previous synced version exists:
-       - EXTRACT previous content and COMPUTE a unified diff
-       - IF diff length <= Jira size limits: POST diff as before; ELSE fallback to excerpt
-     ELSE:
-       - IF file length > Jira limit:
-           - EXTRACT only the "## Overview" and "## Expected Deliverable" sections
-           - PREPEND a note: "Full spec is stored in the repository"
-       - POST a Jira comment with content:
-           """
-           Spec Requirements Document for [SPEC_NAME]
-
-           Repository path: @[spec_folder_path]/spec.md
-
-           ---
-           [SPEC_MARKDOWN_CONTENT_OR_EXCERPT]
-
-           ---
-           Synced by Spec Agent Kibo • key: [spec_key] • sha256: [spec_sha]
-           """
-</actions>
-
-<notes>
-  - This step is purely for Jira visibility. It does not change the local spec.
-  - Re-sync is manual: re-run this step explicitly if you want to update the Jira comment after edits.
-</notes>
 
 </step>
 
