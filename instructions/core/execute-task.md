@@ -110,6 +110,106 @@ Search and extract only the relevant sections from technical-spec.md (do not loa
 
 </step>
 
+<step number="2.1" name="api_spec_review">
+
+### Step 2.1: API Specification Review (Conditional)
+
+Use a hybrid rule: read the API spec when the spec flags API work OR when the current task text clearly indicates API-related work. Prefer manifest-based skipping when unchanged.
+
+<target>@[spec_folder_path]/sub-specs/api-spec.md</target>
+<conditional>
+  IF file missing:
+    SKIP to Step 3
+    NOTE lack of api-spec.md in summary
+  ELSE IF one of the following is TRUE:
+    - @[spec_folder_path]/meta.json exists AND requires_api_changes == true
+    - The current parent task or any of its subtasks (from Step 1 snippet) contains API indicators (case-insensitive):
+      ["API", "endpoint", "controller", "route", "router", "OpenAPI", "Swagger", "REST", "GraphQL", HTTP verbs like GET/POST/PUT/PATCH/DELETE with a path (e.g., "/", "/api/")]
+    THEN:
+      PROCEED to read relevant sections
+    ELSE:
+      SKIP to Step 3
+      NOTE heuristics indicate no API work for this task
+</conditional>
+
+<selective_reading>
+  <search_api_spec>
+    FIND sections relevant to the current task, including:
+    - Affected endpoints (HTTP method + path)
+    - Request schema and validation rules
+    - Response schema, status codes, and error shapes
+    - Controller/handler mappings or notes
+  </search_api_spec>
+</selective_reading>
+
+<instructions>
+  ACTION: Read only the relevant endpoint sections from api-spec.md
+  EXTRACT: Method, path, request/response types, validation, errors
+  SKIP: Unrelated endpoints and sections
+  APPLY: Contracts to guide tests-first and implementation steps
+  NOTE: Use @[spec_folder_path]/context/manifest.json to avoid re-reading when sha256 unchanged
+  DO_NOT_LOAD: decisions.md or full mission.md
+  CHECK: @[spec_folder_path]/meta.json for requires_api_changes; OR rely on API indicators in current task text per the heuristic above
+  </instructions>
+
+<trace>
+  IF [debug_subagents] == true:
+    - BEFORE selective read: APPEND NDJSON to @[debug_task_log] with {"ts":"[ISO8601]","step":2.1,"action":"api-spec-check","gates":{"flag": "[requires_api_changes]","indicators":"[FOUND|NONE]"}}
+    - AFTER selective read (if proceeded): APPEND with {"ts":"[ISO8601]","step":2.1,"action":"api-spec-read","status":"done","sections":"[SUMMARY]"}
+</trace>
+
+</step>
+
+<step number="2.2" name="database_schema_review">
+
+### Step 2.2: Database Schema Review (Conditional)
+
+Use a hybrid rule: read the database schema sub-spec when the spec flags DB work OR when the current task text clearly indicates database-related work. Prefer manifest-based skipping when unchanged.
+
+<target>@[spec_folder_path]/sub-specs/database-schema.md</target>
+<conditional>
+  IF file missing:
+    SKIP to Step 3
+    NOTE lack of database-schema.md in summary
+  ELSE IF one of the following is TRUE:
+    - @[spec_folder_path]/meta.json exists AND requires_db_changes == true
+    - The current parent task or any of its subtasks (from Step 1 snippet) contains DB indicators (case-insensitive):
+      ["DB", "database", "schema", "migration", "migrate", "table", "column", "index", "constraint", "foreign key", "SQL", "DDL", "EF migration", "Prisma migrate", "Liquibase", "Flyway"]
+    THEN:
+      PROCEED to read relevant sections
+    ELSE:
+      SKIP to Step 3
+      NOTE heuristics indicate no DB work for this task
+</conditional>
+
+<selective_reading>
+  <search_db_schema>
+    FIND sections relevant to the current task, including:
+    - New/modified tables, columns, indexes, constraints, relationships
+    - Migration steps and ordering
+    - Exact SQL or migration DSL snippets
+    - Rollback/compatibility notes
+  </search_db_schema>
+</selective_reading>
+
+<instructions>
+  ACTION: Read only the relevant schema/migration sections from database-schema.md
+  EXTRACT: Precise changes (tables/columns/indexes), migration order, and SQL/DSL
+  SKIP: Unrelated schema areas
+  APPLY: Use schema contracts to guide tests-first and implementation steps (including migration application)
+  NOTE: Use @[spec_folder_path]/context/manifest.json to avoid re-reading when sha256 unchanged
+  DO_NOT_LOAD: decisions.md or full mission.md
+  CHECK: @[spec_folder_path]/meta.json for requires_db_changes; OR rely on DB indicators in current task text per the heuristic above
+</instructions>
+
+<trace>
+  IF [debug_subagents] == true:
+    - BEFORE selective read: APPEND NDJSON to @[debug_task_log] with {"ts":"[ISO8601]","step":2.2,"action":"db-spec-check","gates":{"flag":"[requires_db_changes]","indicators":"[FOUND|NONE]"}}
+    - AFTER selective read (if proceeded): APPEND with {"ts":"[ISO8601]","step":2.2,"action":"db-spec-read","status":"done","sections":"[SUMMARY]"}
+</trace>
+
+</step>
+
 <step number="3" subagent="context-fetcher" name="best_practices_review">
 
 ### Step 3: Best Practices Review

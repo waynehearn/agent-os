@@ -77,7 +77,7 @@ Identify which tasks to execute from the spec (using spec_srd_reference file pat
 
 Use the context-fetcher subagent to gather minimal context for task understanding using a lite-first approach:
   - ALWAYS: load only [spec_folder_path]/tasks.md and extract the current parent task block and its subtasks into an in-memory snippet (or write to [spec_folder_path]/context/current-task.md)
-  - CONDITIONALLY: load @.agent-os/product/mission-lite.md (if file exists), [spec_folder_path]/spec-lite.md (if file exists), and [spec_folder_path]/sub-specs/technical-spec.md only if not already in context and only the sections relevant to the current task.
+  - CONDITIONALLY: load @.agent-os/product/mission-lite.md (if file exists), [spec_folder_path]/spec-lite.md (if file exists), [spec_folder_path]/sub-specs/technical-spec.md, [spec_folder_path]/sub-specs/api-spec.md (hybrid API indicator rule), and [spec_folder_path]/sub-specs/database-schema.md (hybrid DB indicator rule). Read only sections relevant to the current task, and skip if already in context or unchanged per manifest.
   - BEFORE reading any file, CHECK [spec_folder_path]/context/manifest.json for sha256; if unchanged, SKIP loading.
 
 <instructions>
@@ -85,6 +85,8 @@ Use the context-fetcher subagent to gather minimal context for task understandin
   - REQUEST: "Get product pitch from mission-lite.md" (skip if manifest unchanged or file missing)
   - REQUEST: "Get spec summary from spec-lite.md" (skip if manifest unchanged or file missing)
     - REQUEST: "Get technical approach from technical-spec.md relevant to [CURRENT_TASK_AREA]" (selective section only)
+  - REQUEST: "Get relevant endpoint contracts from api-spec.md for [CURRENT_TASK_AREA]" (when flag true or API indicators found in current task; selective sections only)
+  - REQUEST: "Get relevant schema/migration details from database-schema.md for [CURRENT_TASK_AREA]" (when flag true or DB indicators found in current task; selective sections only)
   PROCESS: Returned information
   UPDATE: Refresh manifest.json hashes for any files actually read
 </instructions>
@@ -96,8 +98,15 @@ Use the context-fetcher subagent to gather minimal context for task understandin
         "step": 2,
         "subagent": "context-fetcher",
         "action": "request",
-        "requests": ["mission-lite", "spec-lite", "technical-spec subset"],
+        "requests": ["mission-lite", "spec-lite", "technical-spec subset", "api-spec subset?", "db-schema subset?"],
         "includeBodies": [debug_trace_include_bodies]
+      }
+    - HEURISTICS summary: APPEND NDJSON to session.log with {
+        "ts": "[ISO8601]",
+        "step": 2,
+        "action": "heuristics",
+        "api": {"flag": "[requires_api_changes]", "indicators": "[FOUND|NONE]", "willRead": "[YES|NO]"},
+        "db":  {"flag": "[requires_db_changes]",  "indicators": "[FOUND|NONE]", "willRead": "[YES|NO]"}
       }
     - AFTER call: APPEND NDJSON with {
         "ts": "[ISO8601]",
@@ -120,6 +129,8 @@ Use the context-fetcher subagent to gather minimal context for task understandin
   - [spec_folder_path]/spec-lite.md for feature summary; if missing, prioritize context/facts.md and spec.md sections
   - [spec_folder_path]/context/facts.md for fixed facts and first-task summary (if present)
   - [spec_folder_path]/sub-specs/technical-spec.md for implementation details (select sections only)
+  - [spec_folder_path]/sub-specs/api-spec.md for endpoint contracts (select sections only; load via hybrid API rule)
+  - [spec_folder_path]/sub-specs/database-schema.md for DB migrations/schema (select sections only; load via hybrid DB rule)
   </conditional_docs>
 </context_gathering>
 

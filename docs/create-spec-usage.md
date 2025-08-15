@@ -259,6 +259,13 @@ Skip-by-hash & selective reads
 - They prefer `spec-lite.md`, `context/facts.md`, and task-scoped snippets over full-document loads.
 - Strict do-not-load during execution: `decisions.md` and full `mission.md` (roadmap only when needed).
 
+Hybrid consults (execution): When running execute-tasks/execute-task, the runner may selectively consult `sub-specs/api-spec.md` and `sub-specs/database-schema.md` using a hybrid rule:
+
+- If `meta.json` flags `requires_api_changes`/`requires_db_changes` as true, or
+- The current parent task/subtasks clearly include API/DB indicators (e.g., API/endpoint/controller/route/HTTP verb + path; DB/schema/migration/table/column/index/constraint)
+
+These reads are minimal, section-scoped, and manifest-aware.
+
 Idempotency
 -----------
 

@@ -60,8 +60,10 @@ Step 2 — Verify outputs
 Tip: See the Glossary for the roles of `spec.md` vs `spec-lite.md`.
 Tip: See the Glossary for lite-first artifacts (`facts.md`, `manifest.json`, `meta.json`).
 
+
 Step 3 — Run the demo tasks
 ---------------------------
+
 Claude Code command (after you verify outputs):
 
 ```text
@@ -69,6 +71,10 @@ Claude Code command (after you verify outputs):
 ```
 
 By default this runs the next uncompleted parent task. To target specific tasks, open `[spec_folder_path]/tasks.md` first, note the parent task numbers, and add a `specific_tasks` list.
+
+Note on API/DB sub-specs during execution:
+
+- The executor uses a hybrid rule to consult `sub-specs/api-spec.md` and `sub-specs/database-schema.md` when either the spec flags API/DB changes (in `meta.json`) or the current task text clearly indicates API/DB work. Reads are selective and manifest-aware to keep context lean.
 
 Expected summary output
 -----------------------

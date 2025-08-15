@@ -98,6 +98,10 @@ Expected:
 - Completion banner prints; tests pass if included in your flow
 - A compact run summary is written to `[spec_folder_path]/context/tasks-summary.json`
 
+Note:
+
+- During execution, the runner may selectively consult `sub-specs/api-spec.md` and `sub-specs/database-schema.md` using a hybrid rule (flag in `meta.json` or API/DB indicators in the current task text). Reads are minimal and manifest-aware.
+
 Test 4 — Minimal subtask run + stop after tests
 -----------------------------------------------
 
