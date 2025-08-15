@@ -68,6 +68,17 @@ Jira mapping
   - Provide overrides directly in `[jira_inputs]`
   - Good Jira tickets include: summary (becomes main_idea), acceptance criteria (maps to deliverables), components/labels (tech constraints)
 
+Jira sync
+---------
+
+- Comment not posted
+  - Ensure `post_spec_to_jira: true`, `jira_issue_key` is valid (e.g., ABC-123), and Atlassian MCP is available in your editor
+  - If an identical hash footer exists, the flow will skip posting by design
+- Comment too large
+  - The flow automatically falls back to posting only Overview and Expected Deliverable sections with a repo path reference
+- Want changes only
+  - Set `jira_comment_mode: summary` (default) to post concise change summaries on subsequent runs; use `diff` for a unified diff
+
 Environment
 -----------
 

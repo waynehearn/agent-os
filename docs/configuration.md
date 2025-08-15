@@ -42,6 +42,21 @@ To drive spec creation from Jira tickets, configure a Atlassian MCP service in y
 - Set `use_jira_mcp: true`
 - Provide overrides for any missing fields (main_idea, user stories, deliverables, etc.)
 
+Jira sync flags
+---------------
+
+- `post_spec_to_jira: true|false`
+  - When true and a valid `jira_issue_key` is provided with MCP available, the flow posts to the Jira issue after creating `spec.md`.
+- `jira_comment_mode: summary|diff|full`
+  - summary (default): posts a concise change summary on subsequent runs
+  - diff: posts a unified diff against the last synced version
+  - full: posts full content (or an excerpt if size limits are hit)
+
+Branding/footer
+---------------
+
+- Jira comments include a footer for dedupe: `Synced by Spec Agent Kibo • key: <spec_key> • sha256: <hash>`
+
 Auth & connectivity
 -------------------
 

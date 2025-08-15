@@ -284,6 +284,11 @@ See also
 - Configuration: [configuration.md](./configuration.md)
 - Installation: [installation.md](./installation.md)
 
+Manual Jira re-sync (optional)
+------------------------------
+
+Re-sync is manual by design. To update the Jira comment after editing `spec.md`, re-run Step 6.2 of `create-spec` with the same `jira_issue_key` and your preferred `jira_comment_mode`. The flow will dedupe by hash and only post a new comment when content changes.
+
 Run only API and DB tasks for the new endpoint spec
 ---------------------------------------------------
 
