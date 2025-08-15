@@ -14,10 +14,10 @@ requires: ["mcp:atlassian"]
 <!-- Jira-driven initiation and optional post-sync extension. This file is only applied when present. -->
 
 <variables>
-  <ext_jira_issue_key>[JIRA_ISSUE_KEY_OR_EMPTY]</ext_jira_issue_key>
-  <ext_use_jira_mcp>false</ext_use_jira_mcp>
-  <ext_post_spec_to_jira>true</ext_post_spec_to_jira>
-  <ext_jira_comment_mode>summary</ext_jira_comment_mode> <!-- values: full | diff | summary -->
+  <jira_issue_key>[JIRA_ISSUE_KEY_OR_EMPTY]</jira_issue_key>
+  <use_jira_mcp>false</use_jira_mcp>
+  <post_spec_to_jira>true</post_spec_to_jira>
+  <jira_comment_mode>summary</jira_comment_mode> <!-- values: full | diff | summary -->
 </variables>
 
 <step number="1.1" subagent="context-fetcher" name="jira_initiation">
@@ -27,11 +27,11 @@ requires: ["mcp:atlassian"]
 If a Jira issue key is supplied and Atlassian MCP is available, derive initial inputs from Jira to seed spec creation.
 
 <gate>
-  RUN ONLY IF: jira_mcp_available == true AND [ext_use_jira_mcp] == true AND [ext_jira_issue_key] matches /(?i)^(jira:)?[A-Z][A-Z0-9]+-\d+$/
+  RUN ONLY IF: jira_mcp_available == true AND [use_jira_mcp] == true AND [jira_issue_key] matches /(?i)^(jira:)?[A-Z][A-Z0-9]+-\d+$/
 </gate>
 
 <actions>
-  1. STRIP optional prefix `jira:` from [ext_jira_issue_key]
+  1. STRIP optional prefix `jira:` from [jira_issue_key]
   2. FETCH via Atlassian MCP: key, summary, description, status, assignee, labels, components, fixVersions; custom fields (acceptance criteria, story points) when present; last 5 comments; linked issues
   3. DISPLAY a compact preview and ASK confirmation (yes/no)
   4. IF yes:
@@ -55,13 +55,13 @@ If a Jira issue key is supplied and Atlassian MCP is available, derive initial i
 Synchronize `spec.md` back to Jira for visibility.
 
 <condition>
-  EXECUTE ONLY IF: [ext_post_spec_to_jira] == true AND [ext_jira_issue_key] is a non-empty valid key AND jira_mcp_available == true
-  MODE: When [ext_jira_comment_mode] == "summary", post a concise summary of changes; when "diff", post a unified diff; when "full", post full content (size-limited)
+  EXECUTE ONLY IF: [post_spec_to_jira] == true AND [jira_issue_key] is a non-empty valid key AND jira_mcp_available == true
+  MODE: When [jira_comment_mode] == "summary", post a concise summary of changes; when "diff", post a unified diff; when "full", post full content (size-limited)
   SAFETY: Exclude secrets and local absolute paths
 </condition>
 
 <inputs>
-  - jira_issue_key: [ext_jira_issue_key]
+  - jira_issue_key: [jira_issue_key]
   - spec_path: @[spec_folder_path]/spec.md
 </inputs>
 
@@ -71,7 +71,7 @@ Synchronize `spec.md` back to Jira for visibility.
   3. CHECK recent Jira comments for prior sync footer: "Synced by Spec Agent Kibo • key: [spec_key] • sha256: <hash>"
      - IF a matching [spec_sha] exists: SKIP posting
      - ELSE capture previous synced content if available for diff/summary
-  4. POST according to [ext_jira_comment_mode]: summary | diff | full (with excerpt fallback when size limits apply)
+  4. POST according to [jira_comment_mode]: summary | diff | full (with excerpt fallback when size limits apply)
   5. APPEND footer: "Synced by Spec Agent Kibo • key: [CURRENT_DATE]-[SPEC_NAME] • sha256: [spec_sha]"
 </actions>
 

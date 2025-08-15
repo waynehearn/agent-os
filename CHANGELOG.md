@@ -5,6 +5,15 @@ All notable changes to Spec Agent Kibo will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Jira extension variables simplified: removed support for legacy `ext_*` keys in `instructions/extensions/create-spec/atlassian-jira.md`.
+  - Use short-form keys instead: `jira_issue_key`, `use_jira_mcp`, `post_spec_to_jira`, `jira_comment_mode`.
+  - Migration: replace any `ext_jira_issue_key`, `ext_use_jira_mcp`, `ext_post_spec_to_jira`, `ext_jira_comment_mode` with the short-form equivalents in your `[jira_inputs]` blocks.
+  - Docs updated to reflect short-form only (jira-extension, configuration, usage, troubleshooting, extensions README).
+
 ## [1.4.0] - 2025-08-14
 
 ### Added [1.4.0]

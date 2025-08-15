@@ -92,11 +92,11 @@ Use this when you have a Jira issue key and an Atlassian MCP service configured,
 @~/.agent-os/instructions/core/create-spec.md
 
 [jira_inputs]
-ext_jira_issue_key: ABC-1234
-ext_use_jira_mcp: true
+jira_issue_key: ABC-1234
+use_jira_mcp: true
 # Optional overrides if Jira fields are missing
-ext_post_spec_to_jira: true
-ext_jira_comment_mode: summary
+post_spec_to_jira: true
+jira_comment_mode: summary
 main_idea: ""
 initial_user_stories: []
 in_scope: []
@@ -116,8 +116,8 @@ Enable discovery debug output (optional): add `debug_extensions: true` anywhere 
 @~/.agent-os/instructions/core/create-spec.md
 
 [jira_inputs]
-ext_jira_issue_key: ABC-1234
-ext_use_jira_mcp: true
+jira_issue_key: ABC-1234
+use_jira_mcp: true
 debug_extensions: true
 [/jira_inputs]
 ```
@@ -142,8 +142,8 @@ Use this when you want to add a new POST endpoint to an existing controller in a
 @~/.agent-os/instructions/core/create-spec.md
 
 [jira_inputs]
-ext_jira_issue_key: API-482
-ext_use_jira_mcp: true
+jira_issue_key: API-482
+use_jira_mcp: true
 
 # Provide overrides if Jira is missing fields
 main_idea: >
@@ -314,7 +314,7 @@ See also
 Manual Jira re-sync (optional, via extension)
 ------------------------------
 
-Re-sync is manual by design. To update the Jira comment after editing `spec.md`, re-run Step 6.2 (extension) of `create-spec` with the same `ext_jira_issue_key` and your preferred `ext_jira_comment_mode`. The extension will dedupe by hash and only post a new comment when content changes.
+Re-sync is manual by design. To update the Jira comment after editing `spec.md`, re-run Step 6.2 (extension) of `create-spec` with the same `jira_issue_key` and your preferred `jira_comment_mode`. The extension will dedupe by hash and only post a new comment when content changes.
 
 Run only API and DB tasks for the new endpoint spec
 ---------------------------------------------------

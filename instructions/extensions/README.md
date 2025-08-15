@@ -39,7 +39,7 @@ For the `create-spec` flow, use:
 
 ## Naming and safety guidance
 
-- Variables: prefer `ext_<vendor>_*` (e.g., `ext_jira_issue_key`) to avoid collisions.
+- Variables: use clear, namespaced keys to avoid collisions (e.g., `jira_issue_key`).
 - Keep side-effects scoped and documented; avoid leaking secrets or absolute local paths.
 - Follow the lite-first context policy (prefer `spec-lite.md`, `context/facts.md`, and selective reads).
 
@@ -85,7 +85,7 @@ vendor: acme
 - See `create-spec/atlassian-jira.md` for a complete example that:
   - Enables Jira-driven initiation (maps Jira fields to spec inputs)
   - Posts `spec.md` back to the Jira issue with summary/diff/full modes, deduped by hash
-  - Uses variables: `ext_jira_issue_key`, `ext_use_jira_mcp`, `ext_post_spec_to_jira`, `ext_jira_comment_mode`
+  - Uses variables: `jira_issue_key`, `use_jira_mcp`, `post_spec_to_jira`, `jira_comment_mode`
 
 ## Testing tips
 

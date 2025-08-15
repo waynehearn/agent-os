@@ -14,8 +14,9 @@ Start here (10–15 minutes)
 
 1. [installation.md](./installation.md)
 2. [quickstart.md](./quickstart.md)
-3. [create-spec-usage.md](./create-spec-usage.md) → Use the Jira-driven Web API example block
-4. [smoke-tests.md](./smoke-tests.md)
+3. [create-spec-usage.md](./create-spec-usage.md)
+4. [jira-extension.md](./jira-extension.md) (optional)
+5. [smoke-tests.md](./smoke-tests.md)
 
 Navigation
 ----------

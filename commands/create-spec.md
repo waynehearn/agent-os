@@ -8,33 +8,8 @@ Inputs (provide inline when invoking):
 
 - Required: main_idea (1–2 sentences), initial_user_stories (1–3), in_scope (1–5), expected_deliverables (1–3)
 - Optional: out_of_scope, tech_constraints, requires_db_changes, requires_api_changes, spec_name_override, overwrite_existing
-- Extensions may add their own inputs. For Atlassian/Jira, install the optional extension at `instructions/extensions/create-spec/atlassian-jira.md` and use the `ext_*` variables shown below.
+- Extensions may add their own inputs.
 
-Jira-driven example (via optional extension):
-
-```text
-@~/.agent-os/instructions/core/create-spec.md
-
-[jira_inputs]
-ext_jira_issue_key: ABC-1234
-ext_use_jira_mcp: true
-# Optional: disable auto Jira comment if desired
-ext_post_spec_to_jira: true
-# Optional: choose how Jira comments are posted: full | diff | summary
-ext_jira_comment_mode: summary
-# Optional overrides if Jira fields are missing
-main_idea: ""
-initial_user_stories: []
-in_scope: []
-out_of_scope: []
-expected_deliverables: []
-tech_constraints: ""
-requires_db_changes: false
-requires_api_changes: false
-spec_name_override: ""
-overwrite_existing: false
-[/jira_inputs]
-```
 
 Manual input example:
 

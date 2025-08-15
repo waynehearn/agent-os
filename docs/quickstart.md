@@ -4,7 +4,7 @@ version: 1.0
 lastUpdated: 2025-08-14
 ---
 
-Start here if you’re new. In ~10 minutes you’ll create a spec from a Jira issue, verify outputs, and run targeted tasks.
+Start here if you’re new. In ~10 minutes you’ll create a spec from a simple example, verify outputs, and run targeted tasks.
 
 What is Spec Agent Kibo?
 ------------------
@@ -23,76 +23,33 @@ Prerequisites
 -------------
 
 - Spec Agent Kibo instructions at `@~/.agent-os/instructions/`
-- Optional: Atlassian MCP configured (for Jira-driven flow)
 
 Local demo (ready-to-run)
 -------------------------
 
 For a minimal, preconfigured example, open `examples/quickstart/` in Claude Code and run `initial-request.md` to execute the create-spec flow. This folder includes local project standards under `@.agent-os/standards/` so it works out of the box after you install the instructions.
 
-Step 1 — Create spec from Jira example
---------------------------------------
+Step 1 — Run the demo request
+-----------------------------
 
-Copy and run the Jira-driven example below (adjust Jira key, date, and NuGet package as needed).
+Claude Code command:
 
 ```text
-@~/.agent-os/instructions/core/create-spec.md
-
-[jira_inputs]
-jira_issue_key: API-482
-use_jira_mcp: true
-
-# Provide overrides if Jira is missing fields
-main_idea: >
-  Add POST /api/v1/events to existing EventsController to accept a JSON payload and persist it using the domain handler + repository pattern.
-
-initial_user_stories:
-  - title: Create Event endpoint
-    story: As an integrator, I want to POST a new Event JSON to /api/v1/events so that it is validated and stored for downstream processing.
-    details: >
-      Payload example: {"type":"purchase","userId":"u-123","occurredAt":"2025-08-14T12:00:00Z","metadata":{"sku":"ABC-123"}}
-      The API layer forwards to a domain handler that enforces validation rules, then calls the repository to persist.
-
-in_scope:
-  - API: Add POST /api/v1/events to existing EventsController
-  - Domain: Implement EventCreateHandler with validation rules
-  - Validation rules (domain): type required (non-empty, <= 50 chars); userId required (non-empty); occurredAt required (UTC, not in future); metadata optional (<= 10 KB JSON)
-  - Repository: Add IEventRepository + implementation using NuGet package [NuGetPackageId]
-  - Database: Create Events table (Id PK GUID, Type NVARCHAR(50), UserId NVARCHAR(100), OccurredAt DATETIMEOFFSET, Metadata NVARCHAR(MAX), CreatedAt DATETIMEOFFSET)
-  - Wiring: Register handler and repository in DI; configure package initialization if required
-  - Tests: Unit tests for domain validation; integration test for POST endpoint (201 Created) and DB insert
-
-out_of_scope:
-  - UI or portal changes
-  - Reporting/analytics pipelines
-  - Bulk ingestion endpoints
-
-expected_deliverables:
-  - POST /api/v1/events returns 201 Created with Location header and persisted record ID
-  - Events table exists with migration applied and record persisted end-to-end
-  - Domain validation rejects invalid payloads with 400 and problem details
-
-tech_constraints: >
-  ASP.NET Core Web API; layered architecture (API -> Domain -> Repo); use specific NuGet package in repo layer: [NuGetPackageId] ([version]). Provide DI registration and any necessary configuration.
-
-requires_db_changes: true
-requires_api_changes: true
-
-spec_name_override: "add-events-post-endpoint"
-overwrite_existing: false
-[/jira_inputs]
+/create-spec @examples/quickstart/initial-request.md
 ```
+
+The request generates a spec for a simple HTML/CSS/JS badge widget and writes outputs under `.agent-os/specs/YYYY-MM-DD-add-kibo-agent-badge-widget/`.
 
 Step 2 — Verify outputs
 -----------------------
 
-- Folder exists: `@.agent-os/specs/YYYY-MM-DD-add-events-post-endpoint/`
+- Folder exists: `@.agent-os/specs/YYYY-MM-DD-add-kibo-agent-badge-widget/`
 - Files exist:
   - `spec.md`
   - `spec-lite.md`
   - `sub-specs/technical-spec.md`
-  - `sub-specs/database-schema.md` (DB required)
-  - `sub-specs/api-spec.md` (API required)
+  - `sub-specs/database-schema.md` (only when DB required)
+  - `sub-specs/api-spec.md` (only when API required)
   - `tasks.md`
   - `context/` (lite-first artifacts)
     - `facts.md` (may say “Mission (lite): N/A” — that’s OK)
@@ -103,21 +60,15 @@ Step 2 — Verify outputs
 Tip: See the Glossary for the roles of `spec.md` vs `spec-lite.md`.
 Tip: See the Glossary for lite-first artifacts (`facts.md`, `manifest.json`, `meta.json`).
 
-Step 3 — Execute only API and DB tasks
--------------------------------------
-
-Open `[spec_folder_path]/tasks.md` to confirm numbers, then run only those parent tasks:
+Step 3 — Run the demo tasks
+---------------------------
+Claude Code command (after you verify outputs):
 
 ```text
-@~/.agent-os/instructions/core/execute-tasks.md
-
-[execution_context]
-spec_folder_path: @.agent-os/specs/YYYY-MM-DD-add-events-post-endpoint
-specific_tasks:
-  - 1   # API endpoint task (adjust)
-  - 4   # DB table/migration task (adjust)
-[/execution_context]
+/execute-tasks @.agent-os/specs/YYYY-MM-DD-add-kibo-agent-badge-widget/tasks.md
 ```
+
+By default this runs the next uncompleted parent task. To target specific tasks, open `[spec_folder_path]/tasks.md` first, note the parent task numbers, and add a `specific_tasks` list.
 
 Expected summary output
 -----------------------
@@ -129,19 +80,23 @@ Example (truncated):
 ```json
 {
   "run": {
-    "specFolderPath": "@.agent-os/specs/2025-08-14-add-events-post-endpoint",
-    "selectedParents": [1, 4],
+  "specFolderPath": "@.agent-os/specs/2025-08-14-add-kibo-agent-badge-widget",
+  "selectedParents": [1],
     "status": "success"
   },
   "tasks": [
-    { "id": "1", "title": "API: POST /api/v1/events", "status": "done" },
-    { "id": "4", "title": "DB: Create Events table migration", "status": "done" }
+  { "id": "1", "title": "Frontend: Render Spec Agent Kibo badge widget", "status": "done" }
   ]
 }
 ```
 
-Step 4 — Validate (optional but recommended)
--------------------------------------------
+Step 4 — View the demo site
+---------------------------
+
+Open `examples/quickstart/site/index.html` in your browser. After tasks complete, refresh the page to see the Spec Agent Kibo badge rendered inside `#kibo-agent-badge-container`.
+
+Step 5 — Validate (optional but recommended)
+--------------------------------------------
 
 - Spec validator
 
@@ -149,7 +104,7 @@ Step 4 — Validate (optional but recommended)
 @~/.agent-os/instructions/core/spec-validator.md
 
 [spec_validation]
-SPEC_PATH: @.agent-os/specs/YYYY-MM-DD-add-events-post-endpoint/spec.md
+SPEC_PATH: @.agent-os/specs/YYYY-MM-DD-add-kibo-agent-badge-widget/spec.md
 [/spec_validation]
 ```
 
@@ -159,7 +114,7 @@ SPEC_PATH: @.agent-os/specs/YYYY-MM-DD-add-events-post-endpoint/spec.md
 @~/.agent-os/instructions/core/tasks-validator.md
 
 [tasks_validation]
-TASKS_PATH: @.agent-os/specs/YYYY-MM-DD-add-events-post-endpoint/tasks.md
+TASKS_PATH: @.agent-os/specs/YYYY-MM-DD-add-kibo-agent-badge-widget/tasks.md
 [/tasks_validation]
 ```
 
@@ -173,6 +128,8 @@ Next steps
 - Configuration: [configuration.md](./configuration.md)
 - Installation: [installation.md](./installation.md)
 - After running execute-tasks, check `context/tasks-summary.json` for a compact run summary.
+
+Using Jira? See: [Jira Extension Guide](./jira-extension.md)
 
 External resources
 ------------------

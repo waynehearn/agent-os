@@ -169,6 +169,7 @@ To enable Jira-driven specs, configure a Atlassian MCP in your editor:
 References:
 
 - Configuration guide: [configuration.md](./configuration.md)
+- Jira Extension Guide: [jira-extension.md](./jira-extension.md)
 
 Step 4 — Verify installation
 ----------------------------
