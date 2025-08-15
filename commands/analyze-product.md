@@ -13,6 +13,6 @@ Optional inputs (provide inline when invoking):
 
 [analyze_inputs]
 context_notes: >
-	[Optional: key notes to guide analysis]
+  [Optional: key notes to guide analysis]
 [/analyze_inputs]
 ```

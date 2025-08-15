@@ -12,14 +12,10 @@ Spec Agent Kibo is your system for spec‑driven agentic development. It gives A
 Start here (10–15 minutes)
 --------------------------
 
-1. Installation
-	- [installation.md](./installation.md)
-2. Quickstart
-	- [quickstart.md](./quickstart.md)
-3. Create Spec (by example)
-	- [create-spec-usage.md](./create-spec-usage.md) → Use the Jira-driven Web API example block
-4. Validate & test
-	- [smoke-tests.md](./smoke-tests.md)
+1. [installation.md](./installation.md)
+2. [quickstart.md](./quickstart.md)
+3. [create-spec-usage.md](./create-spec-usage.md) → Use the Jira-driven Web API example block
+4. [smoke-tests.md](./smoke-tests.md)
 
 Navigation
 ----------
@@ -50,4 +46,4 @@ Tips
 External resources
 ------------------
 
-- Agent OS website: [buildermethods.com/agent-os](https://buildermethods.com/agent-os)
+- Forked from Agent OS website: [buildermethods.com/agent-os](https://buildermethods.com/agent-os)

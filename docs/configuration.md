@@ -20,9 +20,9 @@ Path aliases
 
 The docs and examples use logical, normalized paths resolved by the flow:
 
-- `@~/.agent-os/instructions/` – Your local Spec Agent Kibo instruction set
-- `@.agent-os/standards/` – Project standards (style, tech stack, best practices)
-- `@.agent-os/specs/YYYY-MM-DD-<spec-name>/` – Generated spec folder
+- `@~/.agent-os/instructions/` – Spec Agent Kibo instruction set (Home folder)
+- `@.agent-os/standards/` – Project standards: style, tech stack, best practices (Project folder)
+- `@.agent-os/specs/YYYY-MM-DD-<spec-name>/` – Generated spec folder (Project folder)
 
 Tip: Use the `@` prefix exactly as shown in examples; the system resolves these aliases consistently across OS/shells.
 
@@ -79,6 +79,22 @@ Editor/tooling assumptions
 - Works with Claude Code, Cursor, or similar AI-enabled editors
 - Examples are instruction references, not shell commands; they’re editor-agnostic
 - Optional completion chime may not work in all shells; completion banners always print
+
+Shell compatibility
+-------------------
+
+- Scripts are portable Bash (POSIX-friendly). Do not run them in PowerShell or cmd.exe.
+- On Windows, use Git Bash or WSL Bash. If needed, prefix with `bash` (e.g., `bash ./tools/verify-install.sh`).
+
+Configuration verification
+--------------------------
+
+Use the verification tools to sanity‑check your setup and paths:
+
+- Installation and environment (run in Bash): `tools/verify-install.sh`
+- jq presence and optional spec manifest check (run in Bash): `tools/verify-jq.sh`
+
+Details and expected output: see Installation → [Verify installation](./installation.md).
 
 Integration tips (project‑specific)
 -----------------------------------
