@@ -46,6 +46,44 @@ use_jira_mcp: true
 [/jira_inputs]
 ```
 
+Empty template: all keys
+------------------------
+
+Copy/paste this into your Jira ticket and fill in as needed.
+
+```text
+@~/.agent-os/instructions/core/create-spec.md
+
+[jira_inputs]
+# Jira source
+jira_issue_key: ""               # e.g., ABC-1234 (or prefix with jira:)
+use_jira_mcp: true               # use Atlassian MCP to fetch and map fields
+
+# Post spec back to Jira (optional)
+post_spec_to_jira: false         # set true to comment spec.md to the issue
+jira_comment_mode: summary        # summary | diff | full
+
+# Overrides (use if Jira is missing details)
+main_idea: ""
+initial_user_stories: []
+in_scope: []
+out_of_scope: []
+expected_deliverables: []
+tech_constraints: ""
+
+# Conditional sub-spec flags
+requires_db_changes: false
+requires_api_changes: false
+
+# Determinism / control
+spec_name_override: ""           # optional explicit spec name (kebab-case recommended)
+overwrite_existing: false        # set true to overwrite any existing files
+
+# Debugging (optional)
+debug_extensions: false          # prints/saves an Extensions Discovery Report
+[/jira_inputs]
+```
+
 Concrete example: ASP.NET Core Web API new endpoint
 ---------------------------------------------------
 
@@ -134,9 +172,4 @@ Notes
 - If Jira lacks good fields, supply overrides in the same block.
 - For non-Jira quickstarts, use the manual `[spec_inputs]` path instead. See Quickstart.
 
-Tip: Variable names
--------------------
 
-- Short-form keys (no `ext_`): `jira_issue_key`, `use_jira_mcp`, `post_spec_to_jira`, `jira_comment_mode`
-- Verbose keys (with `ext_`): `ext_jira_issue_key`, `ext_use_jira_mcp`, `ext_post_spec_to_jira`, `ext_jira_comment_mode`
-- You can mix styles, but prefer one style per block for readability. Short-form is recommended.
