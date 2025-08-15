@@ -288,6 +288,19 @@ spec_folder_path: @.agent-os/specs/YYYY-MM-DD-spec-name
 [/execution_context]
 ```
 
+Debugging execution (optional): add these flags to your execution block to trace subagent activity to NDJSON logs under `@[spec_folder_path]/debug/exec-trace/`:
+
+```text
+@~/.agent-os/instructions/core/execute-tasks.md
+
+[execution_context]
+spec_folder_path: @.agent-os/specs/YYYY-MM-DD-spec-name
+debug_subagents: true
+debug_trace_redact_secrets: true
+debug_trace_include_bodies: false
+[/execution_context]
+```
+
 See also
 --------
 

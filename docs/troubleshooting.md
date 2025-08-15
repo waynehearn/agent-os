@@ -54,6 +54,18 @@ Execution
 - Only run a subtask and stop
   - Use `execution_notes` to scope to a single subtask and stop after its tests
 
+Subagent debug tracing (optional)
+---------------------------------
+
+- To trace subagent calls during execution, set `debug_subagents: true` in your execute‑tasks or execute‑task input block.
+- Logs are written as NDJSON to:
+  - Parent session: `@[spec_folder_path]/debug/exec-trace/session.log`
+  - Per parent task: `@[spec_folder_path]/debug/exec-trace/task-[PARENT_TASK_NUMBER].log`
+- Controls:
+  - `debug_trace_redact_secrets: true` (default) to mask tokens/API keys
+  - `debug_trace_include_bodies: false` (default) to avoid large payloads
+  - Helper (bash): `tools/trace-tail.sh @.agent-os/specs/YYYY-MM-DD-name/debug/exec-trace --follow` (pretty output if `jq` is installed; otherwise raw lines)
+
 Idempotency & overwrites
 ------------------------
 

@@ -24,9 +24,33 @@ Note: After execution, a compact run summary is written to [spec_folder_path]/co
   <spec_name>[SPEC_NAME]</spec_name>
   <spec_folder>[SPEC_FOLDER]</spec_folder>
   <spec_folder_path>[spec_folder_path]</spec_folder_path>
+  <debug_subagents>false</debug_subagents>
+  <debug_trace_redact_secrets>true</debug_trace_redact_secrets>
+  <debug_trace_include_bodies>false</debug_trace_include_bodies>
+  <debug_trace_dir>@[spec_folder_path]/debug/exec-trace</debug_trace_dir>
 </variables>
 
 <process_flow>
+
+<step number="0.9" name="subagent_trace_setup">
+
+### Step 0.9: Subagent Trace Setup (debug)
+
+Initialize per-run execution tracing for subagent calls.
+
+<gate>
+  RUN ONLY IF: [debug_subagents] == true
+</gate>
+
+<trace_setup>
+  - CREATE directory if missing: @[debug_trace_dir]
+  - SESSION LOG: @[debug_trace_dir]/session.log (append NDJSON lines)
+  - WRITE an initial line with timestamp, spec_folder_path, selected tasks if known
+  - INCLUDE a header describing redaction mode (debug_trace_redact_secrets) and whether bodies are included (debug_trace_include_bodies)
+  - CAPABILITIES: if runtime exposes capabilities (e.g., mcp:*), include them in the header line
+</trace_setup>
+
+</step>
 
 <step number="1" name="task_assignment">
 
@@ -64,6 +88,27 @@ Use the context-fetcher subagent to gather minimal context for task understandin
   PROCESS: Returned information
   UPDATE: Refresh manifest.json hashes for any files actually read
 </instructions>
+
+<trace>
+  IF [debug_subagents] == true:
+    - BEFORE call: APPEND NDJSON to @[debug_trace_dir]/session.log with {
+        "ts": "[ISO8601]",
+        "step": 2,
+        "subagent": "context-fetcher",
+        "action": "request",
+        "requests": ["mission-lite", "spec-lite", "technical-spec subset"],
+        "includeBodies": [debug_trace_include_bodies]
+      }
+    - AFTER call: APPEND NDJSON with {
+        "ts": "[ISO8601]",
+        "step": 2,
+        "subagent": "context-fetcher",
+        "action": "response",
+        "summary": "loaded: [LIST_DOCS], skipped: [LIST_SKIPPED]",
+        "errors": [LIST_IF_ANY]
+      }
+    - REDACT secrets when [debug_trace_redact_secrets] == true (tokens, passwords, API keys, bearer strings, known env var patterns)
+</trace>
 
 
 <context_gathering>
@@ -124,6 +169,12 @@ Use the git-workflow subagent to manage git branches to ensure proper isolation 
   WAIT: For branch setup completion
 </instructions>
 
+<trace>
+  IF [debug_subagents] == true:
+    - BEFORE call: APPEND NDJSON with {"ts":"[ISO8601]","step":4,"subagent":"git-workflow","action":"request","args":{"specFolder":"[SPEC_FOLDER]"}}
+    - AFTER call: APPEND NDJSON with {"ts":"[ISO8601]","step":4,"subagent":"git-workflow","action":"response","branch":"[BRANCH_NAME]","changes":"[SUMMARY]","errors":[LIST_IF_ANY]}
+</trace>
+
 <branch_naming>
   <source>spec folder name</source>
   <format>exclude date prefix</format>
@@ -153,6 +204,13 @@ Execute all assigned parent tasks and their subtasks using @~/.agent-os/instruct
     UPDATE tasks.md status
   END FOR
 </execution_flow>
+
+<trace>
+  IF [debug_subagents] == true:
+    - APPEND NDJSON at loop start for each parent task with {"ts":"[ISO8601]","step":5,"action":"task-loop-start","parentTask": [NUMBER]}
+    - EXPECT child file logs at: @[debug_trace_dir]/task-[PARENT_TASK_NUMBER].log (emitted by execute-task.md when debug is enabled)
+    - AFTER each task: APPEND NDJSON with {"ts":"[ISO8601]","step":5,"action":"task-loop-end","parentTask":[NUMBER],"status":"completed|blocked","notes":"[IF_BLOCKED]"}
+</trace>
 
 <loop_logic>
   <continue_conditions>
@@ -210,6 +268,12 @@ Use the test-runner subagent to run the entire test suite to ensure no regressio
   PROCESS: Fix any reported failures
   REPEAT: Until all tests pass
 </instructions>
+
+<trace>
+  IF [debug_subagents] == true:
+    - BEFORE call: APPEND NDJSON with {"ts":"[ISO8601]","step":6,"subagent":"test-runner","action":"request","scope":"full-suite"}
+    - AFTER call: APPEND NDJSON with {"ts":"[ISO8601]","step":6,"subagent":"test-runner","action":"response","result":"pass|fail","failures":[{ "test":"...","message":"..." }]} (truncate bodies when [debug_trace_include_bodies] == false)
+</trace>
 
 <test_execution>
   <order>

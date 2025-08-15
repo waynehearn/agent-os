@@ -23,10 +23,33 @@ Execute a specific task along with its sub-tasks systematically following a TDD 
   <spec_name>[SPEC_NAME]</spec_name>
   <spec_folder>[SPEC_FOLDER]</spec_folder>
   <spec_folder_path>[spec_folder_path]</spec_folder_path>
+  <debug_subagents>false</debug_subagents>
+  <debug_trace_redact_secrets>true</debug_trace_redact_secrets>
+  <debug_trace_include_bodies>false</debug_trace_include_bodies>
+  <debug_trace_dir>@[spec_folder_path]/debug/exec-trace</debug_trace_dir>
+  <debug_task_log>@[debug_trace_dir]/task-[PARENT_TASK_NUMBER].log</debug_task_log>
 </variables>
 
 
 <process_flow>
+
+<step number="0.9" name="task_trace_setup">
+
+### Step 0.9: Task Trace Setup (debug)
+
+Initialize per-task debug log if enabled.
+
+<gate>
+  RUN ONLY IF: [debug_subagents] == true
+</gate>
+
+<trace_setup>
+  - CREATE directory if missing: @[debug_trace_dir]
+  - OPEN/CREATE per-task log: @[debug_task_log]
+  - WRITE an initial NDJSON line with {"ts":"[ISO8601]","action":"task-start","parentTask":[PARENT_TASK_NUMBER]}
+</trace_setup>
+
+</step>
 
 <step number="1" name="task_understanding">
 
@@ -114,6 +137,12 @@ Use the context-fetcher subagent to retrieve only the relevant sections from @.a
   APPLY: Relevant patterns to implementation
 </instructions>
 
+<trace>
+  IF [debug_subagents] == true:
+    - BEFORE call: APPEND NDJSON to @[debug_task_log] with {"ts":"[ISO8601]","step":3,"subagent":"context-fetcher","action":"request","doc":"best-practices"}
+    - AFTER call: APPEND NDJSON with {"ts":"[ISO8601]","step":3,"subagent":"context-fetcher","action":"response","sections":"[SUMMARY]","errors":[LIST_IF_ANY]}
+</trace>
+
 </step>
 
 <step number="4" subagent="context-fetcher" name="code_style_review">
@@ -143,6 +172,12 @@ Use the context-fetcher subagent to retrieve only the relevant code style rules 
   APPLY: Relevant formatting and patterns
   DO_NOT_LOAD: Full mission.md, decisions.md
 </instructions>
+
+<trace>
+  IF [debug_subagents] == true:
+    - BEFORE call: APPEND NDJSON to @[debug_task_log] with {"ts":"[ISO8601]","step":4,"subagent":"context-fetcher","action":"request","doc":"code-style","languages":"[LANGUAGES_IN_TASK]"}
+    - AFTER call: APPEND NDJSON with {"ts":"[ISO8601]","step":4,"subagent":"context-fetcher","action":"response","rules":"[SUMMARY]","errors":[LIST_IF_ANY]}
+</trace>
 
 </step>
 
@@ -206,6 +241,13 @@ Execute the parent task and all sub-tasks in order using test-driven development
   UPDATE: Mark each sub-task complete as finished
 </instructions>
 
+<trace>
+  IF [debug_subagents] == true:
+    - APPEND NDJSON to @[debug_task_log] for subtask transitions with {"ts":"[ISO8601]","step":5,"action":"subtask","number":"[SUBTASK_NUMBER]","status":"start|end"}
+    - When running tests or commands, append summary lines (truncate bodies when [debug_trace_include_bodies] == false)
+    - At end of step, append {"ts":"[ISO8601]","step":5,"action":"task-step-complete"}
+</trace>
+
 </step>
 
 <step number="6" subagent="test-runner" name="task_test_verification">
@@ -244,6 +286,12 @@ Use the test-runner subagent to run and verify only the tests specific to this p
   CONFIRM: This feature's tests are complete
 </instructions>
 
+<trace>
+  IF [debug_subagents] == true:
+    - BEFORE call: APPEND NDJSON to @[debug_task_log] with {"ts":"[ISO8601]","step":6,"subagent":"test-runner","action":"request","scope":"task-tests"}
+    - AFTER call: APPEND NDJSON with {"ts":"[ISO8601]","step":6,"subagent":"test-runner","action":"response","result":"pass|fail","failures":[...]} (truncate details when [debug_trace_include_bodies] == false)
+</trace>
+
 </step>
 
 <step number="7" name="task_status_updates">
@@ -279,3 +327,10 @@ Update the tasks.md file immediately after completing each task to track progres
 </step>
 
 </process_flow>
+
+## Debug Log Format (NDJSON)
+
+- Each line is standalone JSON with a timestamp and minimal fields.
+- Secret redaction rules apply when `debug_trace_redact_secrets: true`.
+- Parent run session log: `@[spec_folder_path]/debug/exec-trace/session.log`
+- Per-task log: `@[spec_folder_path]/debug/exec-trace/task-[PARENT_TASK_NUMBER].log`
