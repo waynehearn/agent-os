@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 # Spec Agent Kibo Setup Script (local-only)
 # Copies files from this repository into your home folder. No network calls.
 
@@ -92,7 +90,7 @@ fi
 echo
 echo "✅ Spec Agent Kibo base installation complete!"
 echo
-echo "� Files installed to:"
+echo "📁 Files installed to:"
 echo "   ~/.agent-os/standards/     - Your development standards"
 echo "   ~/.agent-os/instructions/  - Spec Agent Kibo instructions"
 echo
@@ -108,4 +106,4 @@ echo "2. Optional editor integrations (run from this repo root):"
 echo "   - Claude Code: bash ./setup-claude-code.sh"
 echo "   - Cursor:      bash ./setup-cursor.sh (run inside a project repo)"
 echo
-fi
+
