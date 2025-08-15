@@ -14,6 +14,7 @@ Spec Agent Kibo is instruction-driven and editor-agnostic. You primarily need:
 - The instructions folder in your home directory
 - Project standards in your repo
 - (Optional) Atlassian MCP configured in your editor
+- (Optional) Local docs reference in your home directory
 
 Requirements
 ------------
@@ -121,6 +122,83 @@ bash ./setup-claude-code.sh
 ```bash
 bash ./setup-cursor.sh
 ```
+
+Upgrade and change management
+-----------------------------
+
+You can safely upgrade later without losing local edits. All setup scripts support change-only updates, optional dry runs, and automatic backups.
+
+What gets installed/managed:
+
+- Base (home directory)
+	- `~/.agent-os/instructions/` (core + meta)
+	- `~/.agent-os/standards/` (including code-style)
+	- `~/.agent-os/docs/` (local documentation)
+- Claude Code
+	- `~/.claude/commands/*.md`
+	- `~/.claude/agents/*.md`
+- Cursor
+	- `.cursor/rules/*.mdc` (in each project repo)
+
+Upgrade the base installation (instructions, standards, docs)
+
+```bash
+# macOS/Linux (Terminal) or Windows (Git Bash)
+bash ./setup.sh --upgrade
+
+# Preview without writing changes
+bash ./setup.sh --upgrade --dry-run
+
+# Skip backup creation (not recommended)
+bash ./setup.sh --upgrade --no-backup
+```
+
+Notes:
+
+- Only changed files are updated (checksum-based). Unchanged files are skipped.
+- Changed files are backed up to `~/.agent-os/.backup/<timestamp>/` by default.
+- If `jq` is on PATH, a simple `~/.agent-os/manifest.json` is generated with file hashes.
+
+Upgrade Claude Code commands and agents
+
+```bash
+# macOS/Linux or Windows (Git Bash)
+bash ./setup-claude-code.sh --upgrade
+
+# Dry run
+bash ./setup-claude-code.sh --upgrade --dry-run
+
+# Skip backups
+bash ./setup-claude-code.sh --upgrade --no-backup
+```
+
+Notes:
+
+- Backups are written to `~/.claude/.backup/<timestamp>/`.
+- Only changed files are updated.
+
+Regenerate Cursor rules (.cursor/rules)
+
+```bash
+# Run inside your project repository
+bash ./setup-cursor.sh
+
+# Dry run
+bash ./setup-cursor.sh --dry-run
+
+# Skip backups
+bash ./setup-cursor.sh --no-backup
+```
+
+Notes:
+
+- Existing `.mdc` files are updated only if the generated content changed.
+- Backups are written to `.cursor/.backup/<timestamp>/` in the project.
+
+Windows note
+------------
+
+These scripts are Bash-based. On Windows, use Git Bash or WSL. If your default VS Code terminal opens PowerShell, start a Git Bash terminal to run the commands above.
 
 Manual alternative — copy or symlink
 ------------------------------------
