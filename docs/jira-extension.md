@@ -143,6 +143,71 @@ initial_user_stories:
       Validate type, userId, and occurredAt; reject future timestamps.
 ```
 
+Lists vs multi-line strings (in_scope/out_of_scope)
+--------------------------------------------------
+
+Why brackets? `in_scope` and `out_of_scope` are lists (arrays). The `[]` you see is YAML flow style for arrays. You can also write them in block style with dashes (`-`).
+
+How they differ from other multi-line properties: fields like `main_idea` or `tech_constraints` are single strings (scalars). They can span multiple lines using YAML block scalars (`>` folded or `|` literal), but they remain one value, not a list of values.
+
+Use lists for:
+
+- `in_scope` (1–5 items)
+- `out_of_scope` (0+ items)
+- `initial_user_stories` (1–3)
+- `expected_deliverables` (1–3)
+
+Use strings (possibly multi-line) for:
+
+- `main_idea`
+- `tech_constraints`
+
+Examples
+
+- Empty vs filled lists (flow style):
+
+```text
+in_scope: []
+in_scope: ["API: Add endpoint", "DB: Create table"]
+```
+
+- Preferred, readable block style lists:
+
+```text
+in_scope:
+  - API: Add POST /api/v1/events
+  - Domain: Implement EventCreateHandler
+  - Tests: Unit tests for validation
+```
+
+- Multi-line list items (use | or > inside each item):
+
+```text
+in_scope:
+  - |
+    API: Add POST /api/v1/events
+    - Validate payload
+    - Return 201 with Location header
+  - >
+    Domain: Implement EventCreateHandler; enforce rules and call repository.
+```
+
+- Structured items (objects) for complex lists (e.g., user stories):
+
+```text
+initial_user_stories:
+  - title: Create Event endpoint
+    story: As an integrator, I want to POST an Event so it’s validated and stored.
+    details: >
+      Validate type, userId, and occurredAt; reject future timestamps.
+```
+
+Common pitfalls
+
+- Don’t set `in_scope` or `out_of_scope` to a single scalar with `>` or `|`; they must be lists. Use `>` or `|` inside each list item if needed.
+- No trailing commas in YAML arrays. Indent with spaces (not tabs).
+- Quote list items that contain colons or `#`, or use `|`/`>` for those items to avoid parsing issues.
+
 LLM generation guidance (recommended)
 -------------------------------------
 
@@ -206,6 +271,11 @@ Rules:
 - Do not add any commentary before or after the code block.
 - Use only these keys: jira_issue_key, use_jira_mcp, post_spec_to_jira, jira_comment_mode, main_idea, initial_user_stories, in_scope, out_of_scope, expected_deliverables, tech_constraints, requires_db_changes, requires_api_changes, spec_name_override, overwrite_existing, debug_extensions.
 - If not using Jira mapping, include main_idea (1–2 sentences), 1–3 initial_user_stories, 1–5 in_scope, 1–3 expected_deliverables.
+ - Required list types: in_scope, out_of_scope, initial_user_stories, expected_deliverables MUST be YAML lists (arrays). Prefer block style with dash items; do NOT emit a single scalar string for these keys.
+ - Multi-line in lists: if a list item needs multiple lines, use > or | inside that list item (not on the key itself). Indent content by two spaces.
+ - Quoting: quote any single-line list item that contains : or #, or use a block scalar (|/>) within that item to avoid YAML parsing issues.
+ - Characters: use plain ASCII quotes ("), hyphen-minus (-); avoid smart quotes and en/em dashes.
+ - Formatting: output exactly one fenced code block labeled text; do not include backticks inside the content of the block; use spaces (no tabs).
 ```
 
 Concrete example: ASP.NET Core Web API new endpoint
@@ -295,3 +365,4 @@ Notes
 - Keys accept formats like `ABC-1234` or `jira:ABC-1234` (prefix is stripped).
 - If Jira lacks good fields, supply overrides in the same block.
 - For non-Jira quickstarts, use the manual `[spec_inputs]` path instead. See Quickstart.
+
