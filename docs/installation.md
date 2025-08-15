@@ -260,8 +260,46 @@ Run a quick smoke test to confirm paths and validators work:
 Uninstall / cleanup
 -------------------
 
-- Remove `~/.agent-os/instructions/` or the symlink if you used one
-- Remove `@.agent-os/specs/` folders if you want to clear generated specs
+- Base uninstall (home installation)
+
+```bash
+# Remove instructions, standards, docs (with backups)
+bash ./uninstall.sh
+
+# Full removal (including ~/.agent-os) and purge backups
+bash ./uninstall.sh --all --purge-backups
+
+# Dry run (no changes)
+bash ./uninstall.sh --dry-run
+
+# Scoped removal
+bash ./uninstall.sh --only-instructions
+bash ./uninstall.sh --only-standards
+bash ./uninstall.sh --only-docs
+```
+
+- Claude Code uninstall
+
+```bash
+bash ./uninstall-claude-code.sh           # remove commands + agents
+bash ./uninstall-claude-code.sh --dry-run
+bash ./uninstall-claude-code.sh --only-commands
+bash ./uninstall-claude-code.sh --only-agents
+```
+
+- Cursor uninstall (run in a project repo)
+
+```bash
+bash ./uninstall-cursor.sh                # remove .cursor/rules
+bash ./uninstall-cursor.sh --dry-run
+bash ./uninstall-cursor.sh --all          # remove entire .cursor
+```
+
+- Clean generated specs (optional)
+
+```bash
+rm -rf @.agent-os/specs
+```
 
 Next steps
 ----------
