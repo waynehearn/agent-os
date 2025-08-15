@@ -110,6 +110,18 @@ overwrite_existing: false
 [/jira_inputs]
 ```
 
+Enable discovery debug output (optional): add `debug_extensions: true` anywhere in the same input block to print and save the Extensions Discovery Report.
+
+```text
+@~/.agent-os/instructions/core/create-spec.md
+
+[jira_inputs]
+ext_jira_issue_key: ABC-1234
+ext_use_jira_mcp: true
+debug_extensions: true
+[/jira_inputs]
+```
+
 What happens:
 
 - The flow fetches Jira fields (summary, description, status, labels/components, acceptance criteria, etc.)
@@ -228,6 +240,8 @@ spec_name_override: ""
 overwrite_existing: false
 [/spec_inputs]
 ```
+
+Discovery debug (optional): you can also add `debug_extensions: true` in `[spec_inputs]` to see which extensions would load for a manual run.
 
 Determinism & Validation
 ------------------------

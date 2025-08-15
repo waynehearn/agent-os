@@ -67,3 +67,13 @@ vendor: acme
 - Step numbers land where you expect (1.1 after core Step 1, 6.2 after Step 6/6.1)
 - Your `ext_*` flags default to false; enabling them triggers your steps
 - Core outputs (spec.md, tasks.md) still satisfy structure and count constraints
+
+### Debugging extension discovery
+
+- Set `debug_extensions: true` in your create‑spec input block to print an "Extensions Discovery Report" before Step 1.
+- The report shows:
+  - Detected capabilities (when your runtime exposes them)
+  - Each candidate file, whether it LOADED or was SKIPPED, and why (e.g., `requires mcp:atlassian not available`).
+  - Totals loaded vs skipped.
+  - A copy is saved to `@[spec_folder_path]/debug/extensions-discovery.txt` for later review.
+  - A "Merged step order (preview)" showing the final step sequence (core and extensions) with source tags like `[core]` or `[ext:atlassian]`.

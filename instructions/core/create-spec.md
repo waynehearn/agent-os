@@ -25,6 +25,7 @@ Generate detailed feature specifications aligned with product roadmap and missio
   <spec_folder_path>@.agent-os/specs/[CURRENT_DATE]-[SPEC_NAME]</spec_folder_path>
   <requires_db_changes>false</requires_db_changes>
   <requires_api_changes>false</requires_api_changes>
+  <debug_extensions>false</debug_extensions>
 </variables>
 
 <extensions_discovery>
@@ -53,6 +54,14 @@ Generate detailed feature specifications aligned with product roadmap and missio
       - If `requires` includes a capability that is not available in the runtime (e.g., `mcp:atlassian` and no Atlassian MCP), SKIP the file without loading its body.
     - From the remaining files, COLLECT their <step> blocks that declare `targets: ["create-spec"]`.
     - MERGE the collected steps into the ordered flow by step number.
+
+  DEBUGGING (optional):
+    - Toggle `[debug_extensions]` to `true` to emit an "Extensions Discovery Report" before Step 1.
+    - The report MUST list, for each candidate file:
+      - path (logical @-path), vendor (from front matter if present), targets, requires
+      - decision: LOADED or SKIPPED
+      - reason when SKIPPED: missing capability (e.g., requires mcp:... not available), targets mismatch, parse error, or other
+    - Also include a one-line summary of detected capabilities (if your runtime exposes them), e.g., `capabilities: [mcp:atlassian, ...]`.
 </extensions_discovery>
 
 <determinism_rules>
@@ -69,6 +78,36 @@ Generate detailed feature specifications aligned with product roadmap and missio
 </determinism_rules>
 
 <process_flow>
+
+<step number="0.9" subagent="context-fetcher" name="extensions_discovery_report">
+
+### Step 0.9: Extensions Discovery Report (debug)
+
+Emit a concise report of extension discovery outcomes before the main flow begins.
+
+<gate>
+  RUN ONLY IF: [debug_extensions] == true
+</gate>
+
+<report_format>
+  - Print a header: "Extensions Discovery Report"
+  - If available, list `capabilities: [CAP_1, CAP_2, ...]`
+  - For each candidate file discovered in the lookup paths, print one line with:
+    - status: LOADED | SKIPPED
+    - reason (if SKIPPED)
+    - path (logical), vendor, targets, requires
+  - End with a summary count: `loaded: N, skipped: M`
+  - Then print a "Merged step order (preview)" that lists the final ordered steps by number and name, including extension steps. On collisions, show core step first, then extension step(s).
+  - Include a source tag for each item: [core] for core steps, [ext:<vendor-or-file>] for extension steps (use `vendor` from front matter when available, otherwise the file basename).
+</report_format>
+
+<persist_report>
+  - Create directory if missing: @[spec_folder_path]/debug/
+  - Save the exact printed report to: @[spec_folder_path]/debug/extensions-discovery.txt
+  - Overwrite on subsequent runs to keep the latest report
+</persist_report>
+
+</step>
 
 <step number="1" subagent="context-fetcher" name="spec_initiation">
 

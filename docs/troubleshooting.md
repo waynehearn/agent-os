@@ -106,3 +106,10 @@ Getting help
 - Glossary: [glossary.md](./glossary.md)
 - Configuration: [configuration.md](./configuration.md)
 - Installation: [installation.md](./installation.md)
+
+Diagnostics
+-----------
+
+- Not sure if your extension loaded? Set `debug_extensions: true` when running create‑spec to print an Extensions Discovery Report (shows LOADED/SKIPPED and reasons such as missing `mcp:*` capabilities). A copy is saved to `@[spec_folder_path]/debug/extensions-discovery.txt`.
+  - The report includes a "Merged step order (preview)" so you can confirm your step numbers land where expected.
+  - Each step is tagged with its source: `[core]` or `[ext:<vendor>]`.
