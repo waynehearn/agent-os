@@ -84,6 +84,130 @@ debug_extensions: false          # prints/saves an Extensions Discovery Report
 [/jira_inputs]
 ```
 
+Text and formatting inside [jira_inputs]
+----------------------------------------
+
+You can use multi-line text, Markdown formatting, and special characters in values. Treat the block like YAML:
+
+- Multi-line text: use YAML block scalars
+  - ">" (folded) turns newlines into spaces (good for paragraphs)
+  - "|" (literal) preserves newlines (good for Markdown/code/JSON)
+- Special characters: allowed; for single-line values containing characters like :, #, [, ], {, }, or leading/trailing spaces, wrap the value in quotes, or prefer a block scalar.
+- Lists: use [] for inline arrays or dash-lists for readability; complex items can be objects.
+- Indentation: indent block-scalar content by at least two spaces; use spaces, not tabs.
+
+Examples
+--------
+
+- Folded paragraph (newlines folded to spaces):
+
+```text
+main_idea: >
+  Add a POST endpoint to accept JSON and persist via domain handler.
+  Validate inputs and return 201 with Location header.
+```
+
+- Literal block with Markdown and special characters preserved:
+
+```text
+tech_constraints: |
+  - ASP.NET Core 9
+  - NuGet: "Contoso.Events" >= 1.2.3
+  - Env: FOO_BAR="baz:qux"  # inside a literal block this is safe
+```
+
+- JSON payload inside a literal block:
+
+```text
+details: |
+  Example payload:
+  {
+    "type": "purchase",
+    "userId": "u-123",
+    "occurredAt": "2025-08-14T12:00:00Z",
+    "metadata": {"sku": "ABC-123"}
+  }
+```
+
+- Arrays (strings and structured items):
+
+```text
+expected_deliverables:
+  - "**API** returns 201 Created with Location header"
+  - "DB row persisted; query by ID returns the record"
+
+initial_user_stories:
+  - title: Create Event endpoint
+    story: As an integrator, I want to POST an Event so it’s validated and stored.
+    details: >
+      Validate type, userId, and occurredAt; reject future timestamps.
+```
+
+LLM generation guidance (recommended)
+-------------------------------------
+
+If an LLM will generate your `[jira_inputs]` block, use these guardrails to ensure it parses cleanly and passes validation:
+
+Do:
+
+- Output a single fenced code block labeled `text` that contains only the header line and the `[jira_inputs]...[/jira_inputs]` block.
+- Use plain ASCII quotes (") and hyphens (-); avoid “smart quotes”.
+- Use `>` or `|` for multi-line values; keep indentation with 2 spaces; no tabs.
+- Keep booleans lowercase: `true` / `false`.
+- Use 1–3 items for `initial_user_stories` and `expected_deliverables`, and 1–5 for `in_scope` when overriding.
+
+Don’t:
+
+- Don’t add explanations before/after the block.
+- Don’t use trailing commas (YAML doesn’t allow them) or tabs.
+- Don’t invent keys. Allowed keys are exactly: `jira_issue_key`, `use_jira_mcp`, `post_spec_to_jira`, `jira_comment_mode`, `main_idea`, `initial_user_stories`, `in_scope`, `out_of_scope`, `expected_deliverables`, `tech_constraints`, `requires_db_changes`, `requires_api_changes`, `spec_name_override`, `overwrite_existing`, `debug_extensions`.
+
+Validation checklist (overrides path):
+
+- If `use_jira_mcp: false` or Jira lacks fields, provide: `main_idea` (1–2 sentences), `initial_user_stories` (1–3), `in_scope` (1–5), `expected_deliverables` (1–3). `out_of_scope` and `tech_constraints` are optional.
+- Use `requires_db_changes`/`requires_api_changes` to trigger conditional sub-specs when needed.
+
+Commentless, machine-safe template (good for LLMs)
+--------------------------------------------------
+
+```text
+@~/.agent-os/instructions/core/create-spec.md
+
+[jira_inputs]
+jira_issue_key: ""
+use_jira_mcp: true
+post_spec_to_jira: false
+jira_comment_mode: summary
+main_idea: ""
+initial_user_stories: []
+in_scope: []
+out_of_scope: []
+expected_deliverables: []
+tech_constraints: ""
+requires_db_changes: false
+requires_api_changes: false
+spec_name_override: ""
+overwrite_existing: false
+debug_extensions: false
+[/jira_inputs]
+```
+
+Prompt to produce a valid block (copy to your LLM)
+--------------------------------------------------
+
+```text
+Produce ONLY a fenced code block labeled text that contains this exact header line and a valid [jira_inputs] block.
+Header line (first line):
+@~/.agent-os/instructions/core/create-spec.md
+
+Rules:
+- Use YAML-compatible key:value pairs; booleans lowercase; quotes must be ASCII (").
+- For any multi-line values, use YAML block scalars: > for folded, | for literal.
+- Do not add any commentary before or after the code block.
+- Use only these keys: jira_issue_key, use_jira_mcp, post_spec_to_jira, jira_comment_mode, main_idea, initial_user_stories, in_scope, out_of_scope, expected_deliverables, tech_constraints, requires_db_changes, requires_api_changes, spec_name_override, overwrite_existing, debug_extensions.
+- If not using Jira mapping, include main_idea (1–2 sentences), 1–3 initial_user_stories, 1–5 in_scope, 1–3 expected_deliverables.
+```
+
 Concrete example: ASP.NET Core Web API new endpoint
 ---------------------------------------------------
 
@@ -171,5 +295,3 @@ Notes
 - Keys accept formats like `ABC-1234` or `jira:ABC-1234` (prefix is stripped).
 - If Jira lacks good fields, supply overrides in the same block.
 - For non-Jira quickstarts, use the manual `[spec_inputs]` path instead. See Quickstart.
-
-
