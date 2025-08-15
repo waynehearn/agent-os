@@ -25,6 +25,11 @@ Prerequisites
 - Spec Agent Kibo instructions at `@~/.agent-os/instructions/`
 - Optional: Atlassian MCP configured (for Jira-driven flow)
 
+Local demo (ready-to-run)
+-------------------------
+
+For a minimal, preconfigured example, open `examples/quickstart/` in Claude Code and run `initial-request.md` to execute the create-spec flow. This folder includes local project standards under `@.agent-os/standards/` so it works out of the box after you install the instructions.
+
 Step 1 — Create spec from Jira example
 --------------------------------------
 

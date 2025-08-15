@@ -1,4 +1,4 @@
-# Spec Agent Kibo
+#
 
 ![Spec Agent Kibo banner](assets/specl-agent-kibo-banner.svg)
 
