@@ -95,6 +95,8 @@ Use this when you have a Jira issue key and a Atlassian MCP service configured.
 jira_issue_key: ABC-1234
 use_jira_mcp: true
 # Optional overrides if Jira fields are missing
+post_spec_to_jira: true
+jira_comment_mode: summary
 main_idea: ""
 initial_user_stories: []
 in_scope: []
@@ -114,6 +116,10 @@ What happens:
 - Maps them to the required inputs and prompts for any missing items
 - Asks for confirmation before proceeding
 - Proceeds even if no `mission.md` or `mission-lite.md` exists (facts.md will note N/A)
+- After `spec.md` is created, the flow posts the spec content back to the Jira issue as a comment (conditional on MCP and valid key)
+  - If the spec is too large for Jira, it posts only Overview and Expected Deliverable sections with a repo path reference
+  - A footer includes a short hash to avoid duplicate re-posts on re-runs
+  - If `jira_comment_mode: summary`, subsequent runs post a concise summary of changes (section deltas, counts, top highlights). If set to `diff`, they post a unified diff instead. Otherwise, they post the full content or an excerpt.
 
 Concrete Jira example: ASP.NET Core Web API new endpoint (with DB table and repo package)
 ----------------------------------------------------------------------------------------
@@ -166,6 +172,22 @@ requires_api_changes: true
 spec_name_override: "add-events-post-endpoint"
 overwrite_existing: false
 [/jira_inputs]
+```
+
+Jira comment result (example):
+
+```text
+Comment on API-482
+
+Spec Requirements Document for add-events-post-endpoint
+
+Repository path: @.agent-os/specs/YYYY-MM-DD-add-events-post-endpoint/spec.md
+
+---
+[Spec content or excerpt]
+
+---
+Synced by Spec Agent Kibo • key: YYYY-MM-DD-add-events-post-endpoint • sha256: <hash>
 ```
 
 Manual input (structured)

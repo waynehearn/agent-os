@@ -25,6 +25,9 @@ Generate detailed feature specifications aligned with product roadmap and missio
   <spec_folder_path>@.agent-os/specs/[CURRENT_DATE]-[SPEC_NAME]</spec_folder_path>
   <requires_db_changes>false</requires_db_changes>
   <requires_api_changes>false</requires_api_changes>
+  <jira_issue_key>[JIRA_ISSUE_KEY_OR_EMPTY]</jira_issue_key>
+  <post_spec_to_jira>true</post_spec_to_jira>
+  <jira_comment_mode>summary</jira_comment_mode> <!-- values: full | diff | summary -->
 </variables>
 
 <determinism_rules>
@@ -121,6 +124,88 @@ Use the context-fetcher subagent to identify spec initiation method by either fi
   <accept>any format, length, or detail level</accept>
   <proceed>to context gathering</proceed>
 </specific_spec_idea_flow>
+
+</step>
+
+<step number="6.2" subagent="context-fetcher" name="jira_comment_with_spec">
+
+### Step 6.2: Post spec.md to Jira (Conditional)
+
+If the spec creation was initiated from a Jira ticket and Atlassian MCP is available, synchronize the contents of spec.md to the Jira issue for visibility.
+
+<condition>
+  EXECUTE ONLY IF: [post_spec_to_jira] == true AND [jira_issue_key] is a non-empty valid key (e.g., ABC-123) AND jira_mcp_available == true
+  OTHERWISE: SKIP this entire step
+  SAFETY: Do not include secrets or local file paths beyond the relative spec reference
+  MODE: When [jira_comment_mode] == "summary", post a concise human-readable summary of changes; when "diff", post a unified diff; when "full", post the full content (subject to size limits)
+  SIZE LIMIT: If output exceeds Jira comment size limits, post the Overview and Expected Deliverable sections only, with a repo path reference
+  FORMAT: Use a code fence for markdown to preserve formatting inside Jira
+  RE-RUNS: If a prior identical comment exists (hash match), skip re-posting
+  AUDIT: Append a short footer with spec key and hash for deduplication
+</condition>
+
+<inputs>
+  - jira_issue_key: [jira_issue_key]
+  - spec_path: @[spec_folder_path]/spec.md
+</inputs>
+
+<actions>
+  1. READ @[spec_folder_path]/spec.md
+  2. COMPUTE sha256 of the file content as [spec_sha]
+  3. SCAN recent comments on Jira issue [jira_issue_key] for a footer line: "sha256: <hash>"
+     - IF a comment with matching [spec_sha] exists: SKIP posting (already synchronized)
+  - ELSE attempt to find the most recent footer with prefix: "Synced by Spec Agent Kibo • key: [spec_key] • sha256: <prev_sha>"
+  4. IF [jira_comment_mode] == "summary" AND a previous synced version exists:
+       - EXTRACT previous content block from that comment (between separators)
+       - COMPUTE a change summary:
+         - sections added/removed/renamed
+         - counts deltas (user stories, scope items, deliverables)
+         - up to 5 bullet highlights of notable edits (first changed lines in each section)
+       - POST a Jira comment with content:
+         """
+         Spec update (summary) for [SPEC_NAME]
+
+         Repository path: @[spec_folder_path]/spec.md
+
+         Changes since last sync:
+         - Sections: [SECTION_CHANGES]
+         - Counts: stories [S1->S2], scope [S1->S2], deliverables [D1->D2]
+
+         Highlights:
+         - [BULLET_1]
+         - [BULLET_2]
+         - [BULLET_3]
+         - [BULLET_4]
+         - [BULLET_5]
+
+         ---
+         Synced by Spec Agent Kibo • key: [spec_key] • sha256: [spec_sha]
+         """
+     ELSE IF [jira_comment_mode] == "diff" AND a previous synced version exists:
+       - EXTRACT previous content and COMPUTE a unified diff
+       - IF diff length <= Jira size limits: POST diff as before; ELSE fallback to excerpt
+     ELSE:
+       - IF file length > Jira limit:
+           - EXTRACT only the "## Overview" and "## Expected Deliverable" sections
+           - PREPEND a note: "Full spec is stored in the repository"
+       - POST a Jira comment with content:
+           """
+           Spec Requirements Document for [SPEC_NAME]
+
+           Repository path: @[spec_folder_path]/spec.md
+
+           ---
+           [SPEC_MARKDOWN_CONTENT_OR_EXCERPT]
+
+           ---
+           Synced by Spec Agent Kibo • key: [spec_key] • sha256: [spec_sha]
+           """
+</actions>
+
+<notes>
+  - This step is purely for Jira visibility. It does not change the local spec.
+  - Re-sync is manual: re-run this step explicitly if you want to update the Jira comment after edits.
+</notes>
 
 </step>
 
