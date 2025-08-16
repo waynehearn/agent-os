@@ -28,13 +28,13 @@ vendor: acme
 ---
 
 <variables>
-  <ext_acme_flag>false</ext_acme_flag>
+  <acme_flag>false</acme_flag>
 </variables>
 
 <step number="1.1" subagent="context-fetcher" name="acme_initiation">
 ## Step 1.1 (Extension): ACME initiation (optional)
 <gate>
-  RUN ONLY IF: [ext_acme_flag] == true
+  RUN ONLY IF: [acme_flag] == true
 </gate>
 <actions>
   1. FETCH/derive inputs from your system
@@ -43,7 +43,7 @@ vendor: acme
 </step>
 ```
 
-1) Enable it in your instruction block by setting `ext_acme_flag: true` (or your own variable) and run create‑spec.
+1) Enable it in your instruction block by setting `acme_flag: true` (or your own variable) and run create‑spec.
 
 ### Conventions you need to know
 
@@ -53,7 +53,7 @@ vendor: acme
 - Front matter must include `targets: ["create-spec"]` to be picked up by the create‑spec flow.
 - Optional: add `requires: ["capability"]` to declare dependencies (e.g., `mcp:atlassian`). The system reads only the front matter to evaluate `requires` and skips the file entirely when the capability isn’t available.
 - Steps are merged by numeric step number (use decimals like 1.1, 6.2). If a collision occurs, the core step runs first, then the extension step.
-- Use namespaced variables (e.g., `ext_<vendor>_*`) to avoid collisions.
+- Use clear, short variable names; add a vendor prefix only if you expect collisions (e.g., `acme_flag`).
 - Core determinism/validation rules still apply. Extensions must be optional and safe to skip.
 
 ### Examples
@@ -65,7 +65,7 @@ vendor: acme
 ### Test checklist
 
 - Step numbers land where you expect (1.1 after core Step 1, 6.2 after Step 6/6.1)
-- Your `ext_*` flags default to false; enabling them triggers your steps
+- Your extension flags default to false; enabling them triggers your steps
 - Core outputs (spec.md, tasks.md) still satisfy structure and count constraints
 
 ### Debugging extension discovery

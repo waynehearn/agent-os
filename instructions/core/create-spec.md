@@ -654,7 +654,7 @@ Request user review of spec.md and all sub-specs files, waiting for approval or 
 
 ### Step 12: Create tasks.md
 
-Use the file-creator subagent to await user approval from step 11 and then create file: tasks.md
+Use the file-creator subagent to await user approval from step 11 and then create file: tasks.md. When present, selectively consult sub-specs and meta flags to ensure API/DB requirements inform the task breakdown.
 
 <target>[spec_folder_path]/tasks.md</target>
 
@@ -663,6 +663,25 @@ Use the file-creator subagent to await user approval from step 11 and then creat
     # Spec Tasks
   </header>
 </file_template>
+
+<selective_reads>
+  <when>
+    - IF @[spec_folder_path]/meta.json indicates requires_api_changes == true OR sub-specs/api-spec.md exists
+    - IF @[spec_folder_path]/meta.json indicates requires_db_changes == true OR sub-specs/database-schema.md exists
+  </when>
+  <api>
+    - READ only relevant endpoint sections from @[spec_folder_path]/sub-specs/api-spec.md (method, path, request/response, validation, errors)
+    - DERIVE at least one API parent task when endpoints are present (tests-first, implementation, verify)
+  </api>
+  <db>
+    - READ only relevant entities/tables from @[spec_folder_path]/sub-specs/database-schema.md (tables, columns, constraints, migrations)
+    - DERIVE at least one DB parent task when schema changes are present (migration, apply, verify)
+  </db>
+  <notes>
+    - Keep reads minimal and manifest-aware (use @[spec_folder_path]/context/manifest.json to avoid re-reading unchanged content)
+    - Do not load decisions.md or full mission/roadmap here
+  </notes>
+</selective_reads>
 
 <task_structure>
   <major_tasks>
@@ -697,6 +716,7 @@ Use the file-creator subagent to await user approval from step 11 and then creat
   - Follow TDD approach
   - Group related functionality
   - Build incrementally
+  - Prefer backend implementation flow when applicable (e.g., DB → Repository → Handler → API) respecting any extension-provided hints
 </ordering_principles>
 
 </step>

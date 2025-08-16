@@ -102,7 +102,8 @@ sync_dir_changed_only() {
 }
 
 write_manifest_json() {
-    local root="$1" manifest="$root/manifest.json"
+    local root="$1"
+    local manifest="$root/manifest.json"
     if need_cmd jq; then
         mkdir -p "$root"
         echo '{"files":{},"generatedAt":"'"$TIMESTAMP"'"}' > "$manifest"

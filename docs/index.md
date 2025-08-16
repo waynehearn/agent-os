@@ -15,14 +15,17 @@ Start here (10–15 minutes)
 1. [installation.md](./installation.md)
 2. [quickstart.md](./quickstart.md)
 3. [create-spec-usage.md](./create-spec-usage.md)
-4. [jira-extension.md](./jira-extension.md) (optional)
-5. [task-organization-hints.md](./task-organization-hints.md) (optional)
-6. [smoke-tests.md](./smoke-tests.md)
+4. [create-spec-steps.md](./create-spec-steps.md)
+5. [jira-extension.md](./jira-extension.md) (optional)
+6. [task-organization-hints.md](./task-organization-hints.md) (optional)
+7. [smoke-tests.md](./smoke-tests.md)
 
 Navigation
 ----------
 
 - Usage guide: [create-spec-usage.md](./create-spec-usage.md)
+- Create-spec steps: [create-spec-steps.md](./create-spec-steps.md)
+- Task creation details: [create-spec-tasks.md](./create-spec-tasks.md)
 - Installation: [installation.md](./installation.md)
 - Configuration: [configuration.md](./configuration.md)
 - Extensions Quickstart: [extensions-quickstart.md](./extensions-quickstart.md)

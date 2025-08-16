@@ -27,7 +27,7 @@ For the `create-spec` flow, use:
 - Front matter must include: `targets: ["create-spec"]`
 - Optional: `requires: ["capability", ...]` to declare dependencies (e.g., `mcp:atlassian`). The system reads only front matter to evaluate `requires` and skips the file body when dependencies aren’t available.
 - Allowed content blocks:
-  - `<variables>`: define extension-specific variables (recommend namespacing like `ext_<vendor>_*`)
+  - `<variables>`: define extension-specific variables (use clear, short names; avoid verbose prefixes unless necessary)
   - `<step number="X.Y" subagent="..." name="...">` blocks: add steps into the flow
 
 ## Merge rules
@@ -54,13 +54,13 @@ vendor: acme
 ---
 
 <variables>
-  <ext_acme_flag>false</ext_acme_flag>
+  <acme_flag>false</acme_flag>
 </variables>
 
 <step number="1.1" subagent="context-fetcher" name="acme_initiation">
 ## Step 1.1 (Extension): ACME initiation (optional)
 <gate>
-  RUN ONLY IF: [ext_acme_flag] == true
+  RUN ONLY IF: [acme_flag] == true
 </gate>
 <actions>
   1. FETCH/derive inputs from your system
@@ -71,7 +71,7 @@ vendor: acme
 <step number="6.2" subagent="context-fetcher" name="acme_sync">
 ## Step 6.2 (Extension): ACME sync (optional)
 <condition>
-  EXECUTE ONLY IF: [ext_acme_flag] == true
+  EXECUTE ONLY IF: [acme_flag] == true
 </condition>
 <actions>
   1. READ @[spec_folder_path]/spec.md
@@ -89,7 +89,7 @@ vendor: acme
 
 ## Testing tips
 
-- Start with `ext_*` flags defaulting to `false`; enable them in your instruction block.
+- Start with extension flags defaulting to `false`; enable them in your instruction block.
 - Run a dry pass: confirm your step numbers insert at the right places (1.1 after core Step 1, 6.2 after 6/6.1, etc.).
 - Validate that core file outputs still meet structure and count constraints.
 
