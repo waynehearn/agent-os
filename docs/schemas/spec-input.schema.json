@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/spec-input.schema.json",
+  "title": "Create-Spec Inputs (manual mode)",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "main_idea": { "type": "string", "minLength": 8 },
+    "initial_user_stories": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "properties": {
+          "title": { "type": "string", "minLength": 3 },
+          "story": { "type": "string", "minLength": 10 },
+          "details": { "type": "string" }
+        },
+        "required": ["title", "story"]
+      }
+    },
+    "in_scope": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": { "type": "string", "minLength": 3 }
+    },
+    "out_of_scope": {
+      "type": "array",
+      "maxItems": 5,
+      "items": { "type": "string" }
+    },
+    "expected_deliverables": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": { "type": "string", "minLength": 3 }
+    },
+    "tech_constraints": { "type": "string" },
+    "requires_db_changes": { "type": "boolean" },
+    "requires_api_changes": { "type": "boolean" },
+    "spec_name_override": { "type": "string" },
+    "overwrite_existing": { "type": "boolean" },
+    "mode": { "type": "string", "enum": ["express", "standard", "investigate"] },
+    "non_interactive": { "type": "boolean" },
+    "investigation_type": { "type": "string", "enum": ["bug", "performance", "security", "architecture", "feasibility"] },
+    "symptoms": { "type": "array", "maxItems": 8, "items": { "type": "string" } },
+    "working_hypothesis": { "type": "string" },
+    "affected_systems": { "type": "array", "items": { "type": "string" }, "maxItems": 5 },
+    "generate_tickets": { "type": "boolean" },
+    "ticket_project_key": { "type": "string" },
+    "ticket_priority_default": { "type": "string", "enum": ["High", "Medium", "Low"] },
+    "ticket_labels": { "type": "array", "items": { "type": "string" }, "maxItems": 5 }
+  },
+  "required": [
+    "main_idea",
+    "initial_user_stories",
+    "in_scope",
+    "expected_deliverables"
+  ]
+}

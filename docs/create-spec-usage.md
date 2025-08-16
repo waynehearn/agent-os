@@ -60,6 +60,7 @@ Lite-first context artifacts (new)
 - `context/meta.json`
   - Tiny counts/flags (e.g., section counts) for quick gating.
   - Example:
+Tip: To populate and refresh section-level hashes for targeted reloads, see [section-hashing.md](./section-hashing.md).
     {"spec": {"sections": 5}, "tasks": {"parents": 4}}
 
 All paths are normalized using `[spec_folder_path]` in the instructions.
@@ -176,7 +177,7 @@ Determinism & Validation
 ------------------------
 
 - Name normalization: kebab-case, ≤ 5 words
-- Required sections in `spec.md` in strict order: Overview, User Stories, Spec Scope, Out of Scope, Expected Deliverable
+- Required core sections in `spec.md` in strict order: Overview, User Stories, Scope, Deliverables, Technical Details. API Specification and Database Changes are conditional and appended when applicable.
 - Counts enforced: User Stories 1–3, Spec Scope 1–5, Expected Deliverables 1–3
 - Post-write validation runs and repairs the file if needed
 - `tasks.md` is validated and normalized right after creation
@@ -184,7 +185,7 @@ Determinism & Validation
 Skip-by-hash & selective reads
 ------------------------------
 
-- During execution, the flows consult `context/manifest.json` to avoid re-loading unchanged files.
+- During execution, the flows consult `context/manifest.json` (section-aware) to avoid re-loading unchanged files.
 - They prefer `spec-lite.md`, `context/facts.md`, and task-scoped snippets over full-document loads.
 - Strict do-not-load during execution: `decisions.md` and full `mission.md` (roadmap only when needed).
 
@@ -240,6 +241,8 @@ debug_trace_include_bodies: false
 ## Schemas and Structure
 
 ### Spec Input Fields (Authoritative List)
+
+JSON Schema: [schemas/spec-input.schema.json](./schemas/spec-input.schema.json)
 
 | Field | Type | Required | Constraints | Description |
 |-------|------|----------|-------------|-------------|
@@ -300,6 +303,11 @@ debug_trace_include_bodies: false
 }
 ```
 
+See also:
+
+- Manifest details: [manifest-spec.md](./manifest-spec.md)
+- JSON Schema: [schemas/manifest.schema.json](./schemas/manifest.schema.json)
+
 #### Hashing Rules
 
 - **Algorithm:** SHA256
@@ -350,7 +358,7 @@ Investigation mode supports bug diagnosis, performance analysis, security audits
 ### When to Use Investigation Mode
 
 - **Bug Diagnosis**: Root cause analysis for production issues
-- **Performance Analysis**: Identifying bottlenecks and optimization opportunities  
+- **Performance Analysis**: Identifying bottlenecks and optimization opportunities
 - **Security Audits**: Vulnerability assessment and threat analysis
 - **Architecture Research**: Evaluating approaches for complex changes
 - **Feasibility Studies**: Determining viability of proposed features
@@ -441,7 +449,7 @@ claude create-spec mode=investigate \
 
 # Outputs:
 # - Investigation report with findings
-# - 4 Jira tickets created automatically  
+# - 4 Jira tickets created automatically
 # - 2 create-spec templates generated
 
 # 2. Review tickets in Jira, prioritize work

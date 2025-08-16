@@ -42,7 +42,7 @@ Steps (core)
 
 6 Create spec.md
 
-- Write spec with sections in strict order: Overview, User Stories, Spec Scope, Out of Scope, Expected Deliverable.
+- Write spec with sections in strict order: Overview, User Stories, Scope, Deliverables, Technical Details. API Specification and Database Changes sections are appended if the corresponding flags are set or content exists.
 - Run spec validator; auto-repair if needed.
 
 6.1 Emit Lite Context Artifacts

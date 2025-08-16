@@ -16,7 +16,7 @@ Core objects
   - A normalized path alias used in instructions that points to the spec folder.
 
 - spec.md
-  - The canonical, detailed specification. Must contain sections in this strict order: Overview, User Stories, Spec Scope, Out of Scope, Expected Deliverable.
+  - The canonical, detailed specification. Core sections in strict order: Overview, User Stories, Scope, Deliverables, Technical Details. Conditional sections (appended when applicable): API Specification, Database Changes.
 
 - spec-lite.md
   - A concise summary of the spec for efficient AI context use.
@@ -37,7 +37,7 @@ Lite-first context artifacts
   - A short, human-readable summary of mission/spec facts for fast context. If mission docs are absent, it will include: "Mission (lite): N/A".
 
 - context/manifest.json
-  - Tracks sha256 and lastModified for key files so execution flows can skip re-reading unchanged files.
+  - Tracks sha256 and lastModified for key files and sections so execution flows can skip re-reading unchanged files and load only changed sections.
 
 - context/meta.json
   - Tiny JSON containing counts/flags (e.g., section counts) used for quick checks.

@@ -55,7 +55,7 @@ Step 2 — Verify outputs
     - `facts.md` (may say “Mission (lite): N/A” — that’s OK)
     - `manifest.json` (hashes/mtime for skip-by-hash)
     - `meta.json` (counts/flags for fast checks)
-- `spec.md` sections in strict order: Overview, User Stories, Spec Scope, Out of Scope, Expected Deliverable
+- `spec.md` core sections in strict order: Overview, User Stories, Scope, Deliverables, Technical Details; optional sections appended when applicable: API Specification, Database Changes
 
 Tip: See the Glossary for the roles of `spec.md` vs `spec-lite.md`.
 Tip: See the Glossary for lite-first artifacts (`facts.md`, `manifest.json`, `meta.json`).
@@ -132,9 +132,17 @@ Next steps
 - Glossary: [glossary.md](./glossary.md)
 - Configuration: [configuration.md](./configuration.md)
 - Installation: [installation.md](./installation.md)
+- Architecture & customization: [architecture.md](./architecture.md)
 - After running execute-tasks, check `context/tasks-summary.json` for a compact run summary.
 
 Using Jira? See: [Jira Extension Guide](./jira-extension.md)
+
+Context optimizations (FYI)
+---------------------------
+
+- Lite-first reads (`spec-lite.md`, `context/facts.md`)
+- Section-level manifests for targeted reloads
+- Extension registry caching using front-matter-only reads
 
 External resources
 ------------------

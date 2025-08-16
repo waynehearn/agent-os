@@ -37,12 +37,13 @@ Checklist (update date as appropriate):
     - `facts.md` (Mission (lite) may be N/A when starting from Jira)
     - `manifest.json`
     - `meta.json`
-- `spec.md` sections are in strict order:
+- `spec.md` core sections are in strict order:
   1) Overview
   2) User Stories
-  3) Spec Scope
-  4) Out of Scope
-  5) Expected Deliverable
+  3) Scope
+  4) Deliverables
+  5) Technical Details
+  - Optional sections appended when applicable: API Specification, Database Changes
 
 Optional: run validators explicitly
 
@@ -148,3 +149,5 @@ Troubleshooting
 - If a validator reports issues, rerun it; the flow is designed to repair ordering and counts when possible
 - If task numbers don’t match the examples, open your `tasks.md` and pick the correct numbers
 - If your shell doesn’t beep, ignore the chime—completion banners still print
+
+See also: [architecture.md](./architecture.md) for how context and sections are managed.

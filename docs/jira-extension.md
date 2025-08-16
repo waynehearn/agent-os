@@ -35,6 +35,7 @@ The Jira extension lets you:
 
 - Start create-spec with a Jira issue key (auto-maps fields)
 - Optionally post the resulting spec.md back to the Jira issue
+- Remain context-efficient: the loader uses front-matter-only extension discovery and section-aware manifests to minimize tokens
 
 Requirements
 ------------

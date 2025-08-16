@@ -25,7 +25,7 @@ For the `create-spec` flow, use:
 ## Contract (front matter and blocks)
 
 - Front matter must include: `targets: ["create-spec"]`
-- Optional: `requires: ["capability", ...]` to declare dependencies (e.g., `mcp:atlassian`). The system reads only front matter to evaluate `requires` and skips the file body when dependencies aren’t available.
+- Optional: `requires: ["capability", ...]` to declare dependencies (e.g., `mcp:atlassian`). The loader reads only front matter to evaluate `requires` and skips the file body when dependencies aren’t available. Results are cached (1‑hour TTL) in the extension registry.
 - Allowed content blocks:
   - `<variables>`: define extension-specific variables (use clear, short names; avoid verbose prefixes unless necessary)
   - `<step number="X.Y" subagent="..." name="...">` blocks: add steps into the flow

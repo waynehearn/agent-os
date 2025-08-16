@@ -51,7 +51,7 @@ vendor: acme
   1. `@~/.agent-os/instructions/extensions/create-spec/**/*.md`
   2. `@.agent-os/instructions/extensions/create-spec/**/*.md`
 - Front matter must include `targets: ["create-spec"]` to be picked up by the create‑spec flow.
-- Optional: add `requires: ["capability"]` to declare dependencies (e.g., `mcp:atlassian`). The system reads only the front matter to evaluate `requires` and skips the file entirely when the capability isn’t available.
+- Optional: add `requires: ["capability"]` to declare dependencies (e.g., `mcp:atlassian`). The loader consults only front matter (no body reads) to evaluate `requires` and skips the file entirely when the capability isn’t available. Results are cached in the extension registry (1‑hour TTL).
 - Steps are merged by numeric step number (use decimals like 1.1, 6.2). If a collision occurs, the core step runs first, then the extension step.
 - Use clear, short variable names; add a vendor prefix only if you expect collisions (e.g., `acme_flag`).
 - Core determinism/validation rules still apply. Extensions must be optional and safe to skip.

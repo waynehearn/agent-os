@@ -19,12 +19,17 @@ Start here (10–15 minutes)
 5. [jira-extension.md](./jira-extension.md) (optional)
 6. [task-organization-hints.md](./task-organization-hints.md) (optional)
 7. [smoke-tests.md](./smoke-tests.md)
+8. [architecture.md](./architecture.md)
 
 Navigation
 ----------
 
 - Usage guide: [create-spec-usage.md](./create-spec-usage.md)
 - Create-spec steps: [create-spec-steps.md](./create-spec-steps.md)
+- Architecture & customization: [architecture.md](./architecture.md)
+- Manifest spec: [manifest-spec.md](./manifest-spec.md)
+- Section hashing: [section-hashing.md](./section-hashing.md)
+- Schemas: [schemas/](./schemas/)
 - Task creation details: [create-spec-tasks.md](./create-spec-tasks.md)
 - Installation: [installation.md](./installation.md)
 - Configuration: [configuration.md](./configuration.md)
@@ -42,6 +47,13 @@ Typical flow
 - Validators normalize spec.md and tasks.md
 - Execute tasks (all, specific parents, or a single subtask)
 - Commit, PR, and optional roadmap update
+
+Determinism & context policy
+----------------------------
+
+- Lite-first reads: prefer `spec-lite.md`, `context/facts.md`, and manifest hashes
+- Section-level manifest enables targeted reloads and 4k-token budget awareness
+- Extension registry caching uses front-matter-only reads; unsupported capabilities are safely skipped
 
 Tips
 ----

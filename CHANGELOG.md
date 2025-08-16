@@ -14,6 +14,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Migration: replace any `ext_jira_issue_key`, `ext_use_jira_mcp`, `ext_post_spec_to_jira`, `ext_jira_comment_mode` with the short-form equivalents in your `[jira_inputs]` blocks.
   - Docs updated to reflect short-form only (jira-extension, configuration, usage, troubleshooting, extensions README).
 
+### Added
+
+- Architecture & Customization Guide: `docs/architecture.md` (explains context budgets, section-level manifests, template externalization, and extension registry cache).
+- Manifest spec: `docs/manifest-spec.md` and JSON Schemas under `docs/schemas/` (`manifest.schema.json`, `spec-input.schema.json`).
+- Section hashing utilities:
+  - `tools/section-hash.sh` (POSIX) and `tools/section-hash.ps1` (PowerShell) to compute section-level hashes and update per-spec `context/manifest.json` per the schema.
+
+### Performance
+
+- Implemented hierarchical context loading, section-level manifest tracking, template externalization, and extension registry caching.
+  - Result: ~52.5% token reduction per create-spec execution while maintaining functionality.
+  - Details: see `llm-context-optimization-implementation.md`.
+
 ## [1.4.0] - 2025-08-14
 
 ### Added [1.4.0]

@@ -121,3 +121,10 @@ Related docs
 - Smoke Tests: [smoke-tests.md](./smoke-tests.md)
 - Troubleshooting: [troubleshooting.md](./troubleshooting.md)
 - Glossary: [glossary.md](./glossary.md)
+
+Caches & manifests (advanced)
+-----------------------------
+
+- Extension Registry Cache: front‑matter discovery results are cached for 1 hour in `templates/extension-registry.json`. Cache invalidates when file mtimes or front‑matter hashes change.
+- Section‑Aware Manifest: per‑spec `context/manifest.json` tracks hashes and token estimates per section (e.g., `spec.md:overview`) to enable selective reloads.
+- Details and schema: see [manifest-spec.md](./manifest-spec.md) and [schemas/manifest.schema.json](./schemas/manifest.schema.json)

@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/manifest.schema.json",
+  "title": "Spec Context Manifest (section-aware)",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "files": {
+      "type": "object",
+      "description": "Map of file path to file hash and modification time",
+      "additionalProperties": false,
+      "patternProperties": {
+        ".+": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sha256": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+            "lastModified": { "type": "string", "format": "date-time" }
+          },
+          "required": ["sha256", "lastModified"]
+        }
+      }
+    },
+    "sections": {
+      "type": "object",
+      "description": "Section-level tracking per file",
+      "additionalProperties": false,
+      "patternProperties": {
+        ".+": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sections": {
+              "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                ".+": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "hash": { "type": "string", "pattern": "^[A-Fa-f0-9]{6,64}$" },
+                    "tokens": { "type": "number", "minimum": 0 },
+                    "lines": { "type": "string", "pattern": "^\\d+-\\d+$" }
+                  },
+                  "required": ["hash"],
+                  "anyOf": [
+                    { "required": ["tokens"] },
+                    { "required": ["lines"] }
+                  ]
+                }
+              }
+            }
+          },
+          "required": ["sections"]
+        }
+      }
+    },
+    "context_budget": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "total_available": { "type": "number", "minimum": 0 },
+        "essential_usage": { "type": "number", "minimum": 0 },
+        "conditional_usage": { "type": "number", "minimum": 0 },
+        "remaining": { "type": "number", "minimum": 0 }
+      }
+    }
+  }
+}

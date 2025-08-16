@@ -90,6 +90,7 @@ bash ./tools/verify-install.sh --check-cursor   # run inside a project with .cur
 - Installation: [docs/installation.md](docs/installation.md)
 - Quickstart: [docs/quickstart.md](docs/quickstart.md)
 - Configuration: [docs/configuration.md](docs/configuration.md)
+- Architecture & customization: [docs/architecture.md](docs/architecture.md)
 - Create Spec usage: [docs/create-spec-usage.md](docs/create-spec-usage.md)
 - Troubleshooting: [docs/troubleshooting.md](docs/troubleshooting.md)
 - Smoke tests: [docs/smoke-tests.md](docs/smoke-tests.md)
@@ -112,6 +113,13 @@ If something’s missing locally, see the canonical docs at [buildermethods.com/
   - File Creator: claude-code/agents/file-creator.md
   - Context Fetcher: claude-code/agents/context-fetcher.md
   - Git Workflow: claude-code/agents/git-workflow.md
+
+Performance & context optimization
+----------------------------------
+
+- Externalized templates reduce core file size and improve reuse (see `templates/` and Architecture guide)
+- Hierarchical, budget-aware context loading with section-level manifests
+- Extension registry caching with front-matter-only reads and 1-hour TTL
 
 ---
 
