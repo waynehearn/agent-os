@@ -2,105 +2,32 @@
 
 Your system for deterministic spec-driven agentic development.
 
+What is Spec Agent K?
+------------------
+
+Spec Agent K is a system for spec‑driven agentic development. It gives AI coding agents structured workflows aligned to your standards, stack, and codebase context so they ship quality code on the first try—not the fifth.
+
+---
+
+## Works with
+
+- Claude Code, Cursor, or other AI coding tools(sort of)
+- New products or established codebases
+- Big features or small fixes
+- Any language or framework
+
+---
 ## Reviews
 
 > _“Spec Agent K has matured from a strong spec‑first framework into a fast, investigation‑capable system with real, measurable context‑cost reductions. Investigation mode, section‑aware manifests, and lite‑first artifacts make day‑to‑day work both cheaper and more reliable.  Overall Rating: 8.5/10.”_ — GitHub Copilot
 
 > _“Spec Agent K is a sophisticated LLM‑driven framework that transforms minimal prompting into structured specifications and implementation plans. It excels at greenfield and structured enhancements, while investigation‑heavy work and emergencies benefit from complementary approaches. Overall Rating: 7.5/10.”_ — Claude Code
 
-Spec Agent K 😉 turns AI coding agents into productive developers by enforcing clear specs, standards, and workflows so they ship quality code the first time.
-
-- Start here: [docs/index.md](docs/index.md)
-- Full local docs: [docs/](docs)
-- Canonical docs: [buildermethods.com/agent-os](https://buildermethods.com/agent-os)
-
 ---
+## Get Started
 
-## Install
-
-Works on macOS, Linux, and Windows. On Windows, use Git Bash or WSL. Remote one‑liners are no longer supported; install from a local clone.
-
-Clone this repository:
-
-```bash
-git clone https://github.com/waynehearn/agent-os.git
-cd agent-os
-```
-
-Run the local setup script:
-
-- macOS/Linux (Terminal)
-
-```bash
-bash ./setup.sh
-```
-
-- Windows (Git Bash or WSL)
-
-```bash
-./setup.sh
-```
-
-Optional editor integrations (run from your local clone):
-
-- Claude Code
-
-```bash
-bash ./setup-claude-code.sh
-```
-
-- Cursor (run inside a project repo to add .cursor rules)
-
-```bash
-bash ./setup-cursor.sh
-```
-
-What the installer does
-
-- Creates ~/.agent-os/standards and ~/.agent-os/instructions
-- Installs standards (see standards/tech-stack.md, standards/code-style.md, standards/best-practices.md)
-- Installs core instruction flows (plan, create-spec, execute-task(s), analyze)
-- Optionally adds IDE-specific commands (Claude Code, Cursor) using local scripts
-
-Verify your install
-
-```bash
-bash ./tools/verify-install.sh
-# Optional checks
-bash ./tools/verify-install.sh --check-claude
-bash ./tools/verify-install.sh --check-cursor   # run inside a project with .cursor
-```
-
----
-
-## Quickstart
-
-1. Plan your product (generates .agent-os/product/*)
-    - Open: ~/.agent-os/instructions/core/plan-product.md
-    - Guide: [docs/quickstart.md](docs/quickstart.md)
-2. Create a spec (generates .agent-os/specs/YYYY-MM-DD-feature/*)
-    - Open: ~/.agent-os/instructions/core/create-spec.md
-    - Example flow: [docs/create-spec-usage.md](docs/create-spec-usage.md)
-3. Execute tasks (TDD loop, commits, PR)
-    - Open: ~/.agent-os/instructions/core/execute-tasks.md
-4. Analyze existing codebase (optional)
-    - Open: ~/.agent-os/instructions/core/analyze-product.md
-
----
-
-## Local documentation
-
-- Start here: [docs/index.md](docs/index.md)
-- Installation: [docs/installation.md](docs/installation.md)
-- Quickstart: [docs/quickstart.md](docs/quickstart.md)
-- Configuration: [docs/configuration.md](docs/configuration.md)
-- Architecture & customization: [docs/architecture.md](docs/architecture.md)
-- Create Spec usage: [docs/create-spec-usage.md](docs/create-spec-usage.md)
-- Troubleshooting: [docs/troubleshooting.md](docs/troubleshooting.md)
-- Smoke tests: [docs/smoke-tests.md](docs/smoke-tests.md)
-- Glossary: [docs/glossary.md](docs/glossary.md)
-
-If something’s missing locally, see the canonical docs at [buildermethods.com/agent-os](https://buildermethods.com/agent-os).
+- [QuickStart](QuickStart%20Guide.md)
+- [Index](./docs/Index.md)
 
 ---
 
@@ -113,17 +40,21 @@ If something’s missing locally, see the canonical docs at [buildermethods.com/
   - Execute Tasks: instructions/core/execute-tasks.md
   - Execute Task: instructions/core/execute-task.md
   - Analyze Product: instructions/core/analyze-product.md
-- Claude Code agents (examples):
+  - Claude Code agents (examples):
   - File Creator: claude-code/agents/file-creator.md
   - Context Fetcher: claude-code/agents/context-fetcher.md
   - Git Workflow: claude-code/agents/git-workflow.md
 
-Performance & context optimization
-----------------------------------
+---
+
+## Performance & context optimization
 
 - Externalized templates reduce core file size and improve reuse (see `templates/` and Architecture guide)
 - Hierarchical, budget-aware context loading with section-level manifests
-- Extension registry caching with front-matter-only reads and 1-hour TTL
+- Extension registry caching with front-matter-only reads and 1-hour
+- Lite-first reads (`spec-lite.md`, `context/facts.md`)
+- Section-level manifests for targeted reloads
+- Extension registry caching using front-matter-only reads
 
 ---
 
@@ -134,4 +65,4 @@ Performance & context optimization
 - Project license: [LICENSE](LICENSE)
 
 Created by Brian Casel at Builder Methods — more resources at [buildermethods.com](https://buildermethods.com)
-Modified by ChatGPT5 with some prompting from [Wayne.Hearn@kiboecommerce.com](mailto:Wayne.Hearn@kiboecommerce.com)
+Modified by ChatGPT5/ClaudeCode with some prompting from [Wayne.Hearn@kiboecommerce.com](mailto:Wayne.Hearn@kiboecommerce.com)

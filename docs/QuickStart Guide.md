@@ -3,27 +3,64 @@ title: Spec Agent K – Quickstart
 version: 1.0
 lastUpdated: 2025-08-14
 ---
+## Install
+
+Works on macOS, Linux, and Windows. On Windows, use Git Bash or WSL. Remote one‑liners are no longer supported; install from a local clone.  [Full installation docs](./installation.md)
+
+
+Clone this repository:
+
+```bash
+git clone https://github.com/waynehearn/agent-os.git
+cd agent-os
+```
+
+Run the local setup script:
+
+- macOS/Linux (Terminal)
+
+```bash
+bash ./setup.sh
+```
+
+- Windows (Git Bash or WSL)
+
+```bash
+./setup.sh
+```
+
+Optional editor integrations (run from your local clone):
+
+- Claude Code
+
+```bash
+bash ./setup-claude-code.sh
+```
+
+- Cursor (run inside a project repo to add .cursor rules)
+
+```bash
+bash ./setup-cursor.sh
+```
+
+What the installer does
+
+- Creates ~/.agent-os/standards and ~/.agent-os/instructions
+- Installs standards (see standards/tech-stack.md, standards/code-style.md, standards/best-practices.md)
+- Installs core instruction flows (plan, create-spec, execute-task(s), analyze)
+- Optionally adds IDE-specific commands (Claude Code, Cursor) using local scripts
+
+Verify your install
+
+```bash
+bash ./tools/verify-install.sh
+# Optional checks
+bash ./tools/verify-install.sh --check-claude
+bash ./tools/verify-install.sh --check-cursor   # run inside a project with .cursor
+```
+
 
 Start here if you’re new. In ~10 minutes you’ll create a spec from a simple example, verify outputs, and run targeted tasks.
-
-What is Spec Agent K?
-------------------
-
-Spec Agent K is a system for spec‑driven agentic development. It gives AI coding agents structured workflows aligned to your standards, stack, and codebase context so they ship quality code on the first try—not the fifth.
-
-Works with
-----------
-
-- Claude Code, Cursor, or other AI coding tools
-- New products or established codebases
-- Big features or small fixes
-- Any language or framework
-
-Prerequisites
--------------
-
-- Spec Agent K instructions at `@~/.agent-os/instructions/`
-- For helper scripts (discovery, hashing): Bash + `jq` on PATH (see `docs/installation.md`)
 
 Local demo (ready-to-run)
 -------------------------
@@ -171,20 +208,7 @@ auto_init_product: false
 
 Notes:
 
-- Discovery reads `.agent-os/product/*`, `CLAUDE.md`, `docs/architecture.md`, `README.md`, and build files to infer stack.
+- Discovery reads `.agent-os/product/*`, `CLAUDE.md`,  `README.md`, and build files to infer stack.
 - On Windows, use Git Bash or WSL. The script can use `jq.exe` under WSL and accepts Windows paths like `C:/path/...`.
 - See details: [context-discovery.md](./context-discovery.md)
 
-Context optimizations (FYI)
----------------------------
-
-- Lite-first reads (`spec-lite.md`, `context/facts.md`)
-- Section-level manifests for targeted reloads
-- Extension registry caching using front-matter-only reads
-
-External resources
-------------------
-
-- Spec Agent K website (docs, installation, best practices): [buildermethods.com/agent-os](https://buildermethods.com/agent-os)
-- Builder Briefing newsletter: [buildermethods.com](https://buildermethods.com)
-- YouTube (Brian Casel): [youtube.com/@briancasel](https://youtube.com/@briancasel)

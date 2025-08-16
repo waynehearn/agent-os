@@ -304,7 +304,7 @@ rm -rf @.agent-os/specs
 Next steps
 ----------
 
-- Quickstart: [quickstart.md](./quickstart.md)
+- Quickstart: [quickstart.md](QuickStart%20Guide.md)
 - Create Spec Usage: [create-spec-usage.md](./create-spec-usage.md)
 - Configuration: [configuration.md](./configuration.md)
 - Troubleshooting: [troubleshooting.md](./troubleshooting.md)

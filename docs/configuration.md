@@ -44,7 +44,7 @@ To drive spec creation from Jira tickets, install the Jira extension and configu
 
 - Place `instructions/extensions/create-spec/atlassian-jira.md` in your instructions folder (home or project). It is optional and only loaded if present.
 - Pass `jira_issue_key` in `[jira_inputs]` (see [Jira key reference](jira-extension.md#canonical-jira-key-reference))
-- Set `use_jira_mcp: true`
+- Set `use_jira_mcp: true` (default is false)
 - Provide overrides for any missing fields (main_idea, user stories, deliverables, etc.)
 
 Jira sync flags (extension)
@@ -116,7 +116,7 @@ Integration tips (project‑specific)
 Related docs
 ------------
 
-- Quickstart: [quickstart.md](./quickstart.md)
+- Quickstart: [quickstart.md](QuickStart%20Guide.md)
 - Create Spec Usage: [create-spec-usage.md](./create-spec-usage.md)
 - Smoke Tests: [smoke-tests.md](./smoke-tests.md)
 - Troubleshooting: [troubleshooting.md](./troubleshooting.md)

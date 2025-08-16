@@ -112,7 +112,7 @@ Environment
 Getting help
 ------------
 
-- See Quickstart: [quickstart.md](./quickstart.md)
+- See Quickstart: [quickstart.md](QuickStart%20Guide.md)
 - See Smoke Tests: [smoke-tests.md](./smoke-tests.md)
 - Usage & modes: [create-spec-usage.md](./create-spec-usage.md)
 - Glossary: [glossary.md](./glossary.md)

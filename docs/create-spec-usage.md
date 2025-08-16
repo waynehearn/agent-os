@@ -501,7 +501,7 @@ See also
 --------
 
 - Simple smoke tests: [smoke-tests.md](./smoke-tests.md)
-- Quickstart: [quickstart.md](./quickstart.md)
+- Quickstart: [quickstart.md](QuickStart%20Guide.md)
 - Troubleshooting: [troubleshooting.md](./troubleshooting.md)
 - Glossary: [glossary.md](./glossary.md)
 - Configuration: [configuration.md](./configuration.md)
