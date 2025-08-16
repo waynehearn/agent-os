@@ -60,7 +60,6 @@ Step 2 — Verify outputs
 Tip: See the Glossary for the roles of `spec.md` vs `spec-lite.md`.
 Tip: See the Glossary for lite-first artifacts (`facts.md`, `manifest.json`, `meta.json`).
 
-
 Step 3 — Run the demo tasks
 ---------------------------
 

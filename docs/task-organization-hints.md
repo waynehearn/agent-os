@@ -117,7 +117,7 @@ With Jira inputs (combine in the same block):
 @~/.agent-os/instructions/core/create-spec.md
 
 [jira_inputs]
-jira_issue_key: ABC-1234
+jira_issue_key: ABC-1234  # See canonical Jira key reference in docs/jira-extension.md
 use_jira_mcp: true
 post_spec_to_jira: false
 

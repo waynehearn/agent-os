@@ -1,0 +1,10 @@
+{
+  "$schema": {
+    "description": "Extension registry cache for Spec Agent Kibo",
+    "version": "1.0"
+  },
+  "last_scan": "",
+  "capabilities": [],
+  "extensions": {},
+  "cache_ttl": 3600
+}

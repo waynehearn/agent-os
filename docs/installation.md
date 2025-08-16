@@ -131,14 +131,14 @@ You can safely upgrade later without losing local edits. All setup scripts suppo
 What gets installed/managed:
 
 - Base (home directory)
-	- `~/.agent-os/instructions/` (core + meta)
-	- `~/.agent-os/standards/` (including code-style)
-	- `~/.agent-os/docs/` (local documentation)
+  - `~/.agent-os/instructions/` (core + meta)
+  - `~/.agent-os/standards/` (including code-style)
+  - `~/.agent-os/docs/` (local documentation)
 - Claude Code
-	- `~/.claude/commands/*.md`
-	- `~/.claude/agents/*.md`
+  - `~/.claude/commands/*.md`
+  - `~/.claude/agents/*.md`
 - Cursor
-	- `.cursor/rules/*.mdc` (in each project repo)
+  - `.cursor/rules/*.mdc` (in each project repo)
 
 Upgrade the base installation (instructions, standards, docs)
 

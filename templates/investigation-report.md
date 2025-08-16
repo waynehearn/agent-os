@@ -1,0 +1,106 @@
+---
+description: Investigation Report Template
+type: investigation_template
+variables: [SPEC_NAME, CURRENT_DATE, INVESTIGATION_TYPE, AFFECTED_SYSTEMS_IF_ANY, START_DATE, COMPLETION_DATE, PRIMARY_INVESTIGATION_QUESTION, HYPOTHESIS_IF_PROVIDED, SYMPTOM_1, SYMPTOM_2, SYMPTOM_3, APPROACH_BASED_ON_TYPE, ANALYSIS_TOOL_1, ANALYSIS_TOOL_2, DATA_SOURCE_1, DATA_SOURCE_2, TESTING_APPROACH_IF_ANY, FINDING_1_TITLE, SUPPORTING_DATA, IMPACT_ASSESSMENT, FINDING_2_TITLE, FINDING_3_TITLE, ROOT_CAUSE_IF_IDENTIFIED, CONTRIBUTING_FACTOR_1, CONTRIBUTING_FACTOR_2, SYSTEMIC_ANALYSIS, HOW_TO_PREVENT_RECURRENCE, URGENT_ACTION_1, URGENT_ACTION_2, SHORT_TERM_SOLUTION_1, SHORT_TERM_SOLUTION_2, LONG_TERM_IMPROVEMENT_1, LONG_TERM_IMPROVEMENT_2, RISK_LEVEL, COMPLEXITY_ASSESSMENT, RESOURCE_ESTIMATE, PRIORITY_1, RATIONALE, PRIORITY_2, PRIORITY_3, TIME_ESTIMATE, INFRASTRUCTURE_NEEDS, EXTERNAL_DEPENDENCIES, SUCCESS_CRITERION_1, SUCCESS_CRITERION_2]
+token_estimate: 450
+---
+
+# Investigation Report
+
+> Investigation: [SPEC_NAME]
+> Type: [INVESTIGATION_TYPE]
+> Created: [CURRENT_DATE]
+> Status: [IN_PROGRESS|COMPLETED]
+
+## Investigation Summary
+
+**Type:** [INVESTIGATION_TYPE]
+**Scope:** [AFFECTED_SYSTEMS_IF_ANY]
+**Duration:** [START_DATE] to [COMPLETION_DATE]
+**Key Question:** [PRIMARY_INVESTIGATION_QUESTION]
+**Working Hypothesis:** [HYPOTHESIS_IF_PROVIDED]
+
+**Symptoms Analyzed:**
+
+- [SYMPTOM_1]
+- [SYMPTOM_2]
+- [SYMPTOM_3]
+
+## Methodology
+
+**Investigation Approach:** [APPROACH_BASED_ON_TYPE]
+**Tools and Techniques Used:**
+
+- [ANALYSIS_TOOL_1]
+- [ANALYSIS_TOOL_2]
+**Data Sources:**
+- [DATA_SOURCE_1]
+- [DATA_SOURCE_2]
+**Testing Methods:** [TESTING_APPROACH_IF_ANY]
+
+## Key Findings
+
+1. **[FINDING_1_TITLE]**
+   - Evidence: [SUPPORTING_DATA]
+   - Impact: [IMPACT_ASSESSMENT]
+
+2. **[FINDING_2_TITLE]**
+   - Evidence: [SUPPORTING_DATA]
+   - Impact: [IMPACT_ASSESSMENT]
+
+3. **[FINDING_3_TITLE]**
+   - Evidence: [SUPPORTING_DATA]
+   - Impact: [IMPACT_ASSESSMENT]
+
+## Root Cause Analysis
+
+**Primary Cause:** [ROOT_CAUSE_IF_IDENTIFIED]
+**Contributing Factors:**
+
+- [CONTRIBUTING_FACTOR_1]
+- [CONTRIBUTING_FACTOR_2]
+
+**Why This Occurred:** [SYSTEMIC_ANALYSIS]
+**Prevention Strategy:** [HOW_TO_PREVENT_RECURRENCE]
+
+## Recommendations
+
+**Immediate Actions Required:**
+
+1. [URGENT_ACTION_1]
+2. [URGENT_ACTION_2]
+
+**Short-term Solutions (1-4 weeks):**
+
+1. [SHORT_TERM_SOLUTION_1]
+2. [SHORT_TERM_SOLUTION_2]
+
+**Long-term Improvements (1-6 months):**
+
+1. [LONG_TERM_IMPROVEMENT_1]
+2. [LONG_TERM_IMPROVEMENT_2]
+
+**Risk Assessment:**
+
+- Impact if not addressed: [RISK_LEVEL]
+- Implementation complexity: [COMPLEXITY_ASSESSMENT]
+- Resource requirements: [RESOURCE_ESTIMATE]
+
+## Next Steps
+
+**Implementation Priorities:**
+
+1. [PRIORITY_1] - [RATIONALE]
+2. [PRIORITY_2] - [RATIONALE]
+3. [PRIORITY_3] - [RATIONALE]
+
+**Resource Requirements:**
+
+- Development time: [TIME_ESTIMATE]
+- Infrastructure changes: [INFRASTRUCTURE_NEEDS]
+- Third-party dependencies: [EXTERNAL_DEPENDENCIES]
+
+**Success Criteria:**
+
+- [SUCCESS_CRITERION_1]
+- [SUCCESS_CRITERION_2]

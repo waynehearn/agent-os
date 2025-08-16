@@ -1,7 +1,16 @@
 {
   "permissions": {
     "allow": [
-      "Bash(claude mcp:*)"
+      "Bash(claude mcp:*)",
+      "mcp__serena__list_dir",
+      "Bash(bash --version)",
+      "Bash(command:*)",
+      "Bash(npx --yes markdown-link-check README.md)",
+      "Bash(npx --yes markdownlint-cli2 \"commands/create-spec.md\")",
+      "Bash(npx --yes markdown-link-check docs/jira-extension.md)",
+      "Bash(npx --yes markdown-link-check docs/create-spec-usage.md docs/configuration.md docs/troubleshooting.md)",
+      "Bash(true)",
+      "Bash(npx:*)"
     ],
     "deny": [],
     "ask": []

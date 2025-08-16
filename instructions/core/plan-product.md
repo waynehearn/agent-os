@@ -233,7 +233,6 @@ Use the file-creator subagent to create the file: .agent-os/product/tech-stack.m
   You can respond with the technology choice or "n/a" for each item.
 </missing_items_template>
 
-
 </step>
 
 <step number="5" subagent="file-creator" name="create_mission_lite_md">
@@ -322,7 +321,6 @@ Use the file-creator subagent to create the following file: .agent-os/product/ro
   - L: 2 weeks
   - XL: 3+ weeks
 </effort_scale>
-
 
 </step>
 

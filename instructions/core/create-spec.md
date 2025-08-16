@@ -26,43 +26,129 @@ Generate detailed feature specifications aligned with product roadmap and missio
   <requires_db_changes>false</requires_db_changes>
   <requires_api_changes>false</requires_api_changes>
   <debug_extensions>false</debug_extensions>
+  <mode>standard</mode>  <!-- express|standard|investigate -->
+  <investigation_type>none</investigation_type>
+  <symptoms>[]</symptoms>
+  <working_hypothesis></working_hypothesis>
+  <affected_systems>[]</affected_systems>
+  <generate_tickets>false</generate_tickets>
+  <ticket_project_key></ticket_project_key>
+  <ticket_priority_default>Medium</ticket_priority_default>
+  <ticket_labels>[]</ticket_labels>
 </variables>
 
 <extensions_discovery>
   PURPOSE: Allow project- or team-specific behaviors to extend this core flow without changing it.
 
-  LOOKUP PATHS (in order):
+  OPTIMIZATION: Use cached extension registry to minimize file system operations and context loading.
+
+  CACHE-FIRST DISCOVERY:
+    1. CHECK @templates/extension-registry.json for cached extension data
+    2. IF cache exists AND last_scan < 1 hour ago:
+       USE cached extension definitions (skip file scanning)
+    3. ELSE:
+       SCAN extension paths and UPDATE cache
+
+  LOOKUP PATHS (when scanning):
     1. @~/.agent-os/instructions/extensions/create-spec/**/*.md
     2. @.agent-os/instructions/extensions/create-spec/**/*.md (project-local, optional)
 
-  CONVENTION:
-    - Extension files MUST include front matter with: `targets: ["create-spec"]`.
-  - Optional front matter key `requires: ["capability"]` may declare dependencies (e.g., `mcp:atlassian`).
-    - Extensions may declare additional <variables> and <step> blocks.
-    - Steps are merged into this process by their numeric `number` attribute (e.g., 1.1, 6.2).
-    - Core steps keep their numbers; extensions should use decimal positions that don’t collide.
-    - If a collision occurs, run core step first, then the extension step.
+  FRONT-MATTER-ONLY READS:
+    - For each candidate file, READ only YAML front matter (lines 1-20 typically)
+    - EXTRACT: targets, requires, vendor, description, step_numbers
+    - SKIP body content unless extension is actively loaded
 
-  SAFE MERGE RULES:
-    - Variable names should be distinct; extensions should prefer namespaced keys (e.g., ext_<vendor>_*).
-    - Determinism and validation rules from core always apply.
-    - Extensions MUST be optional; if no matching files are found, run core steps only.
+  CACHED EXTENSION REGISTRY SCHEMA:
+    {
+      "last_scan": "ISO8601_TIMESTAMP",
+      "capabilities": ["mcp:atlassian", "..."],
+      "extensions": {
+        "atlassian-jira.md": {
+          "path": "@~/.agent-os/instructions/extensions/create-spec/atlassian-jira.md",
+          "targets": ["create-spec"],
+          "requires": ["mcp:atlassian"],
+          "vendor": "atlassian",
+          "steps": ["1.2", "6.2"],
+          "hash": "sha256_of_file",
+          "token_estimate": 250
+        }
+      }
+    }
 
-  EXECUTION:
-    - Before processing <process_flow>, DISCOVER candidate files per paths above.
-    - For each candidate, READ only front matter to check `targets` and optional `requires`.
-      - If `requires` includes a capability that is not available in the runtime (e.g., `mcp:atlassian` and no Atlassian MCP), SKIP the file without loading its body.
-    - From the remaining files, COLLECT their <step> blocks that declare `targets: ["create-spec"]`.
-    - MERGE the collected steps into the ordered flow by step number.
+  RUNTIME EFFICIENCY:
+    - Only load extension body content for matched and available extensions
+    - Use hash comparison to detect file changes
+    - Token estimate tracking for context budgeting
+    - Capability-aware filtering before file loading
 
   DEBUGGING (optional):
-    - Toggle `[debug_extensions]` to `true` to emit an "Extensions Discovery Report" before Step 1.
-    - The report MUST list, for each candidate file:
-      - path (logical @-path), vendor (from front matter if present), targets, requires
-      - decision: LOADED or SKIPPED
-      - reason when SKIPPED: missing capability (e.g., requires mcp:... not available), targets mismatch, parse error, or other
-    - Also include a one-line summary of detected capabilities (if your runtime exposes them), e.g., `capabilities: [mcp:atlassian, ...]`.
+    - Toggle `[debug_extensions]` to emit extension discovery report
+    - Include cache hit/miss statistics
+    - Show token usage estimates
 </extensions_discovery>
+
+<express_mode_guardrails>
+  PURPOSE: Skip time-costly steps for simple features while maintaining quality.
+
+  WHEN mode=express:
+    SKIP:
+      - Extended validation rounds (keep input validation only)
+      - Sub-specification creation
+      - Cross-reference validation
+      - Detailed dependency analysis
+
+    KEEP:
+      - Input schema validation
+      - Final output validation
+      - Section count checks (when strict_counts: true)
+      - Core deliverable verification
+
+  EXPRESS MODE STEPS:
+    1. Quick spec creation (combine steps 1-4)
+    2. Task breakdown (step 13)
+    3. Final validation (step 14)
+</express_mode_guardrails>
+
+<investigation_mode_guardrails>
+  PURPOSE: Structure exploratory work while maintaining flexibility for discovery.
+
+  WHEN mode=investigate:
+    MODIFY WORKFLOW:
+      - Step 0.5: Investigation Planning (replace spec initiation)
+      - Step 2-5: Standard context gathering
+      - Step 6A: Investigation Report (replace spec.md)
+      - Step 7: Spec-lite creation (investigation summary)
+      - Step 7.5: Ticket Generation (if generate_tickets=true)
+      - Steps 8-10: Skip technical/database/api specs
+      - Steps 11-14: User review and readiness check (adapted for investigation)
+
+    INVESTIGATION PLANNING:
+      - Validate symptoms and affected systems
+      - Generate investigation approach based on type
+      - Define success criteria and scope
+      - Create hypothesis testing plan
+
+    OUTPUT STRUCTURE:
+      - investigation-report.md (replaces spec.md)
+      - findings-summary.md (executive summary)
+      - action-items.md (prioritized next steps)
+      - jira-tickets.yaml (if generate_tickets=true)
+      - implementation-specs.yaml (ready-to-use create-spec inputs)
+
+  INVESTIGATION REPORT SECTIONS:
+    1. Investigation Summary - Type, scope, timeline, key questions
+    2. Methodology - Approach, tools used, data sources
+    3. Key Findings - Discoveries with supporting evidence
+    4. Root Cause Analysis - Primary causes and contributing factors
+    5. Recommendations - Immediate actions, solutions, improvements
+    6. Next Steps - Implementation priorities and resource requirements
+
+  TICKET GENERATION CATEGORIES:
+    - Immediate Fixes: Critical bugs and security issues (High priority)
+    - Improvement Opportunities: Performance and UX enhancements (Medium priority)
+    - Technical Debt: Refactoring and maintenance work (Low-Medium priority)
+    - New Features: Capabilities identified during investigation (Medium priority)
+</investigation_mode_guardrails>
 
 <determinism_rules>
 
@@ -71,7 +157,7 @@ Generate detailed feature specifications aligned with product roadmap and missio
 - Counts:
   - User Stories: 1-3
   - Spec Scope items: 1-5
-  - Expected Deliverables: 1-3 (browser-testable)
+  - Expected Deliverables: 1-3 (externally verifiable acceptance outcomes)
 - Tone: concise, declarative, aligned with project style.
 - Idempotency: if any target file exists, ASK user to overwrite (yes/no). On "no", SKIP creation for that file and report in summary.
 
@@ -110,6 +196,56 @@ Emit a concise report of extension discovery outcomes before the main flow begin
 </step>
 
 <step number="1" subagent="context-fetcher" name="spec_initiation">
+
+<step number="0.5" subagent="context-fetcher" name="investigation_planning">
+
+### Step 0.5: Investigation Planning (Investigation Mode Only)
+
+Structure exploratory work for bug diagnosis, performance analysis, security audits, and architectural research.
+
+<gate>
+  RUN ONLY IF: [mode] == "investigate"
+</gate>
+
+<actions>
+  1. VALIDATE investigation inputs:
+     - investigation_type is set (bug|performance|security|architecture|feasibility)
+     - symptoms array has 1+ items
+     - expected_deliverables include investigation-specific outcomes
+
+  2. GENERATE investigation approach based on type:
+     - bug: symptom analysis → reproduction → root cause → fix recommendations
+     - performance: baseline measurement → profiling → bottleneck analysis → optimization plan
+     - security: threat assessment → vulnerability scan → risk analysis → mitigation plan
+     - architecture: requirements analysis → option evaluation → recommendation → implementation plan
+     - feasibility: constraint analysis → prototyping → validation → go/no-go decision
+
+  3. CREATE hypothesis testing plan:
+     - If working_hypothesis provided, design tests to validate/invalidate
+     - If no hypothesis, design discovery experiments
+     - Define success criteria for investigation completion
+
+  4. SCOPE investigation boundaries:
+     - Time limits and resource constraints
+     - Systems to include/exclude from analysis
+     - Depth of analysis required
+     - Risk tolerance for investigation activities
+
+  5. OUTPUT investigation plan for user approval:
+     - Investigation approach and methodology
+     - Expected timeline and milestones
+     - Resources and tools needed
+     - Success criteria and deliverables
+
+  6. IF generate_tickets=true:
+     - Validate ticket_project_key is provided
+     - Confirm Jira integration is available
+     - Set up ticket generation parameters
+
+  7. PROCEED to context gathering with investigation focus
+</actions>
+
+</step>
 
 ### Step 1: Spec Initiation
 
@@ -166,29 +302,41 @@ Note: Additional initiation sources (e.g., external ticket systems) may be provi
 
 Use the context-fetcher subagent to read @.agent-os/product/mission-lite.md and @.agent-os/standards/tech-stack.md only if not already in context to ensure minimal context for spec alignment.
 
-<conditional_logic>
-  IF both mission-lite.md AND tech-stack.md already read in current context:
-    SKIP this entire step
-    PROCEED to step 3
-  ELSE:
-    READ only files not already in context AND present on disk:
-      - mission-lite.md (if not in context AND file exists)
-      - tech-stack.md (if not in context AND file exists)
-    IF mission-lite.md is missing:
-      NOTE: proceed without mission-lite.md (not required when starting via analyze-product or Jira); rely on inputs and tech-stack
-    CONTINUE with context analysis
-</conditional_logic>
+<hierarchical_context_loading>
+  PRIORITY 1: Essential Context (< 100 tokens)
+    - Mission statement (1 sentence from facts.md OR mission-lite.md)
+    - Current task focus (from variables or previous context)
+    - Key technical constraints (from inputs)
 
-<lite_first_and_cache>
-  - NEVER load full mission.md or roadmap.md during spec creation; use mission-lite.md only.
-  - BEFORE reading a file, CHECK [spec_folder_path]/context/manifest.json:
-    - IF entry exists for the target file AND sha256 matches current file on disk:
-      SKIP reading; treat as already in context.
-    - ELSE:
-      READ only the exact sections requested by this step (avoid full-file loads when possible).
-      AFTER read, UPDATE manifest.json with new sha256 and lastModified.
-  - PREFERRED sources for alignment: mission-lite.md -> spec-lite.md (later) -> spec.md sections only when required by validation.
-</lite_first_and_cache>
+  PRIORITY 2: Conditional Context (< 300 tokens)
+    - Tech stack requirements (only relevant sections from tech-stack.md)
+    - Existing spec context (only if continuation/modification)
+    - Extension requirements (only for actively loaded extensions)
+
+  PRIORITY 3: Reference Context (on-demand)
+    - Full specifications (via @-references)
+    - Historical context (via manifest links)
+    - Extended examples (via external templates)
+
+  CONTEXT_BUDGET_MANAGEMENT:
+    - Track token usage per context layer
+    - Use manifest.json context_budget tracking
+    - Prefer section-level reads over full-file loads
+    - Skip loading if section hash matches manifest
+
+  CACHE-AWARE_LOADING:
+    1. CHECK context/manifest.json for existing hashes
+    2. COMPARE file/section hashes before reading
+    3. LOAD only changed or missing sections
+    4. UPDATE manifest with new tokens and hashes
+    5. RESPECT total context budget (4000 tokens default)
+
+  SELECTIVE_READING_STRATEGY:
+    - mission-lite.md: First paragraph only (core purpose)
+    - tech-stack.md: Sections matching current task technology
+    - spec.md: Target sections only (not entire file)
+    - extension files: Front matter first, body content on-demand
+</hierarchical_context_loading>
 
 <context_analysis>
   <mission_lite>core product purpose and value</mission_lite>
@@ -276,7 +424,43 @@ Use kebab-case for spec name. Maximum 5 words in name.
 
 <step number="6" subagent="file-creator" name="create_spec_md">
 
-### Step 6: Create spec.md
+### Step 6: Create spec.md OR Investigation Report
+
+Create either a standard spec document or investigation report based on the workflow mode.
+
+<gate>
+  IF [mode] == "investigate":
+    EXECUTE Step 6A - Create Investigation Report
+  ELSE:
+    EXECUTE Step 6B - Create spec.md
+</gate>
+
+#### Step 6A: Create Investigation Report (Investigation Mode)
+
+<gate>
+  RUN ONLY IF: [mode] == "investigate"
+</gate>
+
+Use the file-creator subagent to create investigation outputs:
+
+<target>[spec_folder_path]/investigation-report.md</target>
+
+<template_reference>
+  TEMPLATE: @templates/investigation-report.md
+  VARIABLES: [SPEC_NAME, CURRENT_DATE, INVESTIGATION_TYPE, symptoms, working_hypothesis, affected_systems]
+  POPULATE: All template variables with investigation-specific content based on:
+    - investigation_type (bug|performance|security|architecture|feasibility)
+    - symptoms provided in input array
+    - working_hypothesis if available
+    - affected_systems if specified
+  VALIDATION: Ensure all template placeholders are replaced with actual content
+</template_reference>
+
+#### Step 6B: Create spec.md (Standard/Express Mode)
+
+<gate>
+  RUN ONLY IF: [mode] != "investigate"
+</gate>
 
 Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spec-name/spec.md using this template:
 
@@ -363,8 +547,35 @@ Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spe
   </template>
   <constraints>
     - count: 1-3 expectations
-    - focus: browser-testable outcomes
+    - focus: externally verifiable acceptance outcomes
   </constraints>
+
+EXTERNALLY VERIFIABLE OUTCOMES - Examples by Type:
+
+WEB UI:
+  - User can click "Export" button and download CSV file
+  - Dashboard shows updated metrics within 5 seconds
+  - Form validation prevents submission with invalid email
+
+API/BACKEND:
+  - GET /api/users returns 200 with expected JSON schema
+  - POST /api/auth generates valid JWT token
+  - Database query returns correct row count after operation
+
+CLI/SYSTEM:
+  - Command exits with code 0 and outputs "Success: feature enabled"
+  - Log file contains expected entry after operation
+  - Configuration file updated with new settings
+
+DATA/PLATFORM:
+  - ETL pipeline processes 1000 records without errors
+  - Data warehouse contains expected table structure
+  - Monitoring dashboard shows green status for new service
+
+INTEGRATION:
+  - Third-party webhook receives expected payload
+  - External API returns success response
+  - Message queue processes events in order
 </section>
 
 <post_write_validation>
@@ -421,11 +632,40 @@ Create lightweight, cached context artifacts for fast, deterministic reuse.
 
 <manifest_json_template>
 {
+  "version": "2.0",
   "docs": {
-    "mission-lite.md": { "path": "@.agent-os/product/mission-lite.md", "sha256": "[HASH]", "lastModified": "[ISO8601]" },
-    "spec.md": { "path": "@[spec_folder_path]/spec.md", "sha256": "[HASH]", "lastModified": "[ISO8601]" },
-    "spec-lite.md": { "path": "@[spec_folder_path]/spec-lite.md", "sha256": "[PENDING_UNTIL_STEP7]", "lastModified": "" },
-    "technical-spec.md": { "path": "@[spec_folder_path]/sub-specs/technical-spec.md", "sha256": "[HASH]", "lastModified": "[ISO8601]" }
+    "spec.md": {
+      "path": "@[spec_folder_path]/spec.md",
+      "full_hash": "[HASH]",
+      "lastModified": "[ISO8601]",
+      "token_estimate": "[CALCULATED_TOKENS]",
+      "sections": {
+        "overview": {"hash": "[HASH]", "tokens": "[COUNT]", "lines": "[RANGE]"},
+        "user_stories": {"hash": "[HASH]", "tokens": "[COUNT]", "lines": "[RANGE]"},
+        "scope": {"hash": "[HASH]", "tokens": "[COUNT]", "lines": "[RANGE]"},
+        "deliverables": {"hash": "[HASH]", "tokens": "[COUNT]", "lines": "[RANGE]"}
+      }
+    },
+    "spec-lite.md": {
+      "path": "@[spec_folder_path]/spec-lite.md",
+      "full_hash": "[PENDING_UNTIL_STEP7]",
+      "lastModified": "",
+      "token_estimate": "[CALCULATED_TOKENS]",
+      "priority": "essential"
+    },
+    "context/facts.md": {
+      "path": "@[spec_folder_path]/context/facts.md",
+      "full_hash": "[HASH]",
+      "lastModified": "[ISO8601]",
+      "token_estimate": "[CALCULATED_TOKENS]",
+      "priority": "essential"
+    }
+  },
+  "context_budget": {
+    "total_available": 4000,
+    "essential_usage": "[CALCULATED]",
+    "conditional_usage": 0,
+    "remaining": "[CALCULATED]"
   }
 }
 </manifest_json_template>
@@ -475,6 +715,114 @@ Use the file-creator subagent to create the file: .agent-os/specs/YYYY-MM-DD-spe
 ### Step 7.1: Update Manifest for spec-lite.md
 
 After creating spec-lite.md, update its entry in [spec_folder_path]/context/manifest.json with sha256 and lastModified.
+
+</step>
+
+<step number="7.5" subagent="file-creator" name="investigation_ticket_generation">
+
+### Step 7.5: Generate Jira Tickets (Investigation Mode Only)
+
+<gate>
+  RUN ONLY IF: [mode] == "investigate" AND [generate_tickets] == true
+</gate>
+
+Use the file-creator subagent to generate actionable Jira tickets based on investigation findings:
+
+<target>[spec_folder_path]/jira-tickets.yaml</target>
+
+<ticket_generation_logic>
+  ANALYZE investigation-report.md findings and recommendations
+  CATEGORIZE by urgency and type:
+    - Immediate Fixes: Critical bugs and security issues (High priority)
+    - Improvement Opportunities: Performance and UX enhancements (Medium priority)  
+    - Technical Debt: Refactoring and maintenance work (Low-Medium priority)
+    - New Features: Capabilities identified during investigation (Medium priority)
+  
+  GENERATE tickets with:
+    - Clear titles and descriptions referencing investigation
+    - Acceptance criteria based on findings
+    - Priority from category rules or ticket_priority_default
+    - Labels from ticket_labels plus category-specific labels
+    - Links back to investigation report
+</ticket_generation_logic>
+
+<ticket_template>
+tickets:
+  - title: "[CLEAR_ACTIONABLE_TITLE]"
+    description: |
+      Based on investigation findings in [spec_folder_path]/investigation-report.md
+
+      **Problem:**
+      [REFERENCE_TO_FINDING_FROM_REPORT]
+
+      **Solution:**
+      [RECOMMENDED_ACTION_FROM_REPORT]
+
+      **Context:**
+      - Investigation Type: [investigation_type]
+      - Root Cause: [IF_IDENTIFIED]
+      - Systems Affected: [affected_systems]
+
+    acceptance_criteria:
+      - "[VERIFIABLE_OUTCOME_1]"
+      - "[VERIFIABLE_OUTCOME_2]"
+
+    priority: "[High|Medium|Low]"
+    project_key: "[ticket_project_key]"
+    issue_type: "[Bug|Task|Story|Epic]"
+
+    labels:
+      - "investigation-[investigation_type]"
+      - "[CATEGORY_LABEL]" # immediate-fix, improvement, tech-debt, new-feature
+      - "[ticket_labels_if_provided]"
+
+    metadata:
+      investigation_spec: "[spec_folder_path]"
+      finding_reference: "[SECTION_NUMBER_FROM_REPORT]"
+      estimated_effort: "[S|M|L|XL]"
+</ticket_template>
+
+<conditional_spec_generation>
+  FOR tickets marked as "complex" or estimated effort > M:
+    GENERATE ready-to-use create-spec input template:
+
+    [spec_folder_path]/implementation-specs/[TICKET_TITLE_KEBAB].yaml:
+    main_idea: "[TICKET_SOLUTION_AS_1_2_SENTENCES]"
+    initial_user_stories:
+      - title: "[DERIVED_FROM_TICKET]"
+        story: "As a [USER], I want [ACTION] so that [BENEFIT_FROM_INVESTIGATION]"
+        details: "[CONTEXT_FROM_INVESTIGATION_FINDINGS]"
+    in_scope: ["[ITEMS_FROM_TICKET_ACCEPTANCE_CRITERIA]"]
+    expected_deliverables: ["[VERIFIABLE_OUTCOMES_FROM_TICKET]"]
+    tech_constraints: "[RELEVANT_SYSTEM_CONSTRAINTS]"
+    investigation_reference: "[spec_folder_path]/investigation-report.md#[SECTION]"
+</conditional_spec_generation>
+
+<jira_ticket_creation>
+  IF Atlassian MCP is available AND ticket_project_key is valid:
+    FOR each ticket in jira-tickets.yaml:
+      CREATE Jira ticket using mcp__atlassian__createJiraIssue:
+        - project_key: [ticket_project_key]
+        - issue_type: [ticket.issue_type]
+        - summary: [ticket.title]
+        - description: [ticket.description] + acceptance criteria
+        - priority: [ticket.priority]
+        - labels: [ticket.labels]
+
+      LINK ticket back to investigation:
+        - Add comment with link to investigation report
+        - Include investigation summary and finding reference
+        - Add label "investigation-derived"
+        
+      UPDATE jira-tickets.yaml with created ticket keys:
+        ticket_key: "[PROJECT_KEY]-[NUMBER]"
+        created_date: "[ISO8601_TIMESTAMP]"
+        status: "created"
+  
+  ELSE:
+    LOG: "Jira tickets defined in jira-tickets.yaml but not created (MCP unavailable or invalid project key)"
+    RECOMMEND: "Manually create tickets using the structured definitions in jira-tickets.yaml"
+</jira_ticket_creation>
 
 </step>
 
@@ -547,32 +895,11 @@ Use the file-creator subagent to create the file: sub-specs/database-schema.md O
     SKIP this_step
 </decision_tree>
 
-<file_template>
-  <header>
-    # Database Schema
-
-  This is the database schema implementation for the spec detailed in @[spec_folder_path]/spec.md
-  </header>
-</file_template>
-
-<schema_sections>
-  <changes>
-    - new tables
-    - new columns
-    - modifications
-    - migrations
-  </changes>
-  <specifications>
-    - exact SQL or migration syntax
-    - indexes and constraints
-    - foreign key relationships
-  </specifications>
-  <rationale>
-    - reason for each change
-    - performance considerations
-    - data integrity rules
-  </rationale>
-</schema_sections>
+<template_reference>
+  TEMPLATE: @templates/database-schema.md
+  VARIABLES: [spec_folder_path, NEW_TABLES, NEW_COLUMNS, MODIFICATIONS, MIGRATIONS, SQL_SYNTAX, INDEXES, CONSTRAINTS, FOREIGN_KEYS, CHANGE_REASON, PERFORMANCE_CONSIDERATIONS, DATA_INTEGRITY_RULES]
+  CONDITIONAL: [requires_db_changes] == true
+</template_reference>
 
 </step>
 
@@ -592,42 +919,11 @@ Use the file-creator subagent to create file: sub-specs/api-spec.md ONLY IF API 
     SKIP this_step
 </decision_tree>
 
-<file_template>
-  <header>
-    # API Specification
-
-  This is the API specification for the spec detailed in @[spec_folder_path]/spec.md
-  </header>
-</file_template>
-
-<api_sections>
-  <routes>
-    - HTTP method
-    - endpoint path
-    - parameters
-    - response format
-  </routes>
-  <controllers>
-    - action names
-    - business logic
-    - error handling
-  </controllers>
-  <purpose>
-    - endpoint rationale
-    - integration with features
-  </purpose>
-</api_sections>
-
-<endpoint_template>
-  ## Endpoints
-
-  ### [HTTP_METHOD] [ENDPOINT_PATH]
-
-  **Purpose:** [DESCRIPTION]
-  **Parameters:** [LIST]
-  **Response:** [FORMAT]
-  **Errors:** [POSSIBLE_ERRORS]
-</endpoint_template>
+<template_reference>
+  TEMPLATE: @templates/api-specification.md
+  VARIABLES: [spec_folder_path, HTTP_METHOD, ENDPOINT_PATH, DESCRIPTION, LIST, FORMAT, POSSIBLE_ERRORS]
+  CONDITIONAL: [requires_api_changes] == true
+</template_reference>
 
 </step>
 
@@ -754,6 +1050,23 @@ Evaluate strategic impact without loading decisions.md and update it only if the
   IF roadmap.md NOT in context:
     USE: context-fetcher subagent
     REQUEST: "Get current development phase from roadmap.md"
+
+PRIORITIZATION HEURISTICS:
+  When multiple potential specs are identified, rank by:
+  1. Dependencies count (descending) - items blocking others ranked higher
+  2. Value tag (descending) - "high", "medium", "low" if available
+  3. Effort estimate (ascending) - "small", "medium", "large" if available
+  4. Lexicographic order - consistent tie-breaker
+
+PRESENT TOP 3-5 CANDIDATES:
+Recommended next specs (ranked):
+1. user-authentication (blocks: 3 features, value: high, effort: medium)
+2. database-setup (blocks: 2 features, value: high, effort: small)
+3. api-foundation (blocks: 1 feature, value: medium, effort: large)
+
+Which would you like to spec? [1-3, or describe different feature]
+
+REQUIRE USER CONFIRMATION before proceeding with selected item.
 
   <manual_reads>
     <mission_lite>

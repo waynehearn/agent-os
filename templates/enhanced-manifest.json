@@ -1,0 +1,79 @@
+{
+  "$schema": {
+    "description": "Enhanced manifest with section-level tracking",
+    "version": "2.0"
+  },
+  "metadata": {
+    "spec_name": "example-spec",
+    "created_date": "2025-08-16T10:30:00Z",
+    "last_modified": "2025-08-16T10:30:00Z"
+  },
+  "docs": {
+    "spec.md": {
+      "path": "@[spec_folder_path]/spec.md",
+      "full_hash": "sha256_of_entire_file",
+      "lastModified": "2025-08-16T10:30:00Z",
+      "token_estimate": 450,
+      "sections": {
+        "overview": {
+          "hash": "sha256_of_overview_section",
+          "tokens": 45,
+          "lines": "1-8"
+        },
+        "user_stories": {
+          "hash": "sha256_of_user_stories_section", 
+          "tokens": 120,
+          "lines": "9-25"
+        },
+        "spec_scope": {
+          "hash": "sha256_of_scope_section",
+          "tokens": 80,
+          "lines": "26-35"
+        },
+        "deliverables": {
+          "hash": "sha256_of_deliverables_section",
+          "tokens": 95,
+          "lines": "36-45"
+        }
+      }
+    },
+    "tasks.md": {
+      "path": "@[spec_folder_path]/tasks.md",
+      "full_hash": "sha256_of_tasks_file",
+      "lastModified": "2025-08-16T10:30:00Z",
+      "token_estimate": 350,
+      "sections": {
+        "task_1": {
+          "hash": "sha256_of_task_1",
+          "tokens": 80,
+          "lines": "1-12",
+          "status": "pending"
+        },
+        "task_2": {
+          "hash": "sha256_of_task_2", 
+          "tokens": 75,
+          "lines": "13-22",
+          "status": "pending"
+        }
+      }
+    },
+    "context/facts.md": {
+      "path": "@[spec_folder_path]/context/facts.md",
+      "full_hash": "sha256_of_facts",
+      "lastModified": "2025-08-16T10:30:00Z",
+      "token_estimate": 85,
+      "priority": "essential"
+    }
+  },
+  "context_budget": {
+    "total_available": 4000,
+    "essential_usage": 130,
+    "conditional_usage": 0,
+    "remaining": 3870
+  },
+  "selective_reads": {
+    "last_task_focus": "task_1",
+    "loaded_sections": ["overview", "task_1", "facts"],
+    "skipped_sections": ["user_stories", "task_2"]
+  }
+}

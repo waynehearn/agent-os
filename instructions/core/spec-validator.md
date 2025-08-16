@@ -76,7 +76,7 @@ Check presence and exact order of required sections. If sections are missing or 
 Within sections:
   - User Stories: ensure 1-3 stories; if >3, keep top 3 by clarity; if 0, synthesize 1 from Overview.
   - Spec Scope: ensure 1-5 numbered items; trim extras or add placeholders.
-  - Expected Deliverable: ensure 1-3 numbered, browser-testable outcomes; trim or synthesize from scope.
+  - Expected Deliverable: ensure 1-3 numbered, externally verifiable acceptance outcomes; trim or synthesize from scope.
 
 </step>
 

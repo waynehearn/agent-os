@@ -14,10 +14,11 @@ requires: ["mcp:atlassian"]
 <!-- Jira-driven initiation and optional post-sync extension. This file is only applied when present. -->
 
 <variables>
-  <jira_issue_key>[JIRA_ISSUE_KEY_OR_EMPTY]</jira_issue_key>
-  <use_jira_mcp>false</use_jira_mcp>
-  <post_spec_to_jira>true</post_spec_to_jira>
-  <jira_comment_mode>summary</jira_comment_mode> <!-- values: full | diff | summary -->
+  <!-- See docs/jira-extension.md for complete key definitions -->
+  <jira_issue_key>[JIRA_ISSUE_KEY_OR_EMPTY]</jira_issue_key>  <!-- Required - see Jira key table -->
+  <use_jira_mcp>false</use_jira_mcp>  <!-- Optional - see Jira key table -->
+  <post_spec_to_jira>true</post_spec_to_jira>  <!-- Optional - see Jira key table -->
+  <jira_comment_mode>summary</jira_comment_mode>  <!-- Optional - see Jira key table -->
 </variables>
 
 <step number="1.1" subagent="context-fetcher" name="jira_initiation">
@@ -27,7 +28,7 @@ requires: ["mcp:atlassian"]
 If a Jira issue key is supplied and Atlassian MCP is available, derive initial inputs from Jira to seed spec creation.
 
 <gate>
-  RUN ONLY IF: jira_mcp_available == true AND [use_jira_mcp] == true AND [jira_issue_key] matches /(?i)^(jira:)?[A-Z][A-Z0-9]+-\d+$/
+  RUN ONLY IF: jira_mcp_available == true AND [use_jira_mcp] == true AND [jira_issue_key] matches `/(?i)^(jira:)?[A-Z][A-Z0-9]+-\d+$/`
 </gate>
 
 <actions>
@@ -40,7 +41,7 @@ If a Jira issue key is supplied and Atlassian MCP is available, derive initial i
        - initial_user_stories := acceptance criteria if present, else derive 1–3 from description
        - in_scope := derive 1–5 concrete items from description/labels/components
        - out_of_scope := optional exclusions when explicit
-       - expected_deliverables := 1–3 browser‑testable outcomes
+       - expected_deliverables := 1–3 externally verifiable acceptance outcomes
        - tech_constraints := components/labels implying constraints
      - FILL any missing required fields per core Step 1 schema by prompting the user
   5. PROCEED to context gathering

@@ -7,9 +7,9 @@ IMPORTANT: Closely follow instructions located in @~/.agent-os/instructions/core
 Inputs (provide inline when invoking):
 
 - Required: main_idea (1–2 sentences), initial_user_stories (1–3), in_scope (1–5), expected_deliverables (1–3)
+- Optional: mode (express|standard|investigate, default: standard)
 - Optional: out_of_scope, tech_constraints, requires_db_changes, requires_api_changes, spec_name_override, overwrite_existing
 - Extensions may add their own inputs.
-
 
 Manual input example:
 
@@ -42,7 +42,16 @@ tech_constraints: >
 requires_db_changes: false
 requires_api_changes: false
 
+mode: standard
 spec_name_override: ""
 overwrite_existing: false
+
+# Investigation mode example:
+# mode: investigate
+# investigation_type: bug
+# symptoms: ["Login returns 500 errors intermittently"]
+# working_hypothesis: "Database connection pool exhaustion"
+# generate_tickets: true
+# ticket_project_key: "BUG"
 [/spec_inputs]
 ```

@@ -119,7 +119,6 @@ Use the context-fetcher subagent to gather minimal context for task understandin
     - REDACT secrets when [debug_trace_redact_secrets] == true (tokens, passwords, API keys, bearer strings, known env var patterns)
 </trace>
 
-
 <context_gathering>
   <essential_docs>
     - [spec_folder_path]/tasks.md for task breakdown (extract only the current parent task subtree)

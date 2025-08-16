@@ -86,7 +86,7 @@ What happens:
 Jira-driven (via Atlassian MCP, via extension)
 --------------------------
 
-Use this when you have a Jira issue key and an Atlassian MCP service configured, plus the Jira extension installed.
+For Jira integration configuration, see the [canonical Jira key reference](jira-extension.md#canonical-jira-key-reference).
 
 ```text
 @~/.agent-os/instructions/core/create-spec.md
@@ -94,33 +94,10 @@ Use this when you have a Jira issue key and an Atlassian MCP service configured,
 [jira_inputs]
 jira_issue_key: ABC-1234
 use_jira_mcp: true
-# Optional overrides if Jira fields are missing
-post_spec_to_jira: true
-jira_comment_mode: summary
-main_idea: ""
-initial_user_stories: []
-in_scope: []
-out_of_scope: []
-expected_deliverables: []
-tech_constraints: ""
-requires_db_changes: false
-requires_api_changes: false
-spec_name_override: ""
-overwrite_existing: false
 [/jira_inputs]
 ```
 
-Enable discovery debug output (optional): add `debug_extensions: true` anywhere in the same input block to print and save the Extensions Discovery Report.
-
-```text
-@~/.agent-os/instructions/core/create-spec.md
-
-[jira_inputs]
-jira_issue_key: ABC-1234
-use_jira_mcp: true
-debug_extensions: true
-[/jira_inputs]
-```
+Enable discovery debug output (optional): add `debug_extensions: true` anywhere in the same input block to print and save the Extensions Discovery Report. See the [canonical Jira key reference](jira-extension.md#canonical-jira-key-reference) for all configuration options.
 
 What happens:
 
@@ -136,55 +113,7 @@ What happens:
 Concrete Jira example: ASP.NET Core Web API new endpoint (with DB table and repo package)
 ----------------------------------------------------------------------------------------
 
-Use this when you want to add a new POST endpoint to an existing controller in a .NET Core ASP.NET Web API app. The app uses a layered architecture (API layer -> domain handler layer -> repo layer). The endpoint accepts a simple JSON payload, applies domain-level validation rules, and persists to the database via a repository that uses a specific NuGet package. A new table is required.
-
-```text
-@~/.agent-os/instructions/core/create-spec.md
-
-[jira_inputs]
-jira_issue_key: API-482
-use_jira_mcp: true
-
-# Provide overrides if Jira is missing fields
-main_idea: >
-  Add POST /api/v1/events to existing EventsController to accept a JSON payload and persist it using the domain handler + repository pattern.
-
-initial_user_stories:
-  - title: Create Event endpoint
-    story: As an integrator, I want to POST a new Event JSON to /api/v1/events so that it is validated and stored for downstream processing.
-    details: >
-      Payload example: {"type":"purchase","userId":"u-123","occurredAt":"2025-08-14T12:00:00Z","metadata":{"sku":"ABC-123"}}
-      The API layer forwards to a domain handler that enforces validation rules, then calls the repository to persist.
-
-in_scope:
-  - API: Add POST /api/v1/events to existing EventsController
-  - Domain: Implement EventCreateHandler with validation rules
-  - Validation rules (domain): type required (non-empty, <= 50 chars); userId required (non-empty); occurredAt required (UTC, not in future); metadata optional (<= 10 KB JSON)
-  - Repository: Add IEventRepository + implementation using NuGet package [NuGetPackageId]
-  - Database: Create Events table (Id PK GUID, Type NVARCHAR(50), UserId NVARCHAR(100), OccurredAt DATETIMEOFFSET, Metadata NVARCHAR(MAX), CreatedAt DATETIMEOFFSET)
-  - Wiring: Register handler and repository in DI; configure package initialization if required
-  - Tests: Unit tests for domain validation; integration test for POST endpoint (201 Created) and DB insert
-
-out_of_scope:
-  - UI or portal changes
-  - Reporting/analytics pipelines
-  - Bulk ingestion endpoints
-
-expected_deliverables:
-  - POST /api/v1/events returns 201 Created with Location header and persisted record ID
-  - Events table exists with migration applied and record persisted end-to-end
-  - Domain validation rejects invalid payloads with 400 and problem details
-
-tech_constraints: >
-  ASP.NET Core Web API; layered architecture (API -> Domain -> Repo); use specific NuGet package in repo layer: [NuGetPackageId] ([version]). Provide DI registration and any necessary configuration.
-
-requires_db_changes: true
-requires_api_changes: true
-
-spec_name_override: "add-events-post-endpoint"
-overwrite_existing: false
-[/jira_inputs]
-```
+For complex examples with detailed overrides, see the [canonical Jira key reference](jira-extension.md#canonical-jira-key-reference) and the full examples in `docs/jira-extension.md`.
 
 Jira comment result (example):
 
@@ -276,7 +205,7 @@ Tips & Pitfalls
 ---------------
 
 - Keep main_idea to 1–2 sentences; it drives the spec name if you don’t override
-- Ensure deliverables are browser-testable outcomes
+- Ensure deliverables are externally verifiable outcomes
 - For Jira keys, formats like `ABC-1234` are accepted; an optional `jira:` prefix is also allowed
 - If the technical spec isn’t needed for a simple change, it’s still created but can be minimal; DB/API sub-specs are conditional
 
@@ -306,6 +235,258 @@ debug_subagents: true
 debug_trace_redact_secrets: true
 debug_trace_include_bodies: false
 [/execution_context]
+```
+
+## Schemas and Structure
+
+### Spec Input Fields (Authoritative List)
+
+| Field | Type | Required | Constraints | Description |
+|-------|------|----------|-------------|-------------|
+| `main_idea` | string | Yes | 1-2 sentences | Core goal/intent for this feature |
+| `initial_user_stories` | array | Yes | 1-5 stories | User stories with title, story, details |
+| `in_scope` | array | Yes | 1-8 items | Clear, concrete scope items |
+| `out_of_scope` | array | No | 0-5 items | Explicit exclusions |
+| `expected_deliverables` | array | Yes | 1-5 items | Externally verifiable outcomes |
+| `tech_constraints` | string | No | - | Framework/version/performance limits |
+| `requires_db_changes` | boolean | No | - | Database schema changes needed |
+| `requires_api_changes` | boolean | No | - | API contract changes needed |
+| `spec_name_override` | string | No | - | Custom spec name (auto-generated if empty) |
+| `overwrite_existing` | boolean | No | - | Overwrite existing spec if exists |
+| `mode` | string | No | express\|standard\|investigate | Workflow mode (default: standard) |
+| `non_interactive` | boolean | No | default: false | Alias for --auto-approve, enables deterministic defaults |
+| `investigation_type` | string | No (required if mode=investigate) | bug\|performance\|security\|architecture\|feasibility | Type of investigation |
+| `symptoms` | array | No | 1-8 items | Observed issues, questions, or areas of concern |
+| `working_hypothesis` | string | No | 1-2 sentences | Optional starting theory or direction |
+| `affected_systems` | array | No | 0-5 items | Components or areas that might be involved |
+| `generate_tickets` | boolean | No | default: false | Auto-generate Jira tickets from findings |
+| `ticket_project_key` | string | No (required if generate_tickets=true) | - | Jira project key for ticket creation |
+| `ticket_priority_default` | string | No | High\|Medium\|Low | Default priority for generated tickets (default: Medium) |
+| `ticket_labels` | array | No | 0-5 items | Standard labels to apply to all tickets |
+
+### Required Section Order
+
+#### spec.md Structure
+
+1. **Overview** - Feature summary and goals
+2. **User Stories** - Detailed user story breakdown
+3. **Scope** - In-scope and out-of-scope items
+4. **Deliverables** - Externally verifiable acceptance outcomes
+5. **Technical Details** - Architecture, dependencies, constraints
+6. **API Specification** - Endpoints, contracts, data models (if applicable)
+7. **Database Changes** - Schema changes, migrations (if applicable)
+
+#### tasks.md Structure
+
+1. **Task Summary** - High-level breakdown
+2. **Implementation Tasks** - Ordered list of development tasks
+3. **Testing Tasks** - Validation and quality assurance tasks
+4. **Documentation Tasks** - User guides, API docs, etc.
+5. **Deployment Tasks** - Release and deployment activities
+
+### Manifest Schema
+
+```json
+{
+  "spec_name": "string - normalized feature name",
+  "created_date": "string - ISO 8601 timestamp",
+  "last_modified": "string - ISO 8601 timestamp",
+  "checksum": "string - SHA256 hash of spec.md content",
+  "tasks_checksum": "string - SHA256 hash of tasks.md content",
+  "mode": "string - express|standard",
+  "validation_status": "string - passed|failed|pending",
+  "dependencies": ["array of string - prerequisite specs"],
+  "extensions_used": ["array of string - extension names applied"]
+}
+```
+
+#### Hashing Rules
+
+- **Algorithm:** SHA256
+- **Input:** File content with normalized line endings (LF only)
+- **Encoding:** UTF-8
+- **Update:** Hash regenerated on any content change
+
+## Non-Interactive Mode
+
+### Behavior
+
+When `non_interactive: true` is set:
+
+- **Equivalent to:** `--auto-approve` flag
+- **User prompts:** Automatically answered with deterministic defaults
+- **Confirmations:** Skipped with default choices logged
+- **Validation errors:** Stop execution (no retry prompts)
+
+### Default Responses
+
+| Prompt Type | Default Response | Logged As |
+|-------------|------------------|-----------|
+| "Continue with spec creation?" | Yes | "DEFAULT: Continuing with spec creation" |
+| "Overwrite existing spec?" | No | "DEFAULT: Preserving existing spec" |
+| "Add more user stories?" | No | "DEFAULT: Using provided user stories only" |
+| "Validate dependencies?" | Yes | "DEFAULT: Running dependency validation" |
+| Extension prompts | Extension defaults | "DEFAULT: [extension-name] using defaults" |
+
+### Logging Requirements
+
+All skipped prompts and default choices must be logged with prefix "DEFAULT:" for audit trails.
+
+### Example Usage
+
+```yaml
+# CI/CD pipeline usage
+non_interactive: true
+main_idea: "Automated feature from ticket ABC-123"
+# ... other required fields
+```
+
+## Investigation Mode
+
+### Overview
+
+Investigation mode supports bug diagnosis, performance analysis, security audits, and exploratory development work. It creates structured investigation reports and can automatically generate actionable Jira tickets for implementation.
+
+### When to Use Investigation Mode
+
+- **Bug Diagnosis**: Root cause analysis for production issues
+- **Performance Analysis**: Identifying bottlenecks and optimization opportunities  
+- **Security Audits**: Vulnerability assessment and threat analysis
+- **Architecture Research**: Evaluating approaches for complex changes
+- **Feasibility Studies**: Determining viability of proposed features
+
+### Investigation Types
+
+#### Bug Investigation
+
+```yaml
+mode: investigate
+investigation_type: bug
+symptoms:
+  - "Login endpoint returns 500 errors intermittently"
+  - "Error rate increases during peak hours"
+working_hypothesis: "Database connection pool exhaustion under load"
+expected_deliverables:
+  - type: "finding"
+    outcome: "Root cause identified with reproduction method"
+  - type: "tickets"
+    outcome: "3-5 actionable Jira tickets created for fixes"
+```
+
+#### Performance Investigation
+
+```yaml
+mode: investigate
+investigation_type: performance
+symptoms:
+  - "User dashboard loads in 8+ seconds"
+  - "Database queries timing out during peak hours"
+affected_systems: ["web-frontend", "user-service", "postgres-db"]
+generate_tickets: true
+ticket_project_key: "PERF"
+```
+
+### Investigation Outputs
+
+Investigation mode creates different outputs than standard specs:
+
+#### Core Investigation Files
+
+- `investigation-report.md` - Comprehensive findings and analysis
+- `findings-summary.md` - Executive summary for stakeholders
+- `action-items.md` - Prioritized next steps
+- `jira-tickets.yaml` - Generated ticket definitions (if enabled)
+- `implementation-specs.yaml` - Ready-to-use create-spec inputs
+
+#### Investigation Report Structure
+
+1. **Investigation Summary** - Type, scope, timeline, key questions
+2. **Methodology** - Approach, tools used, data sources
+3. **Key Findings** - Discoveries with supporting evidence
+4. **Root Cause Analysis** - Primary causes and contributing factors
+5. **Recommendations** - Immediate actions, short-term and long-term solutions
+6. **Next Steps** - Implementation priorities and resource requirements
+
+### Ticket Generation
+
+When `generate_tickets: true` is set, the system automatically creates structured Jira tickets:
+
+#### Ticket Categories
+
+- **Immediate Fixes** - Critical bugs and security issues (High priority)
+- **Improvement Opportunities** - Performance and UX enhancements (Medium priority)
+- **Technical Debt** - Refactoring and maintenance work (Low-Medium priority)
+- **New Features** - Capabilities identified during investigation (Medium priority)
+
+#### Ticket Structure
+
+Each generated ticket includes:
+
+- Clear title and description with context
+- Acceptance criteria based on investigation findings
+- Priority assessment (High/Medium/Low)
+- Links back to investigation report
+- Appropriate labels and metadata
+- Ready-to-use create-spec inputs for complex items
+
+### Investigation → Implementation Flow
+
+```bash
+# 1. Run investigation
+claude create-spec mode=investigate \
+  investigation_type=performance \
+  symptoms="Dashboard loads slowly" \
+  generate_tickets=true \
+  ticket_project_key="PERF"
+
+# Outputs:
+# - Investigation report with findings
+# - 4 Jira tickets created automatically  
+# - 2 create-spec templates generated
+
+# 2. Review tickets in Jira, prioritize work
+
+# 3. Implement high-priority items
+claude create-spec \
+  jira_issue_key=PERF-123 \
+  use_jira_mcp=true
+
+# Or use generated spec template:
+claude create-spec \
+  @.agent-os/investigations/dashboard-performance/specs/database-optimization.yaml
+```
+
+### Example Investigation Scenarios
+
+#### Database Performance Issue
+
+```yaml
+mode: investigate
+investigation_type: performance
+symptoms:
+  - "API response times >3 seconds"
+  - "Database CPU at 90% during business hours"
+  - "Connection pool warnings in logs"
+working_hypothesis: "Missing database indexes causing table scans"
+affected_systems: ["api-gateway", "user-service", "postgres-primary"]
+generate_tickets: true
+ticket_project_key: "DB"
+ticket_labels: ["performance", "database"]
+```
+
+#### Security Vulnerability Assessment
+
+```yaml
+mode: investigate
+investigation_type: security
+symptoms:
+  - "Unusual authentication patterns detected"
+  - "Increased failed login attempts"
+  - "Suspicious API requests from new IP ranges"
+affected_systems: ["auth-service", "rate-limiter", "api-gateway"]
+generate_tickets: true
+ticket_project_key: "SEC"
+ticket_priority_default: "High"
 ```
 
 See also

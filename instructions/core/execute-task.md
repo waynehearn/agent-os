@@ -18,7 +18,6 @@ Execute a specific task along with its sub-tasks systematically following a TDD 
   EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
 </pre_flight_check>
 
-
 <variables>
   <spec_name>[SPEC_NAME]</spec_name>
   <spec_folder>[SPEC_FOLDER]</spec_folder>
@@ -29,7 +28,6 @@ Execute a specific task along with its sub-tasks systematically following a TDD 
   <debug_trace_dir>@[spec_folder_path]/debug/exec-trace</debug_trace_dir>
   <debug_task_log>@[debug_trace_dir]/task-[PARENT_TASK_NUMBER].log</debug_task_log>
 </variables>
-
 
 <process_flow>
 

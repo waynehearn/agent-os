@@ -14,12 +14,14 @@ ELSE:
 ## General Formatting
 
 ### Indentation
+
 - Use 4 spaces for indentation (never tabs) - C# standard
 - Maintain consistent indentation throughout files
 - Align nested structures for readability
 - Use braces on new lines (Allman style)
 
 ### Naming Conventions
+
 - **Methods and Properties**: Use PascalCase (e.g., `GetUserProfile`, `CalculateTotal`)
 - **Variables and Parameters**: Use camelCase (e.g., `userProfile`, `totalAmount`)
 - **Classes, Interfaces, and Namespaces**: Use PascalCase (e.g., `UserProfile`, `IPaymentProcessor`)
@@ -28,12 +30,14 @@ ELSE:
 - **Interfaces**: Prefix with "I" (e.g., `ILocationRepository`)
 
 ### String Formatting
+
 - Use double quotes for strings: `"Hello World"`
 - Use string interpolation for dynamic content: `$"Hello {name}"`
 - Use verbatim strings for file paths: `@"C:\Path\To\File"`
 - Use raw string literals for multi-line strings in C# 11+
 
 ### Code Comments
+
 - Add brief comments above non-obvious business logic
 - Document complex algorithms or calculations
 - Explain the "why" behind implementation choices

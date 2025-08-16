@@ -14,6 +14,7 @@ ELSE:
 ## Core Principles
 
 ### Keep It Simple
+
 - Implement code in the fewest lines possible
 - Avoid over-engineering solutions
 - Choose straightforward approaches over clever ones
@@ -22,6 +23,7 @@ ELSE:
 - Classes should be under 100 lines representing single concept
 
 ### Optimize for Readability
+
 - Prioritize code clarity over micro-optimizations
 - Write self-documenting code with clear variable names
 - Add comments for "why" not "what"
@@ -29,6 +31,7 @@ ELSE:
 - Maintain consistent indentation and formatting
 
 ### DRY (Don't Repeat Yourself)
+
 - Extract repeated business logic to private methods
 - Extract repeated DTOs to reusable contracts
 - Create utility functions for common operations
@@ -36,6 +39,7 @@ ELSE:
 - Leverage repository base classes for common data access
 
 ### SOLID Design Principles
+
 - **Single Responsibility**: Each class has one reason to change
 - **Open/Closed**: Open for extension, closed for modification
 - **Liskov Substitution**: Derived classes must be substitutable for base classes
@@ -43,6 +47,7 @@ ELSE:
 - **Dependency Inversion**: Depend on abstractions, not concretions
 
 ### File Structure and Architecture
+
 - Follow layered architecture: WebApi → Domain → Repository
 - Keep files focused on a single responsibility
 - Group related functionality together
@@ -64,7 +69,9 @@ ELSE:
 ## Dependencies
 
 ### Choose Libraries Wisely
+
 When adding third-party dependencies:
+
 - Select the most popular and actively maintained option
 - Check the library's GitHub repository for:
   - Recent commits (within last 6 months)

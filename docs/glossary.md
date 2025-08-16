@@ -81,7 +81,7 @@ Initiation modes
   - Roadmap-driven trigger that selects the next uncompleted item from `@.agent-os/product/roadmap.md`.
 
 - jira_inputs
-  - Jira-driven mode that maps a Jira issue (`jira_issue_key`) into spec inputs; supports overrides.
+  - Jira-driven mode that maps a Jira issue (`jira_issue_key`) into spec inputs; supports overrides (see [Jira key reference](jira-extension.md#canonical-jira-key-reference)).
 
 - spec_inputs
   - Manual mode where all inputs are provided explicitly.

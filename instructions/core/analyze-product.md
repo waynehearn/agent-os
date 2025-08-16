@@ -170,7 +170,6 @@ Refine the generated documentation to ensure accuracy for the existing product b
   [CONTINUE_WITH_STANDARD_PHASES]
 </roadmap_template>
 
-
 </step>
 
 <step number="5" name="final_verification">
@@ -217,7 +216,6 @@ Verify installation completeness and provide clear next steps for the user to st
 
   Your codebase is now Spec Agent Kibo-enabled! 🚀
 </summary_template>
-
 
 </step>
 

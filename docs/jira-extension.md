@@ -6,6 +6,28 @@ lastUpdated: 2025-08-15
 
 Use this guide to enable and run the Jira-driven create-spec flow via the Atlassian extension.
 
+## Canonical Jira Key Reference
+
+| Key Name | Description | Example | Required |
+|----------|-------------|---------|----------|
+| `jira_issue_key` | Jira issue identifier | "ABC-1234", "jira:PROD-123" | Yes |
+| `use_jira_mcp` | Enable Atlassian MCP integration | true, false | No (default: false) |
+| `post_spec_to_jira` | Post spec back to Jira issue | true, false | No (default: false) |
+| `jira_comment_mode` | Format for Jira comments | "summary", "diff", "full" | No (default: "summary") |
+| `main_idea` | Core goal/intent override | "Add user logout button" | No (from Jira if available) |
+| `initial_user_stories` | User stories override | [{"title": "...", "story": "...", "details": "..."}] | No (from Jira if available) |
+| `in_scope` | Scope items override | ["Add logout button", "Session termination"] | No (from Jira if available) |
+| `out_of_scope` | Explicit exclusions override | ["Multi-device logout", "Remember me"] | No |
+| `expected_deliverables` | Acceptance outcomes override | ["User can click logout", "Session invalidated"] | No (from Jira if available) |
+| `tech_constraints` | Technical limitations override | "ASP.NET Core 9, PostgreSQL 17" | No |
+| `requires_db_changes` | Database changes flag | true, false | No (default: false) |
+| `requires_api_changes` | API changes flag | true, false | No (default: false) |
+| `spec_name_override` | Custom spec name | "user-logout-feature" | No (auto-generated if empty) |
+| `overwrite_existing` | Overwrite existing spec | true, false | No (default: false) |
+| `debug_extensions` | Enable extension debugging | true, false | No (default: false) |
+
+**This is the single source of truth for all Jira keys. Reference this table from other documentation.**
+
 Overview
 --------
 
@@ -365,4 +387,3 @@ Notes
 - Keys accept formats like `ABC-1234` or `jira:ABC-1234` (prefix is stripped).
 - If Jira lacks good fields, supply overrides in the same block.
 - For non-Jira quickstarts, use the manual `[spec_inputs]` path instead. See Quickstart.
-

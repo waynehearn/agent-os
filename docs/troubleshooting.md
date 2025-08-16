@@ -12,7 +12,7 @@ Paths/files
 - Spec folder not found after run
   - Confirm the date and normalized name (kebab-case ≤ 5 words)
   - Check `@.agent-os/specs/` for a similarly named folder
-  - If you used Jira-driven mode via extension, ensure the extension file exists and `jira_issue_key` was correct
+  - If you used Jira-driven mode via extension, ensure the extension file exists and `jira_issue_key` was correct (see [Jira key reference](jira-extension.md#canonical-jira-key-reference))
 
 - Sub-specs not created
   - Confirm flags:
@@ -84,7 +84,7 @@ Jira sync (extension)
 ---------
 
 - Comment not posted
-  - Ensure the Jira extension is installed, `post_spec_to_jira: true`, `jira_issue_key` is valid (e.g., ABC-123), and Atlassian MCP is available in your editor
+  - Ensure the Jira extension is installed, `post_spec_to_jira: true`, `jira_issue_key` is valid (e.g., ABC-123), and Atlassian MCP is available in your editor (see [Jira key reference](jira-extension.md#canonical-jira-key-reference))
   - If an identical hash footer exists, the flow will skip posting by design
 - Comment too large
   - The flow automatically falls back to posting only Overview and Expected Deliverable sections with a repo path reference

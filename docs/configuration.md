@@ -43,7 +43,7 @@ Atlassian MCP (optional, via extension)
 To drive spec creation from Jira tickets, install the Jira extension and configure an Atlassian MCP service in your editor.
 
 - Place `instructions/extensions/create-spec/atlassian-jira.md` in your instructions folder (home or project). It is optional and only loaded if present.
-- Pass `jira_issue_key` in `[jira_inputs]`
+- Pass `jira_issue_key` in `[jira_inputs]` (see [Jira key reference](jira-extension.md#canonical-jira-key-reference))
 - Set `use_jira_mcp: true`
 - Provide overrides for any missing fields (main_idea, user stories, deliverables, etc.)
 
@@ -51,7 +51,7 @@ Jira sync flags (extension)
 ---------------
 
 - `post_spec_to_jira: true|false`
-  - When true and a valid `jira_issue_key` is provided with MCP available, the extension posts to the Jira issue after creating `spec.md`.
+  - When true and a valid `jira_issue_key` is provided with MCP available, the extension posts to the Jira issue after creating `spec.md` (see [Jira key reference](jira-extension.md#canonical-jira-key-reference)).
 - `jira_comment_mode: summary|diff|full`
   - summary (default): posts a concise change summary on subsequent runs
   - diff: posts a unified diff against the last synced version
