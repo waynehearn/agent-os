@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Spec Agent Kibo Claude Code Uninstall Script (local-only)
+# Spec Agent K Claude Code Uninstall Script (local-only)
 # Safely removes files installed under ~/.claude (commands and agents).
 
 set -euo pipefail
@@ -75,7 +75,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-echo "🧹 Spec Agent Kibo Claude Code Uninstall"
+echo "🧹 Spec Agent K Claude Code Uninstall"
 [[ "$DRY_RUN" == true ]] && echo "(dry run)"
 
 if [[ "$REMOVE_ALL" == true ]]; then

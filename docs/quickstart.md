@@ -1,15 +1,15 @@
 ---
-title: Spec Agent Kibo – Quickstart
+title: Spec Agent K – Quickstart
 version: 1.0
 lastUpdated: 2025-08-14
 ---
 
 Start here if you’re new. In ~10 minutes you’ll create a spec from a simple example, verify outputs, and run targeted tasks.
 
-What is Spec Agent Kibo?
+What is Spec Agent K?
 ------------------
 
-Spec Agent Kibo is a system for spec‑driven agentic development. It gives AI coding agents structured workflows aligned to your standards, stack, and codebase context so they ship quality code on the first try—not the fifth.
+Spec Agent K is a system for spec‑driven agentic development. It gives AI coding agents structured workflows aligned to your standards, stack, and codebase context so they ship quality code on the first try—not the fifth.
 
 Works with
 ----------
@@ -22,7 +22,7 @@ Works with
 Prerequisites
 -------------
 
-- Spec Agent Kibo instructions at `@~/.agent-os/instructions/`
+- Spec Agent K instructions at `@~/.agent-os/instructions/`
 - For helper scripts (discovery, hashing): Bash + `jq` on PATH (see `docs/installation.md`)
 
 Local demo (ready-to-run)
@@ -91,7 +91,7 @@ Example (truncated):
     "status": "success"
   },
   "tasks": [
-  { "id": "1", "title": "Frontend: Render Spec Agent Kibo badge widget", "status": "done" }
+  { "id": "1", "title": "Frontend: Render Spec Agent K badge widget", "status": "done" }
   ]
 }
 ```
@@ -99,7 +99,7 @@ Example (truncated):
 Step 4 — View the demo site
 ---------------------------
 
-Open `examples/quickstart/site/index.html` in your browser. After tasks complete, refresh the page to see the Spec Agent Kibo badge rendered inside `#kibo-agent-badge-container`.
+Open `examples/quickstart/site/index.html` in your browser. After tasks complete, refresh the page to see the Spec Agent K badge rendered inside `#kibo-agent-badge-container`.
 
 Step 5 — Validate (optional but recommended)
 --------------------------------------------
@@ -185,6 +185,6 @@ Context optimizations (FYI)
 External resources
 ------------------
 
-- Spec Agent Kibo website (docs, installation, best practices): [buildermethods.com/agent-os](https://buildermethods.com/agent-os)
+- Spec Agent K website (docs, installation, best practices): [buildermethods.com/agent-os](https://buildermethods.com/agent-os)
 - Builder Briefing newsletter: [buildermethods.com](https://buildermethods.com)
 - YouTube (Brian Casel): [youtube.com/@briancasel](https://youtube.com/@briancasel)

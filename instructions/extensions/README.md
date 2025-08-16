@@ -1,5 +1,5 @@
 ---
-title: Spec Agent Kibo – Extensions
+title: Spec Agent K – Extensions
 version: 1.0
 lastUpdated: 2025-08-14
 ---

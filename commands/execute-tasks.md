@@ -1,6 +1,6 @@
 # Execute Tasks
 
-Execute one or more spec tasks using the Spec Agent Kibo task loop.
+Execute one or more spec tasks using the Spec Agent K task loop.
 
 Refer to the instructions located in @~/.agent-os/instructions/core/execute-tasks.md
 

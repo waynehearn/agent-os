@@ -1,5 +1,5 @@
 ---
-title: Spec Agent Kibo – Troubleshooting
+title: Spec Agent K – Troubleshooting
 version: 1.0
 lastUpdated: 2025-08-14
 ---

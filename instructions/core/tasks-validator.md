@@ -1,5 +1,5 @@
 ---
-description: Tasks Validator for Spec Agent Kibo
+description: Tasks Validator for Spec Agent K
 globs:
 alwaysApply: false
 version: 1.0

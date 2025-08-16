@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Spec Agent Kibo will be documented in this file.
+All notable changes to Spec Agent K will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added [1.4.0]
 
-- Renamed to Spec Agent Kibo
+- Renamed to Spec Agent K
   - Cause Kibo and Specs...😉
 - Documentation folder with local, offline-first docs:
   - `docs/index.md`, `docs/installation.md`, `docs/quickstart.md`, `docs/configuration.md`
@@ -163,7 +163,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Each agent uses only necessary tools (e.g., test-runner uses only Bash, Read, Grep, Glob)
 - Automatic fallback ensures compatibility for users without Claude Code
 - Consistent `IF has_[agent_name]:` pattern reduces code complexity
-- All agents follow Spec Agent Kibo conventions (branch naming, commit messages, file templates)
+- All agents follow Spec Agent K conventions (branch naming, commit messages, file templates)
 
 ## [1.1.0] - 2025-07-29
 
@@ -210,7 +210,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial release of Spec Agent Kibo framework
+- Initial release of Spec Agent K framework
 - Core instruction files:
   - `plan-product.md` for product initialization
   - `create-spec.md` for feature specification

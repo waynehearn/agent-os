@@ -2,7 +2,7 @@
 
 ## Context
 
-Global development guidelines for Spec Agent Kibo projects.
+Global development guidelines for Spec Agent K projects.
 
 <conditional-block context-check="core-principles">
 IF this Core Principles section already read in current context:

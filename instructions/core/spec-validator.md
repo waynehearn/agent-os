@@ -1,5 +1,5 @@
 ---
-description: Spec Validator for Spec Agent Kibo
+description: Spec Validator for Spec Agent K
 globs:
 alwaysApply: false
 version: 1.0

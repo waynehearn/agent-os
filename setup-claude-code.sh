@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Spec Agent Kibo Claude Code Setup Script (local-only)
+# Spec Agent K Claude Code Setup Script (local-only)
 # Copies commands and agents from this repo into ~/.claude. No network calls.
 
 set -euo pipefail
@@ -96,13 +96,13 @@ EOF
     esac
 done
 
-echo "🚀 Spec Agent Kibo Claude Code Setup (local)"
+echo "🚀 Spec Agent K Claude Code Setup (local)"
 echo "========================================="
 echo
 
-# Check if Spec Agent Kibo base installation is present (optional)
+# Check if Spec Agent K base installation is present (optional)
 if [ ! -d "$HOME/.agent-os/instructions" ] || [ ! -d "$HOME/.agent-os/standards" ]; then
-        echo "⚠️  Spec Agent Kibo base installation not found!"
+        echo "⚠️  Spec Agent K base installation not found!"
         echo "   Run: bash ./setup.sh (from the repo root)"
 fi
 
@@ -142,7 +142,7 @@ echo
 if [[ "$DRY_RUN" == true ]]; then
     echo "🧪 Dry run complete (no changes written)"
 else
-    echo "✅ Spec Agent Kibo Claude Code installation complete!"
+    echo "✅ Spec Agent K Claude Code installation complete!"
     if [[ "$DO_UPGRADE" == true ]]; then
         echo "🔄 Upgrade mode used. Backups (if any) in ~/.claude/.backup/$TIMESTAMP"
     fi

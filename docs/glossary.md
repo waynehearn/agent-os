@@ -1,5 +1,5 @@
 ---
-title: Spec Agent Kibo – Glossary
+title: Spec Agent K – Glossary
 version: 1.0
 lastUpdated: 2025-08-14
 ---

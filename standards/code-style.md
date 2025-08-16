@@ -2,7 +2,7 @@
 
 ## Context
 
-Global code style rules for Spec Agent Kibo projects.
+Global code style rules for Spec Agent K projects.
 
 <conditional-block context-check="general-formatting">
 IF this General Formatting section already read in current context:

@@ -1,5 +1,5 @@
 ---
-description: Deterministic Spec Name Normalizer for Spec Agent Kibo
+description: Deterministic Spec Name Normalizer for Spec Agent K
 globs:
 alwaysApply: false
 version: 1.0

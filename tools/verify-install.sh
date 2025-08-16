@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Spec Agent Kibo – Verify local installation
+# Spec Agent K – Verify local installation
 # Checks that key files exist under ~/.agent-os and optional editor setups.
 
 set -uo pipefail
@@ -12,7 +12,7 @@ print_usage() {
   cat <<EOF
 Usage: $(basename "$0") [--check-claude] [--check-cursor]
 
-Verifies Spec Agent Kibo installation by checking for expected files.
+Verifies Spec Agent K installation by checking for expected files.
 
 Options:
   --check-claude    Also verify ~/.claude commands and agents
@@ -52,7 +52,7 @@ check_dir() {
   fi
 }
 
-echo "🔎 Verifying Spec Agent Kibo installation"
+echo "🔎 Verifying Spec Agent K installation"
 echo "========================================"
 
 echo "\nHome directories"

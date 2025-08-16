@@ -2,7 +2,7 @@
 
 ## Context
 
-C# specific formatting rules for Spec Agent Kibo projects following Mozu.Location patterns.
+C# specific formatting rules for Spec Agent K projects following Mozu.Location patterns.
 
 ## Class Structure
 
@@ -25,13 +25,13 @@ namespace Mozu.Location.WebApi.Controllers
     {
         // 4. Private fields
         private readonly ILocationAdminHandler _locationHandler;
-        
+
         // 5. Constructor
         public LocationAdminController(ILocationAdminHandler locationHandler)
         {
             _locationHandler = locationHandler;
         }
-        
+
         // 6. Public methods
         // 7. Private methods
     }
@@ -43,7 +43,7 @@ namespace Mozu.Location.WebApi.Controllers
 ```csharp
 [HttpGet("{locationCode}")]
 public async Task<ActionResult<LocationDto>> GetLocationAsync(
-    string locationCode, 
+    string locationCode,
     CancellationToken cancellationToken = default)
 {
     var location = await _locationHandler.GetLocationAsync(locationCode, cancellationToken);
@@ -68,7 +68,7 @@ public interface ILocationRepository
 public class LocationRepository : MongoRepositoryBase<Location>, ILocationRepository
 {
     public LocationRepository(IMongoClient mongoClient) : base(mongoClient) { }
-    
+
     public async Task<Location> GetAsync(string locationCode, CancellationToken cancellationToken = default)
     {
         var filter = FilterBuilder.Eq(x => x.LocationCode, locationCode);
@@ -89,13 +89,13 @@ public class LocationAdminHandler : ILocationAdminHandler
 {
     private readonly ILocationRepository _locationRepository;
     private readonly IMapper _mapper;
-    
+
     public LocationAdminHandler(ILocationRepository locationRepository, IMapper mapper)
     {
         _locationRepository = locationRepository;
         _mapper = mapper;
     }
-    
+
     public async Task<LocationDto> GetLocationAsync(string locationCode, CancellationToken cancellationToken = default)
     {
         var location = await _locationRepository.GetAsync(locationCode, cancellationToken);
@@ -114,7 +114,7 @@ public class CreateLocationRequestValidator : AbstractValidator<CreateLocationRe
         RuleFor(x => x.LocationCode)
             .NotEmpty()
             .MaximumLength(50);
-            
+
         RuleFor(x => x.Name)
             .NotEmpty()
             .MaximumLength(200);
@@ -125,7 +125,7 @@ public class CreateLocationRequestValidator : AbstractValidator<CreateLocationRe
 ### Exception Handling and Localized Error Messages Pattern
 
   When implementing error handling in this codebase, follow these guidelines:
-  
+
 - Never catch and convert to ActionResult unless absolutely necessary
 - Let exceptions bubble up to the framework
 - Don't use try-catch in controllers for business logic exceptions
@@ -139,7 +139,7 @@ public class CreateLocationRequestValidator : AbstractValidator<CreateLocationRe
   The codebase follows a **domain-first exception pattern** rather than controller-level error handling:
 
   **❌ Avoid ASP.NET return types for business logic errors:**
-  
+
   ```csharp
   // DON'T do this - puts business logic in controller layer
   if (location.Code == null)
@@ -381,13 +381,13 @@ public async Task<Location> GetLocationAsync(string locationCode)
     {
         throw new ArgumentException("Location code cannot be null or empty", nameof(locationCode));
     }
-    
+
     var location = await _repository.GetAsync(locationCode);
     if (location == null)
     {
         throw new LocationNotFoundException($"Location with code '{locationCode}' not found");
     }
-    
+
     return location;
 }
 ```
@@ -430,7 +430,7 @@ public class LocationAdminHandlerTests
     private LocationAdminHandler _handler;
     private ILocationRepository _locationRepository;
     private IMapper _mapper;
-    
+
     [SetUp]
     public void SetUp()
     {
@@ -438,7 +438,7 @@ public class LocationAdminHandlerTests
         _mapper = Substitute.For<IMapper>();
         _handler = new LocationAdminHandler(_locationRepository, _mapper);
     }
-    
+
     [Test]
     public async Task GetLocationAsync_ValidLocationCode_ReturnsLocation()
     {
@@ -446,14 +446,14 @@ public class LocationAdminHandlerTests
         var locationCode = "STORE001";
         var location = new Location { LocationCode = locationCode };
         var locationDto = new LocationDto { LocationCode = locationCode };
-        
+
         _locationRepository.GetAsync(locationCode, Arg.Any<CancellationToken>())
             .Returns(location);
         _mapper.Map<LocationDto>(location).Returns(locationDto);
-        
+
         // Act
         var result = await _handler.GetLocationAsync(locationCode);
-        
+
         // Assert
         result.Should().NotBeNull();
         result.LocationCode.Should().Be(locationCode);
@@ -473,10 +473,10 @@ public class LocationAdminControllerIntegrationTests : IntegrationTestBase
         // Arrange
         var locationCode = "STORE001";
         await SeedLocationAsync(locationCode);
-        
+
         // Act
         var response = await Client.GetAsync($"/commerce/admin/locations/{locationCode}");
-        
+
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var content = await response.Content.ReadAsStringAsync();

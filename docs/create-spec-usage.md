@@ -14,7 +14,7 @@ It also covers expected outputs, idempotency behavior, and common pitfalls.
 Prerequisites
 -------------
 
-- Spec Agent Kibo instructions folder is available at `@~/.agent-os/instructions/`
+- Spec Agent K instructions folder is available at `@~/.agent-os/instructions/`
 - Standards docs are present in `@.agent-os/standards/`
 - Optional: Atlassian MCP configured if you want to pull from Jira (enable by adding the Jira extension file under `@~/.agent-os/instructions/extensions/create-spec/`)
 
@@ -129,7 +129,7 @@ Repository path: @.agent-os/specs/YYYY-MM-DD-add-events-post-endpoint/spec.md
 [Spec content or excerpt]
 
 ---
-Synced by Spec Agent Kibo • key: YYYY-MM-DD-add-events-post-endpoint • sha256: <hash>
+Synced by Spec Agent K • key: YYYY-MM-DD-add-events-post-endpoint • sha256: <hash>
 ```
 
 Manual input (structured)

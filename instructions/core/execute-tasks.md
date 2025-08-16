@@ -1,5 +1,5 @@
 ---
-description: Rules to initiate execution of a set of tasks using Spec Agent Kibo
+description: Rules to initiate execution of a set of tasks using Spec Agent K
 globs:
 alwaysApply: false
 version: 1.0

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Spec Agent Kibo Cursor Uninstall Script (local-only)
+# Spec Agent K Cursor Uninstall Script (local-only)
 # Safely removes generated .cursor/rules/*.mdc from the current project repo.
 
 set -euo pipefail
@@ -72,7 +72,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-echo "🧹 Spec Agent Kibo Cursor Uninstall"
+echo "🧹 Spec Agent K Cursor Uninstall"
 [[ "$DRY_RUN" == true ]] && echo "(dry run)"
 
 if [[ "$REMOVE_ALL" == true ]]; then

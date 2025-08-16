@@ -40,7 +40,7 @@ The Jira extension lets you:
 Requirements
 ------------
 
-- Spec Agent Kibo instructions at `@~/.agent-os/instructions/`
+- Spec Agent K instructions at `@~/.agent-os/instructions/`
 - Atlassian MCP configured in your editor
 - Jira extension file present: `instructions/extensions/create-spec/atlassian-jira.md` (home or project scope)
 

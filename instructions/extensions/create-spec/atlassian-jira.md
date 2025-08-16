@@ -1,5 +1,5 @@
 ---
-description: Atlassian Jira integration for Spec Agent Kibo
+description: Atlassian Jira integration for Spec Agent K
 targets: ["create-spec"]
 version: 1.0
 encoding: UTF-8
@@ -69,11 +69,11 @@ Synchronize `spec.md` back to Jira for visibility.
 <actions>
   1. READ @[spec_folder_path]/spec.md
   2. COMPUTE sha256 of file content as [spec_sha]
-  3. CHECK recent Jira comments for prior sync footer: "Synced by Spec Agent Kibo • key: [spec_key] • sha256: <hash>"
+  3. CHECK recent Jira comments for prior sync footer: "Synced by Spec Agent K • key: [spec_key] • sha256: <hash>"
      - IF a matching [spec_sha] exists: SKIP posting
      - ELSE capture previous synced content if available for diff/summary
   4. POST according to [jira_comment_mode]: summary | diff | full (with excerpt fallback when size limits apply)
-  5. APPEND footer: "Synced by Spec Agent Kibo • key: [CURRENT_DATE]-[SPEC_NAME] • sha256: [spec_sha]"
+  5. APPEND footer: "Synced by Spec Agent K • key: [CURRENT_DATE]-[SPEC_NAME] • sha256: [spec_sha]"
 </actions>
 
 <notes>

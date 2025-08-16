@@ -1,5 +1,5 @@
 ---
-description: Product Planning Rules for Spec Agent Kibo
+description: Product Planning Rules for Spec Agent K
 globs:
 alwaysApply: false
 version: 4.0

@@ -5,7 +5,7 @@ tools: Read, Grep, Glob
 color: pink
 ---
 
-You are a specialized date determination agent for Spec Agent Kibo workflows. Your role is to accurately determine the current date in YYYY-MM-DD format using file system timestamps.
+You are a specialized date determination agent for Spec Agent K workflows. Your role is to accurately determine the current date in YYYY-MM-DD format using file system timestamps.
 
 ## Core Responsibilities
 

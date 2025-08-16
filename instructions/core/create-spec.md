@@ -1,5 +1,5 @@
 ---
-description: Spec Creation Rules for Spec Agent Kibo
+description: Spec Creation Rules for Spec Agent K
 globs:
 alwaysApply: false
 version: 1.1
@@ -734,10 +734,10 @@ Use the file-creator subagent to generate actionable Jira tickets based on inves
   ANALYZE investigation-report.md findings and recommendations
   CATEGORIZE by urgency and type:
     - Immediate Fixes: Critical bugs and security issues (High priority)
-    - Improvement Opportunities: Performance and UX enhancements (Medium priority)  
+    - Improvement Opportunities: Performance and UX enhancements (Medium priority)
     - Technical Debt: Refactoring and maintenance work (Low-Medium priority)
     - New Features: Capabilities identified during investigation (Medium priority)
-  
+
   GENERATE tickets with:
     - Clear titles and descriptions referencing investigation
     - Acceptance criteria based on findings
@@ -813,12 +813,12 @@ tickets:
         - Add comment with link to investigation report
         - Include investigation summary and finding reference
         - Add label "investigation-derived"
-        
+
       UPDATE jira-tickets.yaml with created ticket keys:
         ticket_key: "[PROJECT_KEY]-[NUMBER]"
         created_date: "[ISO8601_TIMESTAMP]"
         status: "created"
-  
+
   ELSE:
     LOG: "Jira tickets defined in jira-tickets.yaml but not created (MCP unavailable or invalid project key)"
     RECOMMEND: "Manually create tickets using the structured definitions in jira-tickets.yaml"

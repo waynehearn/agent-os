@@ -4,13 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Spec Agent Kibo is a system for spec-driven agentic development that transforms AI coding agents into productive developers through structured workflows. It provides standards, tech stack definitions, and workflow instructions that help AI agents ship quality code consistently.
+Spec Agent K is a system for spec-driven agentic development that transforms AI coding agents into productive developers through structured workflows. It provides standards, tech stack definitions, and workflow instructions that help AI agents ship quality code consistently.
 
 ## Installation and Setup Commands (local)
 
 Run these from the repository root in Bash (macOS/Linux or Git Bash/WSL on Windows):
 
-### Install Spec Agent Kibo Base System
+### Install Spec Agent K Base System
 
 ```bash
 bash ./setup.sh
@@ -42,9 +42,9 @@ bash ./setup-cursor.sh
 - **`commands/`** - Claude Code command definitions that reference instructions
 - **`claude-code/agents/`** - Specialized subagent configurations for Claude Code
 
-### Spec Agent Kibo Workflow
+### Spec Agent K Workflow
 
-Spec Agent Kibo follows a structured workflow:
+Spec Agent K follows a structured workflow:
 
 1. **Plan Product** (`/plan-product`) - For new projects, creates mission, tech stack, roadmap, and decisions documentation
 2. **Analyze Product** (`/analyze-product`) - For existing projects, analyzes codebase and creates documentation
@@ -60,7 +60,7 @@ Spec Agent Kibo follows a structured workflow:
 
 ## Default Tech Stack
 
-When working with Spec Agent Kibo projects, use these defaults unless overridden in project-specific `.agent-os/product/tech-stack.md`:
+When working with Spec Agent K projects, use these defaults unless overridden in project-specific `.agent-os/product/tech-stack.md`:
 
 - **Backend**: Ruby on Rails 8.0+, Ruby 3.2+, PostgreSQL 17+
 - **Frontend**: React (latest stable), Vite build tool, Node.js 22 LTS
@@ -80,14 +80,14 @@ When working with Spec Agent Kibo projects, use these defaults unless overridden
 
 ### Workflow Integration
 
-- Always check for existing Spec Agent Kibo documentation in `.agent-os/product/` before starting work
+- Always check for existing Spec Agent K documentation in `.agent-os/product/` before starting work
 - Use the date-checker subagent when creating time-sensitive documentation
 - Use the context-fetcher subagent to gather information from existing standards
 - Use the file-creator subagent for batch file creation with proper structure
 
 ## Common Commands
 
-### Initialize Spec Agent Kibo in Projects
+### Initialize Spec Agent K in Projects
 
 - New project: `/plan-product`
 - Existing project: `/analyze-product`

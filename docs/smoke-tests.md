@@ -1,5 +1,5 @@
 ---
-title: Spec Agent Kibo – Simple Smoke Tests
+title: Spec Agent K – Simple Smoke Tests
 version: 1.0
 lastUpdated: 2025-08-14
 ---

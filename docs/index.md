@@ -1,5 +1,5 @@
 ---
-title: Spec Agent Kibo – Start here
+title: Spec Agent K – Start here
 version: 1.0
 lastUpdated: 2025-08-14
 ---
@@ -7,7 +7,7 @@ lastUpdated: 2025-08-14
 Welcome
 -------
 
-Spec Agent Kibo is your system for spec‑driven agentic development. It gives AI coding agents structured workflows aligned to your standards, stack, and codebase context so they ship quality code on the first try—not the fifth.
+Spec Agent K is your system for spec‑driven agentic development. It gives AI coding agents structured workflows aligned to your standards, stack, and codebase context so they ship quality code on the first try—not the fifth.
 
 Start here (10–15 minutes)
 --------------------------

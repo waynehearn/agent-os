@@ -1,5 +1,5 @@
 ---
-description: Analyze Current Product & Install Spec Agent Kibo
+description: Analyze Current Product & Install Spec Agent K
 globs:
 alwaysApply: false
 version: 1.0
@@ -8,11 +8,11 @@ encoding: UTF-8
 
 <!-- markdownlint-disable MD033 MD032 MD007 MD022 MD023 -->
 
-# Analyze Current Product & Install Spec Agent Kibo
+# Analyze Current Product & Install Spec Agent K
 
 ## Overview
 
-Install Spec Agent Kibo into an existing codebase, analyze current product state and progress. Builds on @~/.agent-os/instructions/core/plan-product.md
+Install Spec Agent K into an existing codebase, analyze current product state and progress. Builds on @~/.agent-os/instructions/core/plan-product.md
 
 <pre_flight_check>
   EXECUTE: @~/.agent-os/instructions/meta/pre-flight.md
@@ -84,7 +84,7 @@ Use the context-fetcher subagent to supplement codebase analysis with business c
 <context_questions>
   Based on my analysis of your codebase, I can see you're building [OBSERVED_PRODUCT_TYPE].
 
-  To properly set up Spec Agent Kibo, I need to understand:
+  To properly set up Spec Agent K, I need to understand:
 
   1. **Product Vision**: What problem does this solve? Who are the target users?
 
@@ -110,7 +110,7 @@ Use the context-fetcher subagent to supplement codebase analysis with business c
 
 ### Step 3: Execute Plan-Product with Context
 
-Execute our standard flow for installing Spec Agent Kibo in existing products
+Execute our standard flow for installing Spec Agent K in existing products
 
 <execution_parameters>
   <main_idea>[DERIVED_FROM_ANALYSIS_AND_USER_INPUT]</main_idea>
@@ -122,7 +122,7 @@ Execute our standard flow for installing Spec Agent Kibo in existing products
 <execution_prompt>
   @~/.agent-os/instructions/core/plan-product.md
 
-  I'm installing Spec Agent Kibo into an existing product. Here's what I've gathered:
+  I'm installing Spec Agent K into an existing product. Here's what I've gathered:
 
   **Main Idea**: [SUMMARY_FROM_ANALYSIS_AND_CONTEXT]
 
@@ -189,7 +189,7 @@ Refine the generated documentation to ensure accuracy for the existing product b
 
 ### Step 5: Final Verification and Summary
 
-Verify installation completeness and provide clear next steps for the user to start using Spec Agent Kibo with their existing codebase.
+Verify installation completeness and provide clear next steps for the user to start using Spec Agent K with their existing codebase.
 
 <verification_checklist>
   - [ ] .agent-os/product/ directory created
@@ -199,9 +199,9 @@ Verify installation completeness and provide clear next steps for the user to st
 </verification_checklist>
 
 <summary_template>
-  ## ✅ Spec Agent Kibo Successfully Installed
+  ## ✅ Spec Agent K Successfully Installed
 
-  I've analyzed your [PRODUCT_TYPE] codebase and set up Spec Agent Kibo with documentation that reflects your actual implementation.
+  I've analyzed your [PRODUCT_TYPE] codebase and set up Spec Agent K with documentation that reflects your actual implementation.
 
   ### What I Found
 
@@ -220,14 +220,14 @@ Verify installation completeness and provide clear next steps for the user to st
 
   1. Review the generated documentation in `.agent-os/product/`
   2. Make any necessary adjustments to reflect your vision
-  3. See the Spec Agent Kibo README for usage instructions: [github.com/buildermethods/agent-os](https://github.com/buildermethods/agent-os)
-  4. Start using Spec Agent Kibo for your next feature:
+  3. See the Spec Agent K README for usage instructions: [github.com/buildermethods/agent-os](https://github.com/buildermethods/agent-os)
+  4. Start using Spec Agent K for your next feature:
 
      ```text
      @~/.agent-os/instructions/core/create-spec.md
      ```
 
-  Your codebase is now Spec Agent Kibo-enabled! 🚀
+  Your codebase is now Spec Agent K-enabled! 🚀
 </summary_template>
 
 </step>
@@ -259,6 +259,6 @@ Verify installation completeness and provide clear next steps for the user to st
     - [ ] User context gathered
     - [ ] plan-product.md executed with proper context
     - [ ] Documentation customized for existing product
-    - [ ] Team can adopt Spec Agent Kibo workflow
+    - [ ] Team can adopt Spec Agent K workflow
   </verify>
 </final_checklist>

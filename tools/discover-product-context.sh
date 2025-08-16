@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # discover-product-context.sh
-# Unified, Bash-only product context discovery for Spec Agent Kibo flows.
+# Unified, Bash-only product context discovery for Spec Agent K flows.
 #
 # Goals:
 # - Prefer existing sources (do not create anything unless asked)
@@ -59,7 +59,7 @@ jq() { "$JQ_BIN" "$@"; }
 usage() {
   cat <<'USAGE'
 discover-product-context.sh
-Unified, Bash-only product context discovery for Spec Agent Kibo.
+Unified, Bash-only product context discovery for Spec Agent K.
 
 Usage:
   tools/discover-product-context.sh [project_root] [--write | --write-if-missing] [--init-product]

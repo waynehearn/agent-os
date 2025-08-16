@@ -1,5 +1,5 @@
 ---
-description: Task organization hints for Spec Agent Kibo (create-spec)
+description: Task organization hints for Spec Agent K (create-spec)
 targets: ["create-spec"]
 version: 1.0
 encoding: UTF-8

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Spec Agent Kibo Uninstall Script (local-only)
+# Spec Agent K Uninstall Script (local-only)
 # Safely removes files installed under ~/.agent-os with optional dry-run and backups.
 # No network calls.
 
@@ -66,7 +66,7 @@ usage() {
   cat <<EOF
 Usage: $0 [OPTIONS]
 
-Safely uninstall Spec Agent Kibo files from ~/.agent-os.
+Safely uninstall Spec Agent K files from ~/.agent-os.
 
 Options:
   --dry-run           Show what would be removed without deleting
@@ -107,7 +107,7 @@ if [[ "$REMOVE_ALL" == true ]]; then
   fi
 fi
 
-echo "🧹 Spec Agent Kibo Uninstall"
+echo "🧹 Spec Agent K Uninstall"
 [[ "$DRY_RUN" == true ]] && echo "(dry run)"
 
 target_root="$HOME/.agent-os"

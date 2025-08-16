@@ -1,5 +1,5 @@
 ---
-description: Rules to execute a task and its sub-tasks using Spec Agent Kibo
+description: Rules to execute a task and its sub-tasks using Spec Agent K
 globs:
 alwaysApply: false
 version: 1.0

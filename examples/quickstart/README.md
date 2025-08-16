@@ -1,6 +1,6 @@
 # Quickstart Demo
 
-This folder is a minimal, ready-to-run HTML/JS example to test Spec Agent Kibo with Claude Code.
+This folder is a minimal, ready-to-run HTML/JS example to test Spec Agent K with Claude Code.
 
 What you’ll do
 
@@ -49,7 +49,7 @@ What happens
 
 Open the demo site
 
-- Open `examples/quickstart/site/index.html` in your browser to view the page. After tasks are implemented, refresh to see the Spec Agent Kibo badge.
+- Open `examples/quickstart/site/index.html` in your browser to view the page. After tasks are implemented, refresh to see the Spec Agent K badge.
 
 Run the demo (execute-tasks)
 

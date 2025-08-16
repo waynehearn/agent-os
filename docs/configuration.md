@@ -1,5 +1,5 @@
 ---
-title: Spec Agent Kibo – Configuration
+title: Spec Agent K – Configuration
 version: 1.0
 lastUpdated: 2025-08-14
 ---
@@ -20,7 +20,7 @@ Path aliases
 
 The docs and examples use logical, normalized paths resolved by the flow:
 
-- `@~/.agent-os/instructions/` – Spec Agent Kibo instruction set (Home folder)
+- `@~/.agent-os/instructions/` – Spec Agent K instruction set (Home folder)
 - `@.agent-os/standards/` – Project standards: style, tech stack, best practices (Project folder)
 - `@.agent-os/specs/YYYY-MM-DD-<spec-name>/` – Generated spec folder (Project folder)
 
@@ -60,7 +60,7 @@ Jira sync flags (extension)
 Branding/footer
 ---------------
 
-- Jira comments include a footer for dedupe: `Synced by Spec Agent Kibo • key: <spec_key> • sha256: <hash>`
+- Jira comments include a footer for dedupe: `Synced by Spec Agent K • key: <spec_key> • sha256: <hash>`
 
 Auth & connectivity
 -------------------

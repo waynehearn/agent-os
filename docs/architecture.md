@@ -7,7 +7,7 @@ lastUpdated: 2025-08-16
 Purpose
 -------
 
-This guide explains how Spec Agent Kibo is structured, how context is loaded efficiently, and how to safely customize or extend the process. It’s written for both humans and LLMs. LLMs should follow the “LLM operating hints” in each section to stay budget-aware and deterministic.
+This guide explains how Spec Agent K is structured, how context is loaded efficiently, and how to safely customize or extend the process. It’s written for both humans and LLMs. LLMs should follow the “LLM operating hints” in each section to stay budget-aware and deterministic.
 
 High-level architecture
 -----------------------

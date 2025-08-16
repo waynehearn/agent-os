@@ -1,15 +1,15 @@
 ---
-title: Spec Agent Kibo – Installation
+title: Spec Agent K – Installation
 version: 1.0
 lastUpdated: 2025-08-14
 ---
 
-Install and verify Spec Agent Kibo locally so you can run the create-spec and execute-tasks flows.
+Install and verify Spec Agent K locally so you can run the create-spec and execute-tasks flows.
 
 Overview
 --------
 
-Spec Agent Kibo is instruction-driven and editor-agnostic. You primarily need:
+Spec Agent K is instruction-driven and editor-agnostic. You primarily need:
 
 - The instructions folder in your home directory
 - Project standards in your repo

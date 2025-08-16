@@ -1,6 +1,6 @@
 # Plan Product
 
-Plan a new product and install Spec Agent Kibo in its codebase.
+Plan a new product and install Spec Agent K in its codebase.
 
 Refer to the instructions located in @~/.agent-os/instructions/core/plan-product.md
 

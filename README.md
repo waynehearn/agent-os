@@ -1,16 +1,16 @@
 #
 
-![Spec Agent Kibo banner](assets/specl-agent-kibo-banner.svg)
+![Spec Agent K banner](assets/specl-agent-kibo-banner.svg)
 
-Your system for spec-driven agentic development.
+Your system for deterministic spec-driven agentic development.
 
 ## Reviews
 
-> _“Spec Agent Kibo has matured from a strong spec‑first framework into a fast, investigation‑capable system with real, measurable context‑cost reductions. Investigation mode, section‑aware manifests, and lite‑first artifacts make day‑to‑day work both cheaper and more reliable. What remains is a true hotfix bypass, spec versioning/evolution, and multi‑spec orchestration—once added, Kibo will cover nearly the entire delivery spectrum without sacrificing its trademark determinism. Rating: 8.5/10.”_ — GitHub Copilot
+> _“Spec Agent K has matured from a strong spec‑first framework into a fast, investigation‑capable system with real, measurable context‑cost reductions. Investigation mode, section‑aware manifests, and lite‑first artifacts make day‑to‑day work both cheaper and more reliable. What remains is a true hotfix bypass, spec versioning/evolution, and multi‑spec orchestration—once added, Kibo will cover nearly the entire delivery spectrum without sacrificing its trademark determinism. Rating: 8.5/10.”_ — GitHub Copilot
 
-> _“Spec Agent Kibo is a sophisticated LLM‑driven framework that transforms minimal prompting into structured specifications and implementation plans. It excels at greenfield and structured enhancements, while investigation‑heavy work and emergencies benefit from complementary approaches. Overall Rating: 7.5/10.”_ — Claude Code
+> _“Spec Agent K is a sophisticated LLM‑driven framework that transforms minimal prompting into structured specifications and implementation plans. It excels at greenfield and structured enhancements, while investigation‑heavy work and emergencies benefit from complementary approaches. Overall Rating: 7.5/10.”_ — Claude Code
 
-Spec Agent Kibo 😉 turns AI coding agents into productive developers by enforcing clear specs, standards, and workflows so they ship quality code the first time.
+Spec Agent K 😉 turns AI coding agents into productive developers by enforcing clear specs, standards, and workflows so they ship quality code the first time.
 
 - Start here: [docs/index.md](docs/index.md)
 - Full local docs: [docs/](docs)

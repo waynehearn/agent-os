@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Spec Agent Kibo Cursor Setup Script (local-only)
+# Spec Agent K Cursor Setup Script (local-only)
 # Generates .cursor/rules/*.mdc from local command files. No network calls.
 
 set -euo pipefail
@@ -10,13 +10,13 @@ ENABLE_BACKUP=true
 TIMESTAMP="$(date -u +%Y%m%d-%H%M%SZ)"
 BACKUP_ROOT=".cursor/.backup/$TIMESTAMP"
 
-echo "🚀 Spec Agent Kibo Cursor Setup (local)"
+echo "🚀 Spec Agent K Cursor Setup (local)"
 echo "====================================="
 echo
 
-# Check if Spec Agent Kibo base installation is present
+# Check if Spec Agent K base installation is present
 if [ ! -d "$HOME/.agent-os/instructions" ] || [ ! -d "$HOME/.agent-os/standards" ]; then
-        echo "⚠️  Spec Agent Kibo base installation not found!"
+        echo "⚠️  Spec Agent K base installation not found!"
         echo "   Run: bash ./setup.sh (from the repo root)"
 fi
 
@@ -108,16 +108,16 @@ echo
 if [[ "$DRY_RUN" == true ]]; then
     echo "🧪 Dry run complete (no changes written)"
 else
-    echo "✅ Spec Agent Kibo Cursor setup complete!"
+    echo "✅ Spec Agent K Cursor setup complete!"
 fi
 echo
 echo "📍 Files installed to:"
 echo "   .cursor/rules/             - Cursor command rules"
 echo
 echo "Next steps:"
-echo "Use Spec Agent Kibo commands in Cursor with @ prefix:"
-echo "  @plan-product     - Initiate Spec Agent Kibo in a new product's codebase"
-echo "  @analyze-product  - Initiate Spec Agent Kibo in an existing product's codebase"
+echo "Use Spec Agent K commands in Cursor with @ prefix:"
+echo "  @plan-product     - Initiate Spec Agent K in a new product's codebase"
+echo "  @analyze-product  - Initiate Spec Agent K in an existing product's codebase"
 echo "  @create-spec      - Initiate a new feature (or simply ask 'what's next?')"
 echo "  @execute-tasks     - Build and ship code"
 echo

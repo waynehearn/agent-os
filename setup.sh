@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Spec Agent Kibo Setup Script (local-only)
+# Spec Agent K Setup Script (local-only)
 # Copies files from this repository into your home folder. No network calls.
 
 set -euo pipefail
@@ -148,7 +148,7 @@ Options:
         --overwrite-standards     Force overwrite standards (legacy behavior)
         -h, --help                Show this help message
 
-This script installs or upgrades Spec Agent Kibo locally by copying files from
+This script installs or upgrades Spec Agent K locally by copying files from
 this repo to ~/.agent-os. Intended to run via Git Bash, WSL, or any POSIX shell.
 EOF
             exit 0 ;;
@@ -159,7 +159,7 @@ EOF
     esac
 done
 
-echo "🚀 Spec Agent Kibo Setup (local)"
+echo "🚀 Spec Agent K Setup (local)"
 echo "==============================="
 echo
 
@@ -254,12 +254,12 @@ if [[ "$DRY_RUN" == false ]]; then
 fi
 
 echo
-echo "✅ Spec Agent Kibo base installation complete!"
+echo "✅ Spec Agent K base installation complete!"
 echo
 echo "📁 Files installed to:"
 echo "   ~/.agent-os/standards/     - Your development standards"
-echo "   ~/.agent-os/instructions/  - Spec Agent Kibo instructions"
-echo "   ~/.agent-os/docs/          - Spec Agent Kibo documentation"
+echo "   ~/.agent-os/instructions/  - Spec Agent K instructions"
+echo "   ~/.agent-os/docs/          - Spec Agent K documentation"
 echo
 if [[ "$DO_UPGRADE" == true ]]; then
     echo "🔄 Upgrade mode was used. Changed files were backed up to ~/.agent-os/.backup/$TIMESTAMP"

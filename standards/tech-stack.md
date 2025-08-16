@@ -2,7 +2,7 @@
 
 ## Context
 
-Global tech stack defaults for Spec Agent Kibo projects, overridable in project-specific `.agent-os/product/tech-stack.md`.
+Global tech stack defaults for Spec Agent K projects, overridable in project-specific `.agent-os/product/tech-stack.md`.
 
 - App Framework: ASP.NET Core Web API 6.0+
 - Language: C# 10.0+

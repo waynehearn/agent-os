@@ -7,7 +7,7 @@ lastUpdated: 2025-08-16
 Overview
 --------
 
-This document describes the Bash-only product context discovery used by Spec Agent Kibo flows to avoid duplicating context across tools like Claude Code, Serena MCP, and repository docs.
+This document describes the Bash-only product context discovery used by Spec Agent K flows to avoid duplicating context across tools like Claude Code, Serena MCP, and repository docs.
 
 Goals
 -----
