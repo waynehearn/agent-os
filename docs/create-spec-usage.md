@@ -315,6 +315,72 @@ See also:
 - **Encoding:** UTF-8
 - **Update:** Hash regenerated on any content change
 
+## Express Mode vs Standard
+
+### What changes in Express
+
+Express mode optimizes for speed on simple or low-risk features. It adjusts the workflow as follows:
+
+- Skips: extended validation rounds, cross-reference checks, detailed dependency analysis, and all sub-spec creation (technical-spec.md, api-spec.md, database-schema.md)
+- Keeps: input schema validation, final output validation, section count checks, and core deliverable verification
+- Outputs: `spec.md`, `spec-lite.md`, `tasks.md`, and lite context under `context/` (no sub-specs)
+
+Tasks still reflect API/DB work when you set `requires_api_changes`/`requires_db_changes` in inputs; the runner uses `meta.json` flags even without sub-specs.
+
+### When to use Express
+
+- Small UI flows, content/copy tweaks, feature flags, configuration toggles
+- Minor endpoint additions that follow an established pattern
+- Instrumentation/telemetry, logging, or docs-first tasks
+
+Prefer Standard when the change is cross-cutting, introduces new dependencies, requires deeper validation, or has compliance/risk implications.
+
+### Example: Manual inputs in Express
+
+```text
+@~/.agent-os/instructions/core/create-spec.md
+
+[spec_inputs]
+mode: express
+non_interactive: true            # optional for CI-like runs
+main_idea: >
+  Add export-to-CSV button to Reports page with basic filter support.
+
+initial_user_stories:
+  - title: Export filtered report
+    story: As an analyst, I want to export the filtered report to CSV so that I can analyze it offline.
+    details: Supports existing date and status filters; max 10k rows.
+
+in_scope:
+  - Add Export CSV button and hook to existing report query
+  - Respect current filters in the CSV output
+
+expected_deliverables:
+  - User clicks Export and receives a CSV download that matches the on-screen filters
+
+requires_api_changes: false
+requires_db_changes: false
+overwrite_existing: false
+[/spec_inputs]
+```
+
+Result: Fast creation of `spec.md`, `spec-lite.md`, `tasks.md`. No `sub-specs/` are generated. You can still run execute-tasks immediately.
+
+### Example: Jira-driven Express with API work
+
+```text
+@~/.agent-os/instructions/core/create-spec.md
+
+[jira_inputs]
+jira_issue_key: API-482
+use_jira_mcp: true
+mode: express
+requires_api_changes: true       # tasks will include API work even without api-spec.md
+[/jira_inputs]
+```
+
+Result: Jira fields seed the spec; the extension may post a comment back to the issue. `tasks.md` will include API parent tasks inferred from the `requires_api_changes` flag, but no `sub-specs/api-spec.md` is created. If you later need sub-specs, re-run with `mode: standard` (and `overwrite_existing: true` if you want to regenerate files).
+
 ## Non-Interactive Mode
 
 ### Behavior

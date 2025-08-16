@@ -19,6 +19,7 @@ Navigation
 - Section hashing: [section-hashing.md](./section-hashing.md)
 - Schemas: [schemas/](./schemas/)
 - Task creation details: [create-spec-tasks.md](./create-spec-tasks.md)
+- How modes/settings shape tasks: [tasks-derivation.md](./tasks-derivation.md)
 - Installation: [installation.md](./installation.md)
 - Copilot usage (GitHub Copilot Chat): [copilot-usage.md](./copilot-usage.md)
 - Configuration: [configuration.md](./configuration.md)
