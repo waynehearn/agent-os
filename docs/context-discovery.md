@@ -1,0 +1,58 @@
+---
+title: Product Context Discovery
+version: 1.0
+lastUpdated: 2025-08-16
+---
+
+Overview
+--------
+
+This document describes the Bash-only product context discovery used by Spec Agent Kibo flows to avoid duplicating context across tools like Claude Code, Serena MCP, and repository docs.
+
+Goals
+-----
+
+- Prefer existing, authoritative sources
+- Be fast and side-effect free by default
+- Only create product docs if nothing sufficient exists
+
+Discovery order
+---------------
+
+1. `.agent-os/product/context/context.json` (cache)
+2. `.agent-os/product/` docs: `mission.md`, `tech-stack.md`, `roadmap.md`, `decisions.md`, `context/facts.md`
+3. `CLAUDE.md` → "Project Overview" section
+4. `docs/architecture.md`, `docs/index.md`
+5. `README.md` (top paragraphs)
+6. Heuristics from build/config files (`package.json`, `pyproject.toml`, `Gemfile`, `pom.xml`, `build.gradle*`, `go.mod`, `Cargo.toml`, `composer.json`, `*.csproj`)
+
+Output shape
+------------
+
+JSON Schema: `docs/schemas/product-context.schema.json`.
+
+CLI usage
+---------
+
+Run from project root:
+
+```bash
+bash tools/discover-product-context.sh --write-if-missing
+```
+
+Options:
+
+- `--write`: persist to `.agent-os/product/context/context.json`
+- `--write-if-missing`: only write if cache file is absent
+- `--init-product`: if context is insufficient, create minimal `.agent-os/product/` skeleton and a lite `context/facts.md`
+
+Integration notes
+-----------------
+
+- `analyze-product` calls discovery first; it only creates `.agent-os/product/` if discovery reports insufficient context.
+- Other flows (create-spec, execute-tasks) can consult the cache for tech stack and overview, but remain independent.
+
+Windows
+-------
+
+Use Git Bash or WSL. PowerShell is not required for discovery.

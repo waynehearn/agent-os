@@ -23,6 +23,7 @@ Prerequisites
 -------------
 
 - Spec Agent Kibo instructions at `@~/.agent-os/instructions/`
+- For helper scripts (discovery, hashing): Bash + `jq` on PATH (see `docs/installation.md`)
 
 Local demo (ready-to-run)
 -------------------------
@@ -136,6 +137,43 @@ Next steps
 - After running execute-tasks, check `context/tasks-summary.json` for a compact run summary.
 
 Using Jira? See: [Jira Extension Guide](./jira-extension.md)
+
+Existing Project Quickstart (Analyze Product)
+--------------------------------------------
+
+If you’re integrating into an existing repo, run discovery-first to reuse existing context and avoid re-asking for info.
+
+1) Optional: run discovery yourself (read-only unless cache is missing)
+
+```bash
+# from the project root
+bash tools/discover-product-context.sh --write-if-missing
+
+# or target another project path
+bash tools/discover-product-context.sh /absolute/path/to/project --write-if-missing
+```
+
+2) Optional: if discovery is insufficient and you want to bootstrap minimal product docs
+
+```bash
+bash tools/discover-product-context.sh /absolute/path/to/project --init-product --write
+```
+
+3) Run analyze-product in your editor
+
+```text
+@~/.agent-os/instructions/core/analyze-product.md
+
+[analyze_inputs]
+auto_init_product: false
+[/analyze_inputs]
+```
+
+Notes:
+
+- Discovery reads `.agent-os/product/*`, `CLAUDE.md`, `docs/architecture.md`, `README.md`, and build files to infer stack.
+- On Windows, use Git Bash or WSL. The script can use `jq.exe` under WSL and accepts Windows paths like `C:/path/...`.
+- See details: [context-discovery.md](./context-discovery.md)
 
 Context optimizations (FYI)
 ---------------------------

@@ -65,7 +65,19 @@ Perform a deep analysis of the codebase to understand the current state before g
 
 <step number="2" subagent="context-fetcher" name="gather_product_context">
 
-### Step 2: Gather Product Context
+### Step 2: Gather Product Context (with discovery first)
+
+Before asking the user, attempt non-destructive discovery of existing product context from the repository using the Bash utility:
+
+```
+shell: bash tools/discover-product-context.sh --write-if-missing
+```
+
+Behavior:
+
+- Reads `.agent-os/product/` docs if present, CLAUDE.md, README.md, and build files
+- Writes `.agent-os/product/context/context.json` only if missing (cache)
+- If insufficient context and automation is allowed, you may run with `--init-product` to create a minimal `.agent-os/product/` skeleton; otherwise, proceed to ask the user
 
 Use the context-fetcher subagent to supplement codebase analysis with business context and future plans.
 
@@ -86,8 +98,9 @@ Use the context-fetcher subagent to supplement codebase analysis with business c
 </context_questions>
 
 <instructions>
-  ACTION: Ask user for product context
-  COMBINE: Merge user input with codebase analysis
+  ACTION: Run discovery first; prefer discovered context over re-asking
+  ACTION: Ask user for missing items only if discovery is insufficient
+  COMBINE: Merge discovered context and user input with codebase analysis
   PREPARE: Information for plan-product.md execution
 </instructions>
 

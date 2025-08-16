@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/schemas/product-context.schema.json",
+  "title": "Product Context (discovered)",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "sources_used": { "type": "array", "items": { "type": "string" } },
+    "overview": { "type": ["string", "null"] },
+    "target_users": { "type": "array", "items": { "type": "string" } },
+    "tech_stack": { "type": "array", "items": { "type": "string" } },
+    "implemented_features": { "type": "array", "items": { "type": "string" } },
+    "planned_features": { "type": "array", "items": { "type": "string" } },
+    "decisions": { "type": "array", "items": { "type": "string" } },
+    "roadmap": { "type": "array", "items": { "type": "string" } },
+    "sufficient_for_analyze": { "type": "boolean" },
+    "sufficiency_reasons": { "type": "array", "items": { "type": "string" } }
+  }
+}
