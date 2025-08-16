@@ -1,141 +1,20 @@
 ---
-title: Using create-spec from Claude Code
+title: Create Spec – Usage and Details
 version: 1.0
-lastUpdated: 2025-08-14
+lastUpdated: 2025-08-16
 ---
-This guide shows how to run the create-spec flow from Claude Code with three input sources (with optional extensions):
+Create a feature spec and tasks from roadmap, Jira, or manual inputs.
 
-- Roadmap-driven ("what's next?")
-- Jira-driven (via Atlassian MCP) – via optional extension
-- Manual input (structured template)
+> Using Jira (extension): For Jira‑driven specs, use the Jira Extension Guide: [docs/jira-extension.md](./jira-extension.md). This page documents the manual `[spec_inputs]` path; Jira keys are defined in the extension guide.
 
-It also covers expected outputs, idempotency behavior, and common pitfalls.
+## Where it fits
 
-Prerequisites
--------------
+- New project: run plan‑product first. Existing project: optionally run analyze‑product to align docs with code, then use create‑spec → execute‑tasks.
+- Required to kick off implementation for a new feature. Benefits: consistent spec structure, normalized naming, validated tasks, and lite‑first context used by execution flows.
 
-- Spec Agent K instructions folder is available at `@~/.agent-os/instructions/`
-- Standards docs are present in `@.agent-os/standards/`
-- Optional: Atlassian MCP configured if you want to pull from Jira (enable by adding the Jira extension file under `@~/.agent-os/instructions/extensions/create-spec/`)
+## Basic usage
 
-Shell environment
------------------
-
-- This guide targets editor-driven flows and works the same in Git Bash, bash, and zsh.
-- Examples shown are shell-agnostic (they are instruction references, not shell commands).
-- Optional completion chime in bash-compatible shells:
-  - printf '\a'  # emits BEL (audible bell if enabled)
-- Shell: examples assume a bash-like shell (git-bash on Windows, WSL, macOS Terminal, or Linux)
-
-Outputs
--------
-
-When successful, the flow creates a spec folder at:
-
-- `@.agent-os/specs/YYYY-MM-DD-<spec-name>/`
-
-With files:
-
-- `spec.md`
-- `spec-lite.md`
-- `sub-specs/technical-spec.md`
-- `sub-specs/database-schema.md` (conditional)
-- `sub-specs/api-spec.md` (conditional)
-- `tasks.md`
-
-Lite-first context artifacts (new)
----------------------------------
-
-- `context/facts.md`
-  - Summarizes mission/spec facts for quick AI context. If no mission docs exist, it will include: `Mission (lite): N/A`.
-- `context/manifest.json`
-  - Tracks sha256 + lastModified for key files. The execution flows skip re-reading files when hashes match.
-  - Example (truncated):
-    {
-      "files": {
-        "spec.md": {"sha256": "…", "lastModified": "2025-08-14T12:00:00Z"},
-        "spec-lite.md": {"sha256": "…", "lastModified": "2025-08-14T12:00:05Z"}
-      }
-    }
-- `context/meta.json`
-  - Tiny counts/flags (e.g., section counts) for quick gating.
-  - Example:
-Tip: To populate and refresh section-level hashes for targeted reloads, see [section-hashing.md](./section-hashing.md).
-    {"spec": {"sections": 5}, "tasks": {"parents": 4}}
-
-All paths are normalized using `[spec_folder_path]` in the instructions.
-
-Roadmap-driven ("what's next?")
--------------------------------
-
-Use this when you want the agent to pick the next uncompleted roadmap item.
-
-```text
-@~/.agent-os/instructions/core/create-spec.md
-
-[whats_next]
-trigger: "what's next?"
-[/whats_next]
-```
-
-What happens:
-
-- The flow reads `@.agent-os/product/roadmap.md`
-- Suggests the next uncompleted item and asks for approval
-- Proceeds with spec creation after confirmation
-
-Jira-driven (via Atlassian MCP, via extension)
---------------------------
-
-For Jira integration configuration, see the [canonical Jira key reference](jira-extension.md#canonical-jira-key-reference).
-
-```text
-@~/.agent-os/instructions/core/create-spec.md
-
-[jira_inputs]
-jira_issue_key: ABC-1234
-use_jira_mcp: true
-[/jira_inputs]
-```
-
-Enable discovery debug output (optional): add `debug_extensions: true` anywhere in the same input block to print and save the Extensions Discovery Report. See the [canonical Jira key reference](jira-extension.md#canonical-jira-key-reference) for all configuration options.
-
-What happens:
-
-- The flow fetches Jira fields (summary, description, status, labels/components, acceptance criteria, etc.)
-- Maps them to the required inputs and prompts for any missing items
-- Asks for confirmation before proceeding
-- Proceeds even if no `mission.md` or `mission-lite.md` exists (facts.md will note N/A)
-- After `spec.md` is created, the extension posts the spec content back to the Jira issue as a comment (conditional on MCP and valid key)
-  - If the spec is too large for Jira, it posts only Overview and Expected Deliverable sections with a repo path reference
-  - A footer includes a short hash to avoid duplicate re-posts on re-runs
-  - If `ext_jira_comment_mode: summary`, subsequent runs post a concise summary of changes (section deltas, counts, top highlights). If set to `diff`, they post a unified diff instead. Otherwise, they post the full content or an excerpt.
-
-Concrete Jira example: ASP.NET Core Web API new endpoint (with DB table and repo package)
-----------------------------------------------------------------------------------------
-
-For complex examples with detailed overrides, see the [canonical Jira key reference](jira-extension.md#canonical-jira-key-reference) and the full examples in `docs/jira-extension.md`.
-
-Jira comment result (example):
-
-```text
-Comment on API-482
-
-Spec Requirements Document for add-events-post-endpoint
-
-Repository path: @.agent-os/specs/YYYY-MM-DD-add-events-post-endpoint/spec.md
-
----
-[Spec content or excerpt]
-
----
-Synced by Spec Agent K • key: YYYY-MM-DD-add-events-post-endpoint • sha256: <hash>
-```
-
-Manual input (structured)
--------------------------
-
-Use this when you want to specify all inputs explicitly.
+Manual (standard mode):
 
 ```text
 @~/.agent-os/instructions/core/create-spec.md
@@ -153,96 +32,193 @@ in_scope:
   - [Clear, concrete item 1]
   - [Item 2]
 
-out_of_scope:
-  - [Optional exclusion]
-
 expected_deliverables:
-  - [Browser-testable outcome 1]
+  - [Externally verifiable outcome 1]
   - [Outcome 2]
 
-tech_constraints: >
-  [Optional: frameworks, versions, patterns, perf limits]
-
-requires_db_changes: false
 requires_api_changes: false
-
-spec_name_override: ""
+requires_db_changes: false
 overwrite_existing: false
 [/spec_inputs]
 ```
 
-Discovery debug (optional): you can also add `debug_extensions: true` in `[spec_inputs]` to see which extensions would load for a manual run.
+Other entry points:
 
-Determinism & Validation
-------------------------
-
-- Name normalization: kebab-case, ≤ 5 words
-- Required core sections in `spec.md` in strict order: Overview, User Stories, Scope, Deliverables, Technical Details. API Specification and Database Changes are conditional and appended when applicable.
-- Counts enforced: User Stories 1–3, Spec Scope 1–5, Expected Deliverables 1–3
-- Post-write validation runs and repairs the file if needed
-- `tasks.md` is validated and normalized right after creation
-
-Skip-by-hash & selective reads
-------------------------------
-
-- During execution, the flows consult `context/manifest.json` (section-aware) to avoid re-loading unchanged files.
-- They prefer `spec-lite.md`, `context/facts.md`, and task-scoped snippets over full-document loads.
-- Strict do-not-load during execution: `decisions.md` and full `mission.md` (roadmap only when needed).
-
-Hybrid consults (execution): When running execute-tasks/execute-task, the runner may selectively consult `sub-specs/api-spec.md` and `sub-specs/database-schema.md` using a hybrid rule:
-
-- If `meta.json` flags `requires_api_changes`/`requires_db_changes` as true, or
-- The current parent task/subtasks clearly include API/DB indicators (e.g., API/endpoint/controller/route/HTTP verb + path; DB/schema/migration/table/column/index/constraint)
-
-These reads are minimal, section-scoped, and manifest-aware.
-
-Idempotency
------------
-
-- If any target file exists and `overwrite_existing` is false, you will be asked before overwriting
-- If you choose not to overwrite, the file is skipped and noted in the summary
-
-Tips & Pitfalls
----------------
-
-- Keep main_idea to 1–2 sentences; it drives the spec name if you don’t override
-- Ensure deliverables are externally verifiable outcomes
-- For Jira keys, formats like `ABC-1234` are accepted; an optional `jira:` prefix is also allowed
-- If the technical spec isn’t needed for a simple change, it’s still created but can be minimal; DB/API sub-specs are conditional
-
-Next steps
-----------
-
-After the spec is approved (Step 11), use the execute-tasks command to start implementation.
-
-Run next uncompleted task:
+- Roadmap “what’s next?”
 
 ```text
-@~/.agent-os/instructions/core/execute-tasks.md
+@~/.agent-os/instructions/core/create-spec.md
 
-[execution_context]
-spec_folder_path: @.agent-os/specs/YYYY-MM-DD-spec-name
-[/execution_context]
+[whats_next]
+trigger: "what's next?"
+[/whats_next]
 ```
 
-Debugging execution (optional): add these flags to your execution block to trace subagent activity to NDJSON logs under `@[spec_folder_path]/debug/exec-trace/`:
+- Jira (via extension): see the Jira Extension Guide for inputs and examples: [docs/jira-extension.md](./jira-extension.md)
+
+## What it does (steps)
+
+From `instructions/core/create-spec.md`:
+
+1. Validate inputs and normalize spec name (kebab‑case, ≤5 words).
+2. Choose mode (standard/express/investigate) and set guardrails accordingly.
+3. Create `spec.md` with required sections in strict order; enforce counts.
+4. Create `spec-lite.md` (condensed) and write lite context under `context/`.
+5. Create sub‑specs under `sub-specs/` in standard mode (technical, api, db; conditional).
+6. Generate `tasks.md` from the spec; run tasks‑validator for structure/numbering.
+7. Write/refresh `context/manifest.json` and `context/meta.json` (hashes/flags).
+8. Run post‑write validation/repairs and summarize outputs.
+9. Extensions (optional): e.g., Jira comment sync with dedupe by content hash.
+
+## Try it (bash)
+
+These optional bash commands help with spec context and hashes. Use Git Bash on Windows, WSL, or any Unix shell.
+
+Hash sections for a golden example (useful for selective reloads):
+
+```bash
+bash tools/section-hash.sh "examples/golden"
+```
+
+Verify jq and optionally check a spec’s manifest exists:
+
+```bash
+bash tools/verify-jq.sh
+```
+
+Backfill lite-first context for an existing spec folder (if you migrated old specs):
+
+```bash
+bash tools/backfill-context.sh
+```
+
+## Artifacts produced
+
+Creates a folder: `@.agent-os/specs/YYYY-MM-DD-<spec-name>/` with:
+
+- `spec.md`, `spec-lite.md`, `tasks.md`
+- `sub-specs/technical-spec.md` (+ `api-spec.md`, `database-schema.md` when applicable)
+- `context/facts.md`, `context/manifest.json`, `context/meta.json`
+
+All paths are referred to as `[spec_folder_path]` in downstream flows.
+
+## Inputs and flags
+
+- Required content: `main_idea`, `initial_user_stories` (1–3), `in_scope` (1–5), `expected_deliverables` (1–3)
+- Optional: `tech_constraints`, `out_of_scope`, `spec_name_override`, `overwrite_existing`
+- Mode: `mode = standard | express | investigate` (default: standard)
+- Non‑interactive: `non_interactive: true` to auto‑approve deterministic defaults
+- Flags that shape tasks/execution: `requires_api_changes`, `requires_db_changes`
+- Jira (extension): `jira_issue_key`, `use_jira_mcp`, `jira_comment_mode = full|summary|diff`
+- Discovery/debug: `debug_extensions: true` to emit extension loader report
+
+Authoritative schema: `docs/schemas/spec-input.schema.json`.
+
+## Modes: Express vs Standard
+
+Express focuses on speed; Standard maximizes validation and traceability.
+
+- Express skips extended validation/cross‑refs and does not create sub‑specs.
+- Standard performs deeper checks and creates sub‑specs when API/DB are involved.
+- Both modes always validate section order/counts and generate lite context.
+- Tasks still include API/DB work when flags are set, even without sub‑specs (execution flows use `meta.json`).
+
+When to use Express: small UI changes, simple endpoints following a pattern, instrumentation/logging. Prefer Standard for cross‑cutting work, new dependencies, or compliance/risk.
+
+## Extensibility and customization
+
+- Extension loader (create‑spec only):
+  - Jira integration: see `docs/jira-extension.md` and the canonical key reference.
+  - Task Organization Hints: ordering/grouping guidance; does not add/remove tasks.
+- Re‑sync to Jira: re‑run with the same `jira_issue_key` and your `jira_comment_mode`; dedupes by content hash.
+Re‑sync to Jira: re‑run with the same `jira_issue_key` and your `jira_comment_mode`; dedupes by content hash (see [Jira Extension Guide](./jira-extension.md)).
+- Standards influence phrasing/structure; keep `standards/` up‑to‑date.
+
+## Examples
+
+Manual – Standard:
 
 ```text
-@~/.agent-os/instructions/core/execute-tasks.md
+@~/.agent-os/instructions/core/create-spec.md
 
-[execution_context]
-spec_folder_path: @.agent-os/specs/YYYY-MM-DD-spec-name
-debug_subagents: true
-debug_trace_redact_secrets: true
-debug_trace_include_bodies: false
-[/execution_context]
+[spec_inputs]
+main_idea: >
+  Allow editing a location via PATCH /api/v1/locations/{id} with optimistic concurrency.
+
+initial_user_stories:
+  - title: Edit location name
+    story: As an admin, I want to update a location name so that data stays accurate.
+    details: Use ETag for concurrency; return 412 on mismatch.
+
+in_scope:
+  - Update endpoint and validation
+  - Concurrency via ETag
+
+expected_deliverables:
+  - PATCH updates succeed with matching ETag; 412 otherwise
+
+requires_api_changes: true
+requires_db_changes: false
+[/spec_inputs]
 ```
 
-## Schemas and Structure
+Manual – Express:
 
-### Spec Input Fields (Authoritative List)
+```text
+@~/.agent-os/instructions/core/create-spec.md
+
+[spec_inputs]
+mode: express
+non_interactive: true
+main_idea: >
+  Add export‑to‑CSV to Reports page using existing filters.
+
+initial_user_stories:
+  - title: Export filtered report
+    story: As an analyst, I want to export the filtered report to CSV so I can analyze offline.
+    details: Respect date/status filters; max 10k rows.
+
+in_scope:
+  - Add Export CSV button; reuse query
+
+expected_deliverables:
+  - CSV download matches on‑screen filters
+
+requires_api_changes: false
+requires_db_changes: false
+[/spec_inputs]
+```
+
+Jira‑driven – Express with API work:
+
+See Jira-driven examples in the Jira Extension Guide: [docs/jira-extension.md](./jira-extension.md)
+
+## Non‑interactive mode
+
+When `non_interactive: true`:
+
+- Equivalent to auto‑approve; confirmations are skipped and logged with "DEFAULT:" prefix.
+- Validation errors stop the run (no interactive retries).
+
+## Investigation mode
+
+Investigation supports bug/performance/security/architecture/feasibility work. It outputs reports and can generate Jira tickets and ready‑to‑use spec templates.
+
+See “Investigation Mode” details below for types, outputs, and an end‑to‑end example flow.
+
+## Tips
+
+- Keep `main_idea` brief; it drives normalized naming when no override is set.
+- Deliverables must be externally verifiable.
+- For execution details (hybrid API/DB consults, selective reads), see `docs/execute-tasks-usage.md`.
+
+## Reference
+
+### Spec input fields (authoritative list)
 
 JSON Schema: [schemas/spec-input.schema.json](./schemas/spec-input.schema.json)
+
+Note: This table documents fields for the manual `[spec_inputs]` path. Jira extension keys (e.g., `jira_issue_key`, `use_jira_mcp`, `jira_comment_mode`) are defined canonically in [docs/jira-extension.md](./jira-extension.md).
 
 | Field | Type | Required | Constraints | Description |
 |-------|------|----------|-------------|-------------|
@@ -267,27 +243,27 @@ JSON Schema: [schemas/spec-input.schema.json](./schemas/spec-input.schema.json)
 | `ticket_priority_default` | string | No | High\|Medium\|Low | Default priority for generated tickets (default: Medium) |
 | `ticket_labels` | array | No | 0-5 items | Standard labels to apply to all tickets |
 
-### Required Section Order
+### Required section order
 
-#### spec.md Structure
+spec.md
 
-1. **Overview** - Feature summary and goals
-2. **User Stories** - Detailed user story breakdown
-3. **Scope** - In-scope and out-of-scope items
-4. **Deliverables** - Externally verifiable acceptance outcomes
-5. **Technical Details** - Architecture, dependencies, constraints
-6. **API Specification** - Endpoints, contracts, data models (if applicable)
-7. **Database Changes** - Schema changes, migrations (if applicable)
+1. Overview
+2. User Stories
+3. Scope
+4. Deliverables
+5. Technical Details
+6. API Specification (if applicable)
+7. Database Changes (if applicable)
 
-#### tasks.md Structure
+tasks.md
 
-1. **Task Summary** - High-level breakdown
-2. **Implementation Tasks** - Ordered list of development tasks
-3. **Testing Tasks** - Validation and quality assurance tasks
-4. **Documentation Tasks** - User guides, API docs, etc.
-5. **Deployment Tasks** - Release and deployment activities
+1. Task Summary
+2. Implementation Tasks
+3. Testing Tasks
+4. Documentation Tasks
+5. Deployment Tasks
 
-### Manifest Schema
+### Manifest schema
 
 ```json
 {
@@ -308,114 +284,20 @@ See also:
 - Manifest details: [manifest-spec.md](./manifest-spec.md)
 - JSON Schema: [schemas/manifest.schema.json](./schemas/manifest.schema.json)
 
-#### Hashing Rules
+Hashing rules:
 
-- **Algorithm:** SHA256
-- **Input:** File content with normalized line endings (LF only)
-- **Encoding:** UTF-8
-- **Update:** Hash regenerated on any content change
+- Algorithm: SHA256
+- Input: File content with normalized line endings (LF only)
+- Encoding: UTF‑8
+- Update: Hash regenerated on content change
 
-## Express Mode vs Standard
+## Next steps
 
-### What changes in Express
+After the spec is approved, move to implementation: see `docs/execute-tasks-usage.md`.
 
-Express mode optimizes for speed on simple or low-risk features. It adjusts the workflow as follows:
+## Investigation Mode (detailed)
 
-- Skips: extended validation rounds, cross-reference checks, detailed dependency analysis, and all sub-spec creation (technical-spec.md, api-spec.md, database-schema.md)
-- Keeps: input schema validation, final output validation, section count checks, and core deliverable verification
-- Outputs: `spec.md`, `spec-lite.md`, `tasks.md`, and lite context under `context/` (no sub-specs)
-
-Tasks still reflect API/DB work when you set `requires_api_changes`/`requires_db_changes` in inputs; the runner uses `meta.json` flags even without sub-specs.
-
-### When to use Express
-
-- Small UI flows, content/copy tweaks, feature flags, configuration toggles
-- Minor endpoint additions that follow an established pattern
-- Instrumentation/telemetry, logging, or docs-first tasks
-
-Prefer Standard when the change is cross-cutting, introduces new dependencies, requires deeper validation, or has compliance/risk implications.
-
-### Example: Manual inputs in Express
-
-```text
-@~/.agent-os/instructions/core/create-spec.md
-
-[spec_inputs]
-mode: express
-non_interactive: true            # optional for CI-like runs
-main_idea: >
-  Add export-to-CSV button to Reports page with basic filter support.
-
-initial_user_stories:
-  - title: Export filtered report
-    story: As an analyst, I want to export the filtered report to CSV so that I can analyze it offline.
-    details: Supports existing date and status filters; max 10k rows.
-
-in_scope:
-  - Add Export CSV button and hook to existing report query
-  - Respect current filters in the CSV output
-
-expected_deliverables:
-  - User clicks Export and receives a CSV download that matches the on-screen filters
-
-requires_api_changes: false
-requires_db_changes: false
-overwrite_existing: false
-[/spec_inputs]
-```
-
-Result: Fast creation of `spec.md`, `spec-lite.md`, `tasks.md`. No `sub-specs/` are generated. You can still run execute-tasks immediately.
-
-### Example: Jira-driven Express with API work
-
-```text
-@~/.agent-os/instructions/core/create-spec.md
-
-[jira_inputs]
-jira_issue_key: API-482
-use_jira_mcp: true
-mode: express
-requires_api_changes: true       # tasks will include API work even without api-spec.md
-[/jira_inputs]
-```
-
-Result: Jira fields seed the spec; the extension may post a comment back to the issue. `tasks.md` will include API parent tasks inferred from the `requires_api_changes` flag, but no `sub-specs/api-spec.md` is created. If you later need sub-specs, re-run with `mode: standard` (and `overwrite_existing: true` if you want to regenerate files).
-
-## Non-Interactive Mode
-
-### Behavior
-
-When `non_interactive: true` is set:
-
-- **Equivalent to:** `--auto-approve` flag
-- **User prompts:** Automatically answered with deterministic defaults
-- **Confirmations:** Skipped with default choices logged
-- **Validation errors:** Stop execution (no retry prompts)
-
-### Default Responses
-
-| Prompt Type | Default Response | Logged As |
-|-------------|------------------|-----------|
-| "Continue with spec creation?" | Yes | "DEFAULT: Continuing with spec creation" |
-| "Overwrite existing spec?" | No | "DEFAULT: Preserving existing spec" |
-| "Add more user stories?" | No | "DEFAULT: Using provided user stories only" |
-| "Validate dependencies?" | Yes | "DEFAULT: Running dependency validation" |
-| Extension prompts | Extension defaults | "DEFAULT: [extension-name] using defaults" |
-
-### Logging Requirements
-
-All skipped prompts and default choices must be logged with prefix "DEFAULT:" for audit trails.
-
-### Example Usage
-
-```yaml
-# CI/CD pipeline usage
-non_interactive: true
-main_idea: "Automated feature from ticket ABC-123"
-# ... other required fields
-```
-
-## Investigation Mode
+The following section provides the detailed investigation guidance preserved from earlier versions for completeness.
 
 ### Overview
 
@@ -423,11 +305,7 @@ Investigation mode supports bug diagnosis, performance analysis, security audits
 
 ### When to Use Investigation Mode
 
-- **Bug Diagnosis**: Root cause analysis for production issues
-- **Performance Analysis**: Identifying bottlenecks and optimization opportunities
-- **Security Audits**: Vulnerability assessment and threat analysis
-- **Architecture Research**: Evaluating approaches for complex changes
-- **Feasibility Studies**: Determining viability of proposed features
+- Bug Diagnosis, Performance Analysis, Security Audits, Architecture Research, Feasibility Studies
 
 ### Investigation Types
 
@@ -462,46 +340,14 @@ ticket_project_key: "PERF"
 
 ### Investigation Outputs
 
-Investigation mode creates different outputs than standard specs:
-
-#### Core Investigation Files
-
-- `investigation-report.md` - Comprehensive findings and analysis
-- `findings-summary.md` - Executive summary for stakeholders
-- `action-items.md` - Prioritized next steps
-- `jira-tickets.yaml` - Generated ticket definitions (if enabled)
-- `implementation-specs.yaml` - Ready-to-use create-spec inputs
-
-#### Investigation Report Structure
-
-1. **Investigation Summary** - Type, scope, timeline, key questions
-2. **Methodology** - Approach, tools used, data sources
-3. **Key Findings** - Discoveries with supporting evidence
-4. **Root Cause Analysis** - Primary causes and contributing factors
-5. **Recommendations** - Immediate actions, short-term and long-term solutions
-6. **Next Steps** - Implementation priorities and resource requirements
+- `investigation-report.md`, `findings-summary.md`, `action-items.md`
+- `jira-tickets.yaml` (if enabled), `implementation-specs.yaml`
 
 ### Ticket Generation
 
-When `generate_tickets: true` is set, the system automatically creates structured Jira tickets:
+Categories: Immediate Fixes, Improvement Opportunities, Technical Debt, New Features
 
-#### Ticket Categories
-
-- **Immediate Fixes** - Critical bugs and security issues (High priority)
-- **Improvement Opportunities** - Performance and UX enhancements (Medium priority)
-- **Technical Debt** - Refactoring and maintenance work (Low-Medium priority)
-- **New Features** - Capabilities identified during investigation (Medium priority)
-
-#### Ticket Structure
-
-Each generated ticket includes:
-
-- Clear title and description with context
-- Acceptance criteria based on investigation findings
-- Priority assessment (High/Medium/Low)
-- Links back to investigation report
-- Appropriate labels and metadata
-- Ready-to-use create-spec inputs for complex items
+Each ticket includes a clear title/description, acceptance criteria, priority, links back to the report, labels/metadata, and ready‑to‑use create‑spec inputs where relevant.
 
 ### Investigation → Implementation Flow
 
@@ -513,107 +359,22 @@ claude create-spec mode=investigate \
   generate_tickets=true \
   ticket_project_key="PERF"
 
-# Outputs:
-# - Investigation report with findings
-# - 4 Jira tickets created automatically
-# - 2 create-spec templates generated
-
 # 2. Review tickets in Jira, prioritize work
 
 # 3. Implement high-priority items
-claude create-spec \
-  jira_issue_key=PERF-123 \
-  use_jira_mcp=true
-
-# Or use generated spec template:
-claude create-spec \
-  @.agent-os/investigations/dashboard-performance/specs/database-optimization.yaml
+# Use Jira-driven inputs: see Jira Extension Guide for the `[jira_inputs]` block
+# docs/jira-extension.md
 ```
 
 ### Example Investigation Scenarios
 
-#### Database Performance Issue
+See examples above for performance/security.
 
-```yaml
-mode: investigate
-investigation_type: performance
-symptoms:
-  - "API response times >3 seconds"
-  - "Database CPU at 90% during business hours"
-  - "Connection pool warnings in logs"
-working_hypothesis: "Missing database indexes causing table scans"
-affected_systems: ["api-gateway", "user-service", "postgres-primary"]
-generate_tickets: true
-ticket_project_key: "DB"
-ticket_labels: ["performance", "database"]
-```
+## See also
 
-#### Security Vulnerability Assessment
-
-```yaml
-mode: investigate
-investigation_type: security
-symptoms:
-  - "Unusual authentication patterns detected"
-  - "Increased failed login attempts"
-  - "Suspicious API requests from new IP ranges"
-affected_systems: ["auth-service", "rate-limiter", "api-gateway"]
-generate_tickets: true
-ticket_project_key: "SEC"
-ticket_priority_default: "High"
-```
-
-See also
---------
-
-- Simple smoke tests: [smoke-tests.md](./smoke-tests.md)
-- Quickstart: [quickstart.md](QuickStart%20Guide.md)
+- Quickstart: [QuickStart Guide.md](QuickStart%20Guide.md)
 - Troubleshooting: [troubleshooting.md](./troubleshooting.md)
 - Glossary: [glossary.md](./glossary.md)
 - Configuration: [configuration.md](./configuration.md)
 - Installation: [installation.md](./installation.md)
-
-Manual Jira re-sync (optional, via extension)
-------------------------------
-
-Re-sync is manual by design. To update the Jira comment after editing `spec.md`, re-run Step 6.2 (extension) of `create-spec` with the same `jira_issue_key` and your preferred `jira_comment_mode`. The extension will dedupe by hash and only post a new comment when content changes.
-
-Run only API and DB tasks for the new endpoint spec
----------------------------------------------------
-
-Use this to run just the parent tasks that implement the API endpoint and database table for the spec created above. Adjust task numbers to match your generated `[spec_folder_path]/tasks.md`.
-
-```text
-@~/.agent-os/instructions/core/execute-tasks.md
-
-[execution_context]
-spec_folder_path: @.agent-os/specs/YYYY-MM-DD-add-events-post-endpoint
-specific_tasks:
-  - 1   # API: POST /api/v1/events (adjust to match tasks.md)
-  - 4   # Database: Create Events table migration (adjust)
-[/execution_context]
-```
-
-Optional: run only a targeted subtask (e.g., controller action route wiring) and stop after tests:
-
-```text
-@~/.agent-os/instructions/core/execute-tasks.md
-
-[execution_context]
-spec_folder_path: @.agent-os/specs/YYYY-MM-DD-add-events-post-endpoint
-specific_tasks:
-  - 1
-execution_notes: >
-  Execute only subtask 1.1 (controller action + route) and stop after verifying tests for that subtask.
-[/execution_context]
-```
-
-Helper scripts (optional)
--------------------------
-
-- Update manifest hashes/mtime after edits:
-  - `tools/update-manifest.sh [spec_folder_path]`
-- Backfill lite-first context for existing specs:
-  - `tools/backfill-context.sh`
-- Verify jq and optionally check a spec’s manifest exists:
-  - `tools/verify-jq.sh [spec_folder_path]`
+- Execute tasks: [execute-tasks-usage.md](./execute-tasks-usage.md)

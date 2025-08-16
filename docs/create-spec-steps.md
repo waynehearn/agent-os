@@ -6,15 +6,14 @@ lastUpdated: 2025-08-16
 
 This page documents the complete create‑spec flow so you can see what happens, in what order, and why. It mirrors `instructions/core/create-spec.md` and stays high level for quick reference.
 
-Overview
---------
+## Where it fits
 
+- Reference page for the create‑spec flow internals. Pairs with `docs/create-spec-usage.md`.
 - Goal: Generate a feature spec and task plan aligned to mission, roadmap, and standards.
-- Outputs: spec.md, spec-lite.md, sub-specs (technical, API, DB as needed), tasks.md, context files (facts, manifest, meta).
+- Outputs: spec.md, spec-lite.md, sub-specs (technical, API, DB as needed), tasks.md, lite context (facts, manifest, meta).
 - Determinism: Section counts/order enforced; validators repair when needed.
 
-Steps (core)
-------------
+## What it does (steps)
 
 0.9 Extensions Discovery Report (debug, optional)
 
@@ -95,16 +94,32 @@ Steps (core)
 
 - Present a readiness summary and ask to proceed with executing Task 1.
 
-Extensions touchpoints
-----------------------
+## Inputs and flags
+
+- Content inputs: `main_idea`, `initial_user_stories`, `in_scope`, `expected_deliverables`, `tech_constraints` (optional)
+- Mode: `standard | express | investigate`
+- Flags: `requires_api_changes`, `requires_db_changes`, `non_interactive`
+- Extensions (optional): Jira, Task Organization Hints
+
+## Extensions touchpoints
 
 - 0.9 Discovery report (debug)
 - 11.9 Task organization hints (optional): pre-creation guidance and backend flow hinting
 - 12.05 Enforce preferred order (optional): post-creation stable reorder + validator
 
-Notes
------
+## Artifacts produced
+
+- `[spec_folder_path]/spec.md`, `spec-lite.md`, `tasks.md`
+- `[spec_folder_path]/sub-specs/technical-spec.md` (+ api/db when applicable)
+- `[spec_folder_path]/context/facts.md`, `context/manifest.json`, `context/meta.json`
+
+## Notes
 
 - Lite-first reads: prefer spec-lite and targeted sections; respect `context/manifest.json` hashes.
 - Idempotency: ask before overwriting existing files.
 - Safety: never auto-load `decisions.md` during planning.
+
+## See also
+
+- Usage: `docs/create-spec-usage.md`
+- Tasks generation details: `docs/create-spec-tasks.md`

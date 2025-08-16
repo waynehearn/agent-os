@@ -44,6 +44,79 @@ Requirements
 - Atlassian MCP configured in your editor
 - Jira extension file present: `instructions/extensions/create-spec/atlassian-jira.md` (home or project scope)
 
+Quickstart (3 minutes)
+----------------------
+
+1) Verify setup
+
+- Atlassian MCP is available in your editor.
+- Extension file exists at `instructions/extensions/create-spec/atlassian-jira.md` (home or project scope).
+
+1) Create a Jira ticket with you initial request (see section )
+  Sample Jira ticket (copy/paste)
+
+  Copy this into the Jira issue Description and replace bracketed text. Keep it short; the `[jira_inputs]` block is what the agent reads.
+
+```markdown
+  [jira_inputs]
+  jira_issue_key: DEMO-1
+  use_jira_mcp: true
+  post_spec_to_jira: true
+  jira_comment_mode: summary
+
+  main_idea: >
+    Add a playful Spec Agent K badge widget to the simple HTML/JS demo page. The badge renders a cute “spy-bot” SVG that humorously nods to a special agent theme and Kibo.
+  initial_user_stories:
+    - title: Show Spec Agent K badge
+      story: As a visitor, I want to see a fun Spec Agent K “agent” badge so that I immediately know what the project is about.
+      details: >
+        The badge is generated as inline SVG on page load into a container with id "kibo-agent-badge-container". It includes accessible text and a link to the Kibo docs.
+  in_scope:
+    - Frontend: Implement a small JS module in `site/app.js` that renders the inline SVG badge
+    - Frontend: Add minimal CSS styles in `site/styles.css` for a polished “agent” look
+    - Frontend: Ensure accessible labeling (title/desc and a visually hidden label)
+    - Content: Add a clear link to Spec Agent K docs
+  out_of_scope:
+    - Backend services or build tooling
+    - External image hosting or libraries
+  expected_deliverables:
+    - A visible “Spec Agent K” badge renders on `site/index.html` inside `#kibo-agent-badge-container`
+    - Badge includes accessible title/description and a link to <https://www.youtube.com/watch?v=dQw4w9WgXcQ>
+    - Code is plain HTML/CSS/JS with no bundler; loads by opening the file
+  tech_constraints: >
+    HTML5 + CSS3 + Vanilla JavaScript (ES2020+). No frameworks, no bundlers. Keep the SVG small and self-contained.
+  requires_db_changes: false
+  requires_api_changes: false
+  [/jira_inputs]
+```
+
+2) Run create-spec from a Jira issue
+
+Paste this into the editor to start create-spec with Jira inputs:
+
+```text
+@~/.agent-os/instructions/core/create-spec.md
+
+[jira_inputs]
+jira_issue_key: ABC-1234
+use_jira_mcp: true
+post_spec_to_jira: true         # optional: comment spec back to Jira
+jira_comment_mode: summary      # summary | diff | full
+[/jira_inputs]
+```
+
+1) Review outputs
+
+- A new spec folder is created under `.agent-os/specs/`.
+- If `post_spec_to_jira: true`, a comment is added to the Jira issue (deduped by content hash).
+
+4) Re-sync later (after edits)
+
+- Re-run the same `[jira_inputs]` block. The extension dedupes by hash and only posts when content changes. Change `jira_comment_mode` to control comment format.
+
+Tip: Need a fuller scaffold? See “Empty template: all keys” for every option, or the “Concrete example” below for a detailed API+DB scenario.
+That’s it. For all keys and override options, see Canonical Jira Key Reference below.
+
 Enable the extension
 --------------------
 
@@ -55,19 +128,18 @@ Place it in one of these locations so it can be discovered by the core flow:
 - Home scope: `@~/.agent-os/instructions/extensions/create-spec/`
 - Project scope: `@.agent-os/instructions/extensions/create-spec/`
 
-Run with Jira inputs
---------------------
+Ticket author checklist (keep it simple)
+----------------------------------------
 
-Minimal block:
-
-```text
-@~/.agent-os/instructions/core/create-spec.md
-
-[jira_inputs]
-jira_issue_key: ABC-1234
-use_jira_mcp: true
-[/jira_inputs]
-```
+- Keep the Jira ticket descriptive but concise; if fields are sparse, add overrides in `[jira_inputs]`.
+- If overriding, aim for:
+  - main_idea: 1–2 sentences
+  - initial_user_stories: 1–3 items
+  - in_scope: 1–5 items
+  - expected_deliverables: 1–3 items (externally verifiable)
+- Use `>` (folded) for paragraphs and `|` (literal) for code/JSON; avoid tabs or trailing commas.
+- Trigger sub-specs when needed via `requires_api_changes` / `requires_db_changes`.
+- See “Empty template” and “Formatting” sections below for a copy/paste scaffold and syntax tips.
 
 Empty template: all keys
 ------------------------
@@ -368,6 +440,27 @@ jira_comment_mode: summary  # summary | diff | full
 
 Debug extension discovery (optional)
 ------------------------------------
+
+Re-sync after edits
+-------------------
+
+After you edit `spec.md`, re-run create-spec with the same `[jira_inputs]` block and set `post_spec_to_jira: true` (choose `jira_comment_mode`):
+
+```text
+@~/.agent-os/instructions/core/create-spec.md
+
+[jira_inputs]
+jira_issue_key: ABC-1234
+use_jira_mcp: true
+post_spec_to_jira: true
+jira_comment_mode: summary  # or diff | full
+[/jira_inputs]
+```
+
+Notes:
+
+- The extension dedupes by content hash; it posts only when `spec.md` changed.
+- `summary` mode posts concise change highlights; `diff` posts a unified diff; `full` posts the document or excerpt.
 
 Add this to your input block to print and save a discovery report to `@[spec_folder_path]/debug/extensions-discovery.txt`:
 
