@@ -28,9 +28,76 @@ This section captures the latest changes so we can resume the plan without retra
   - `analyze-inputs.md` updated and lint-healthy (MD032 resolved)
   - Sample runs validated on Windows (bash) without errors
 
+— Execute Tasks (Phase 2, selective-reading implemented)
+
+- `tools/execute-tasks.sh` updated with token-efficient, Windows-friendly behavior:
+  - Writes deterministic snippet to `[spec]/context/current-task.md`
+  - Writes lightweight summary to `[spec]/context/tasks-summary.json`
+  - Writes heuristics to `[spec]/context/tasks-heuristics.json` (API/DB indicators + manifest skip hints)
+  - Refreshes `[spec]/context/manifest.json` for `tasks.md` via `tools/update-manifest.sh`
+  - Git Bash portability fixes (grep option handling), awk-based parsing to avoid sed pitfalls
+  - Optional profiling hooks: `ce_track_file` when `ENABLE_PROFILING=1`
+- Per-parent runner expanded: `tools/run-execute-task.sh`
+  - Selective-reading for relevant sections
+    - technical-spec.md → `context/selected-technical.md`
+    - api-spec.md (gated) → `context/selected-api.md`
+    - database-schema.md (gated) → `context/selected-db.md`
+  - Heuristics gating from `context/tasks-heuristics.json` + current-task text
+  - Portable parsing (awk-based execution_context extraction, Git Bash-safe grep)
+  - Debug NDJSON trace when `debug_subagents=true`
+  - TDD loop still placeholder; optional test-runner hook to be implemented next
+- Documentation aligned:
+  - `instructions/core/execute-tasks.md` notes script-mode snippet/summary/manifest behavior
+  - `commands/execute-tasks.md` documents artifacts and manifest refresh
+- Tests:
+  - `test/test-execute-tasks.sh` smoke test added (asserts snippet, summary, heuristics); passing on Windows Git Bash
+  - Clean output achieved (no grep/sed warnings)
+
+  ## Roadmap and Status — Aug 17, 2025
+
+  This checklist reflects the current state at a glance. Items are broken into concrete deliverables to avoid ambiguity.
+
+  Phase 1 — Foundation
+
+  - [x] Context estimator core (tools/context-estimator.sh) and docs
+  - [x] Create-spec workflow (tools/run-create-spec.sh) and docs
+  - [x] Context-gatherer hierarchical loading + section hashing and docs
+  - [x] Command-router updates + optional Jira integration docs
+
+  Phase 2 — Expansion (in progress)
+
+  - Commands
+    - [x] analyze-product.sh: optimized context use
+    - [x] plan-product.sh: roadmap planning
+    - [x] execute-tasks.sh: minimal loop writes snippet/summary/heuristics and refreshes manifest
+  - [x] run-execute-task.sh: selective-reading + heuristics + debug trace
+  - [x] run-execute-task.sh: minimal TDD loop hook (behind flag) + summary
+  - [ ] run-execute-task.sh: focused test selection patterns and retries
+  - [x] execute-tasks usage doc (docs/execute-tasks-usage.md)
+
+  - Shared context management
+    - [ ] Cross-command shared cache w/ TTL and dedup
+    - [ ] Front-matter-only extension scanning
+
+  - Optional extensions architecture
+    - [ ] Discovery + graceful fallback improvements
+    - [ ] Compatibility checks + extension paths
+
+  - Test framework
+    - [x] Smoke test for execute-tasks (test/test-execute-tasks.sh)
+    - [x] Focused test for per-task runner selective-reading (test/test-run-execute-task.sh)
+    - [ ] Focused tests for TDD loop hook (ENABLE_TDD_LOOP, TEST_CMD)
+    - [ ] CRLF portability test coverage
+
+  Phase 3 — Advanced Features (planned)
+
+  - [ ] Advanced context optimization (compression, semantic chunking, summarization)
+  - [ ] Cross-command context sharing (state, incremental updates, invalidation)
+  - [ ] Hybrid reasoning (intelligent task routing; Claude/Copilot integration)
+
 Compact context snapshot (for continuity):
 
-- Branch: `jira`; Default: `main`
+- Branch: `scriptbased-optimized`; Default: `main`
 - Discovery: simple, deterministic; honors `--write-if-missing`
 - Analyze: successful runs created `docs/analysis`, `docs/analysis2`, `docs/analysis3`, `docs/analysis4`, `docs/analysis5`
 - Command Router + Cache Manager: implemented previously; unchanged
@@ -49,10 +116,12 @@ How to resume from here (quick steps):
 bash tools/analyze-product.sh --output-dir docs/analysis6 analyze-inputs.md
 ```
 
-2) Proceed to implement Execute Tasks (next milestone):
-   - Create `tools/execute-tasks.sh` with the token-efficient pattern
-   - Reuse Context Estimator and Cache Manager; prefer deterministic steps
-   - Add a minimal usage doc: `docs/execute-tasks-usage.md`
+2) Execute Tasks (minimal loop implemented):
+
+- Run smoke test: `bash test/test-execute-tasks.sh`
+- Artifacts expected: `context/current-task.md`, `context/tasks-summary.json`, `context/tasks-heuristics.json`, and refreshed `context/manifest.json`
+- Next: expand `tools/run-execute-task.sh` to follow selective-reading/TDD from `instructions/core/execute-task.md`
+
 3) Optional: run golden example section hashing to validate hashing utilities:
 
 ```bash
@@ -61,9 +130,12 @@ bash tools/section-hash.sh "c:/Users/Wayne.Hearn/data/code/github/myagentos/exam
 
 Immediate next tasks (focused):
 
-- [ ] Implement `tools/execute-tasks.sh` (core loop + minimal task runner)
-- [ ] Add `docs/execute-tasks-usage.md` (how-to and flags)
-- [ ] Add 1-2 smoke tests to `test/` that validate execute flow without network
+- [x] Implement `tools/execute-tasks.sh` (minimal context reload: snippet/summary/heuristics + manifest)
+- [x] Expand `tools/run-execute-task.sh` for selective-reading and debug tracing per `instructions/core/execute-task.md`
+- [x] Add `docs/execute-tasks-usage.md` (how-to and flags)
+- [x] Add smoke tests validating artifacts and selective-reading (Windows Git Bash)
+- [x] Implement minimal TDD loop hook (ENABLE_TDD_LOOP + TEST_CMD) and summary output
+- [ ] Add focused test selection patterns + retry logic to test-runner
 
 ## Current Implementation Status
 
@@ -190,12 +262,13 @@ Immediate next tasks (focused):
 
 - [ ] **Update additional commands**:
   - [x] `analyze-product.sh`: Product analysis with optimized context (Completed Aug 18, 2025)
-  - [ ] `execute-tasks.sh`: Task execution with minimal context reloading
-  - [ ] `execute-task.sh`: Individual task handler with focused context
+  - [x] `execute-tasks.sh`: Minimal loop that pre-writes snippet/summary/heuristics and refreshes manifest (Completed Aug 17, 2025)
+  - [x] `run-execute-task.sh`: Per-parent selective reading + debug tracing
+  - [ ] `run-execute-task.sh`: TDD execution per `instructions/core/execute-task.md` (tests-first + focused verification)
   - [x] `plan-product.sh`: Roadmap planning with efficient context (Completed Aug 18, 2025)
   - **Documentation**:
     - `analyze-product-usage.md` user guide (existing)
-    - `execute-tasks-usage.md` user guide
+    - `execute-tasks-usage.md` user guide (to be added)
     - `plan-product-usage.md` user guide (existing)
     - `token-efficiency-user-guide.md` comprehensive usage guide
 
@@ -255,26 +328,28 @@ Immediate next tasks (focused):
 
 Based on the completed work with command router enhancements, context gathering, and section hashing, the next focus should be on updating additional commands as outlined in Phase 2. The following outlines what needs to be accomplished:
 
-### Update Additional Commands
+### Execute Tasks: TDD loop and focused tests (next)
 
-The next step is to update the additional command scripts to utilize the token-efficient hybrid approach:
+Now that selective reading and heuristics gating are implemented in `tools/run-execute-task.sh`, focus on the TDD loop and focused test verification per `instructions/core/execute-task.md` Steps 5–6:
 
-1. **Analyze Product Command**:
-   - Update `analyze-product.sh` to use optimized context loading
-   - Integrate with the context cache manager
-   - Implement deterministic operations for metrics reporting
+1) TDD loop scaffolding (behind a flag):
 
-2. **Execute Tasks Command**:
-   - Enhance `execute-tasks.sh` with minimal context reloading
-   - Implement task dependency tracking
-   - Add support for parallel task execution where possible
+- Add an optional call-out to a `tools/test-runner.sh` when `ENABLE_TDD_LOOP=1`.
+- Scope: run only tests relevant to current parent task (pattern-based or config-driven).
+- Emit NDJSON trace summaries (pass/fail, truncated details).
 
-3. **Plan Product Command**:
-   - Update `plan-product.sh` with efficient roadmap planning
-   - Implement template-based planning documents
-   - Add support for milestone tracking and estimation
+2) Focused test verification:
 
-These updates should leverage the existing infrastructure components:
+- Provide a minimal implementation to re-run failed tests and confirm green.
+- Keep cross-platform (Windows Git Bash) and no-op gracefully when no test runner is available.
+
+3) Documentation update:
+
+- Expand `execute-tasks-usage.md` to include the optional TDD loop flags and expectations.
+
+Leverage existing components (context estimator, cache manager, manifest hashing) and keep the default behavior unchanged unless the TDD flag is enabled.
+
+Leverage the existing infrastructure components:
 
 - Context estimator for profiling
 - Context cache manager for operation caching

@@ -12,6 +12,19 @@ Notes:
   - [spec_folder_path]/context/current-task.md (deterministic snippet of the current parent block)
   - [spec_folder_path]/context/tasks-summary.json (parent number/title, first/last subtask presence)
   - [spec_folder_path]/context/manifest.json is refreshed for tasks.md to support selective reloads
+  - When delegated to per-task runner (tools/run-execute-task.sh), selective-reading extracts may also be written:
+    - [spec_folder_path]/context/selected-technical.md
+    - [spec_folder_path]/context/selected-api.md (gated)
+    - [spec_folder_path]/context/selected-db.md (gated)
+
+Optional TDD loop (script-mode):
+
+- Set `ENABLE_TDD_LOOP=1` to enable an optional focused test run via `tools/test-runner.sh`.
+- Provide a shell command in `TEST_CMD` to actually run your tests (e.g., `npm test -- -t "greeting"`).
+- A compact summary is written to `[spec_folder_path]/context/test-run-summary.json`.
+- Optional envs:
+  - `TEST_PATTERN` to pass a test selector (also seeds from the first line of `execution_notes` when present)
+  - `TEST_RETRIES` to retry failing runs a few times (default: 0)
 
 Examples:
 
@@ -50,4 +63,10 @@ specific_tasks:
 execution_notes: >
   Execute only subtask 1.1 for task 1 and stop after verifying tests for that subtask.
 [/execution_context]
+```
+
+Optional: enable TDD loop and supply a test command (bash env):
+
+```bash
+ENABLE_TDD_LOOP=1 TEST_CMD="npm test -- -t \"Greeting API\"" TEST_PATTERN="Greeting" TEST_RETRIES=1 bash tools/run-execute-task.sh path/to/inputs.md
 ```

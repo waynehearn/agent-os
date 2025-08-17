@@ -1,14 +1,14 @@
 {
-  "updatedAt": "2025-08-17T22:38:16Z",
+  "updatedAt": "2025-08-17T22:13:53Z",
   "requires_api_changes": true,
   "requires_db_changes": true,
   "indicators": {
     "api": [
-      "endpoint",
-      "controller",
-      "route"
+      "api"
     ],
     "db": [
+      "db",
+      "database",
       "schema"
     ]
   },

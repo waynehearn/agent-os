@@ -1,24 +1,26 @@
 {
-  "updatedAt": "2025-08-17T22:38:16Z",
+  "updatedAt": "2025-08-17T22:45:41Z",
   "requires_api_changes": true,
   "requires_db_changes": true,
   "indicators": {
     "api": [
-      "endpoint",
+      "api",
       "controller",
       "route"
     ],
     "db": [
-      "schema"
+      "db",
+      "schema",
+      "migration"
     ]
   },
   "manifest": {
     "apiSpec": {
-      "exists": false,
+      "exists": true,
       "unchanged": false
     },
     "dbSchema": {
-      "exists": false,
+      "exists": true,
       "unchanged": false
     }
   }

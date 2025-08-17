@@ -1,0 +1,6 @@
+{
+  "specFolderPath": "/c/Users/Wayne.Hearn/data/code/github/myagentos/test/.agent-os/specs/2025-08-17-test-run-exec",
+  "updatedAt": "2025-08-17T22:45:43Z",
+  "parentTask": {"number": 1, "title": "Greeting API feature"},
+  "subtasks": {"count": 2, "hasFirst": true, "hasLast": true, "first": "1.1", "last": "1.2"}
+}

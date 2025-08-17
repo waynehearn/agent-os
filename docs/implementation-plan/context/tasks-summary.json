@@ -1,0 +1,15 @@
+{
+  "specFolderPath": "/c/Users/Wayne.Hearn/data/code/github/myagentos/docs/implementation-plan",
+  "updatedAt": "2025-08-17T22:13:51Z",
+  "parentTask": {
+    "number": 1,
+    "title": "Implement per-parent execution (run-execute-task.sh)"
+  },
+  "subtasks": {
+    "count": 3,
+    "hasFirst": true,
+    "hasLast": true,
+    "first": "1.1",
+    "last": "1.3"
+  }
+}
