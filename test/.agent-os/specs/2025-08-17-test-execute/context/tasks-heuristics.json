@@ -1,0 +1,25 @@
+{
+  "updatedAt": "2025-08-17T21:57:08Z",
+  "requires_api_changes": true,
+  "requires_db_changes": true,
+  "indicators": {
+    "api": [
+      "endpoint",
+      "controller",
+      "route"
+    ],
+    "db": [
+      "schema"
+    ]
+  },
+  "manifest": {
+    "apiSpec": {
+      "exists": false,
+      "unchanged": false
+    },
+    "dbSchema": {
+      "exists": false,
+      "unchanged": false
+    }
+  }
+}

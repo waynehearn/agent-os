@@ -133,6 +133,13 @@ Use the context-fetcher subagent to gather minimal context for task understandin
   </conditional_docs>
 </context_gathering>
 
+<script_mode_behavior>
+  When executed via the script implementation (tools/execute-tasks.sh):
+  - A deterministic snippet of the current parent task is written to [spec_folder_path]/context/current-task.md prior to execution.
+  - A lightweight summary is written to [spec_folder_path]/context/tasks-summary.json with parent number/title and first/last subtask presence.
+  - The manifest entry for tasks.md in [spec_folder_path]/context/manifest.json is refreshed so selective reads can reliably skip unchanged content.
+</script_mode_behavior>
+
 </step>
 
 <step number="3" name="development_server_check">
@@ -253,6 +260,10 @@ Execute all assigned parent tasks and their subtasks using @~/.agent-os/instruct
   EXECUTE: @~/.agent-os/instructions/core/tasks-validator.md with TASKS_PATH=@[spec_folder_path]/tasks.md
   AFTER: Write a short summary to [spec_folder_path]/context/tasks-summary.json (normalized numbering, first/last subtask presence) and refresh manifest hash for tasks.md
 </tasks_validation>
+
+<script_mode_behavior>
+  The script may pre-write tasks-summary.json at the start of each parent task execution and refresh the manifest for tasks.md. A final normalization/summary step can still run after updates if desired.
+</script_mode_behavior>
 
 <instructions>
   ACTION: Load execute-task.md instructions once at start

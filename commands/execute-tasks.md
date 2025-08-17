@@ -8,6 +8,10 @@ Notes:
 
 - The flow expects a spec context (e.g., [spec_folder_path]) and reads tasks from [spec_folder_path]/tasks.md
 - Completion prints a visible banner and attempts a short beep when supported by the shell
+- When using the script implementation (tools/execute-tasks.sh), the following artifacts are written prior to executing a parent task:
+  - [spec_folder_path]/context/current-task.md (deterministic snippet of the current parent block)
+  - [spec_folder_path]/context/tasks-summary.json (parent number/title, first/last subtask presence)
+  - [spec_folder_path]/context/manifest.json is refreshed for tasks.md to support selective reloads
 
 Examples:
 
