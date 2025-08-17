@@ -2,13 +2,11 @@
 
 These prompts were written for Claude Code with subagents. GitHub Copilot Chat doesn’t spawn multiple autonomous subagents or run arbitrary tools by itself, but you can get most of the value by asking Copilot to follow the agent playbooks in this repo and by running VS Code tasks/scripts yourself.
 
-
 ### What works in Copilot Chat
 
 - Reading and following playbooks in this repo when you reference file paths explicitly (use @workspace in Chat).
 - Producing specs, task plans, and diffs/patches based on our templates and schemas.
 - Guiding you through terminal/VS Code tasks you run manually.
-
 
 ### What doesn’t (without building an extension)
 
@@ -24,36 +22,29 @@ If you need true agents/tools, consider building a VS Code extension that expose
 
 Tip: Prefix with `@workspace` so Copilot can read files you reference.
 
-
 ### 1) Context Fetcher
 
 "Act as the Context Fetcher per `claude-code/agents/context-fetcher.md`. Read `docs/context-discovery.md` and `examples/golden/context/manifest.json`. Output a concise product/context summary and list unknowns/gaps per the playbook. Keep responses under 200 lines."
-
 
 ### 2) Planner
 
 "Follow `commands/plan-product.md` using `examples/quickstart/initial-request.md` as the input. Produce a high-level plan and risks. Use `docs/create-spec-tasks.md` for structure."
 
-
 ### 3) Spec Creator
 
 "Follow `commands/create-spec.md` and `docs/create-spec-steps.md`. Conform to `docs/schemas/spec-input.schema.json` and `docs/schemas/product-context.schema.json`. Use `templates/enhanced-manifest.json` if relevant. Return a diff-ready spec."
-
 
 ### 4) Task Executor (proposal mode)
 
 "Using `commands/execute-tasks.md` and `instructions/core/execute-tasks.md`, propose an ordered set of edits and shell steps. For file edits, return patch-style suggestions. For shell steps, list commands but don’t run them."
 
-
 ### 5) File Creator
 
 "Behave as the File Creator per `claude-code/agents/file-creator.md`. Create or update files to implement the proposed tasks. Return minimal, focused diffs."
 
-
 ### 6) Git Workflow
 
 "Follow `claude-code/agents/git-workflow.md`. Propose exact git commands (branch, commit messages). Do not execute—only propose."
-
 
 ### 7) Test Runner (manual run)
 
