@@ -51,7 +51,7 @@ Inspect the discovery cache if created:
 jq . .agent-os/product/context/context.json
 ```
 
-Bootstrap minimal product docs (opt-in):
+Bootstrap minimal product docs with discovered content only (opt-in; no placeholders):
 
 ```bash
 bash tools/discover-product-context.sh --init-product --write
@@ -78,7 +78,8 @@ From `instructions/core/analyze-product.md`:
 ## Artifacts produced
 
 - `.agent-os/product/`
-  - `mission.md`, `mission-lite.md`, `tech-stack.md`, `roadmap.md`, `decisions.md`
+   - From analyze-product (via plan-product): `mission.md`, `mission-lite.md`, `tech-stack.md`, `roadmap.md`, `decisions.md`
+   - From discovery `--init-product` (only if content exists): subset of `tech-stack.md`, `roadmap.md`, `decisions.md`, and `context/facts.md`
 - `.agent-os/product/context/context.json` (discovery cache, only if missing)
 
 ## Inputs and flags

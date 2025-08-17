@@ -85,6 +85,68 @@ Optional (Windows with MSYS2):
 pacman -S --noconfirm mingw-w64-x86_64-jq
 ```
 
+Runtime tools directory and PATH
+--------------------------------
+
+The installer sets up a runtime tools directory in your home folder for helper scripts and small utilities needed by Spec Agent K flows:
+
+- Location: `~/.agent-os/tools`
+- Contents: selected helpers from this repo's `tools/` (e.g., `section-hash.sh`, `update-manifest.sh`, `verify-jq.sh`, plus platform wrappers like `embed-png.ps1` on Windows)
+
+During setup, the installer will:
+
+1) Create `~/.agent-os/tools` if it doesn't exist.
+2) Copy required helper scripts into that folder (idempotent, checksum-based).
+3) Attempt to add `~/.agent-os/tools` to your PATH. If it cannot modify your shell profile automatically, use the manual steps below.
+
+Manual PATH setup
+
+- macOS/Linux (Bash)
+
+```bash
+mkdir -p "$HOME/.agent-os/tools"
+if ! grep -q 'PATH="$HOME/.agent-os/tools' "$HOME/.bashrc" 2>/dev/null; then echo 'export PATH="$HOME/.agent-os/tools:$PATH"' >> "$HOME/.bashrc"; fi
+exec "$SHELL" -l
+```
+
+- macOS (zsh)
+
+```bash
+mkdir -p "$HOME/.agent-os/tools"
+if ! grep -q 'PATH="$HOME/.agent-os/tools' "$HOME/.zshrc" 2>/dev/null; then echo 'export PATH="$HOME/.agent-os/tools:$PATH"' >> "$HOME/.zshrc"; fi
+exec "$SHELL" -l
+```
+
+- Windows PowerShell (user PATH, no admin)
+
+```powershell
+$toolDir = "$env:USERPROFILE\.agent-os\tools"
+if (-not (Test-Path $toolDir)) { New-Item -ItemType Directory -Force -Path $toolDir | Out-Null }
+
+# Persist for future sessions
+$current = [Environment]::GetEnvironmentVariable('PATH','User')
+if ($current -notlike "*$toolDir*") { [Environment]::SetEnvironmentVariable('PATH', "$toolDir;" + $current, 'User') }
+
+# Update current session PATH
+if ($env:PATH -notlike "*$toolDir*") { $env:PATH = "$toolDir;" + $env:PATH }
+
+Write-Host "~/.agent-os/tools added to PATH. Restart terminals to take effect everywhere."
+```
+
+Verify PATH contains the tools directory
+
+- macOS/Linux
+
+```bash
+echo $PATH | tr ':' '\n' | grep -F "$HOME/.agent-os/tools"
+```
+
+- Windows PowerShell
+
+```powershell
+($env:PATH -split ';') | Where-Object { $_ -match '\\.agent-os\\tools$' }
+```
+
 Recommended install (from local clone)
 --------------------------------------
 
@@ -134,6 +196,7 @@ What gets installed/managed:
   - `~/.agent-os/instructions/` (core + meta)
   - `~/.agent-os/standards/` (including code-style)
   - `~/.agent-os/docs/` (local documentation)
+  - `~/.agent-os/tools/` (helper scripts placed on PATH)
 - Claude Code
   - `~/.claude/commands/*.md`
   - `~/.claude/agents/*.md`
@@ -276,6 +339,8 @@ bash ./uninstall.sh --dry-run
 bash ./uninstall.sh --only-instructions
 bash ./uninstall.sh --only-standards
 bash ./uninstall.sh --only-docs
+bash ./uninstall.sh --only-tools
+
 ```
 
 - Claude Code uninstall
@@ -320,4 +385,18 @@ bash ./tools/verify-install.sh
 bash ./tools/verify-install.sh --check-claude
 bash ./tools/verify-install.sh --check-cursor   # run inside a project with .cursor
 ./tools/verify-jq.sh                             # confirm jq is on PATH
+```
+
+Confirm that the tools directory is on your PATH:
+
+- macOS/Linux
+
+```bash
+command -v section-hash.sh >/dev/null && echo "tools on PATH" || echo "tools not found on PATH"
+```
+
+- Windows PowerShell
+
+```powershell
+Get-Command section-hash.sh -ErrorAction SilentlyContinue | ForEach-Object { "tools on PATH" }
 ```

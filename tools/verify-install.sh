@@ -81,6 +81,15 @@ check_file "$HOME/.agent-os/instructions/core/analyze-product.md"
 echo "\nInstruction files (meta)"
 check_file "$HOME/.agent-os/instructions/meta/pre-flight.md"
 
+# Tools directory and PATH
+echo "\nTools"
+check_dir "$HOME/.agent-os/tools"
+if command -v section-hash.sh >/dev/null 2>&1; then
+  echo "  ✓ section-hash.sh found on PATH"
+else
+  echo "  ✗ section-hash.sh not found on PATH (ensure ~/.agent-os/tools is in PATH)"
+fi
+
 if [[ "$CHECK_CLAUDE" == true ]]; then
   echo "\nClaude Code (optional)"
   check_dir "$HOME/.claude/commands"

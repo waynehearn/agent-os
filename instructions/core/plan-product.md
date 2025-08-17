@@ -50,7 +50,7 @@ Use the context-fetcher subagent to collect all required inputs from the user in
 
 ### Step 2: Create Documentation Structure
 
-Use the file-creator subagent to create the following file_structure with validation for write permissions and protection against overwriting existing files:
+Use the file-creator subagent to create the following file_structure with validation for write permissions. Protect existing user-authored files, but allow overwriting files that contain the exact marker `<!-- PLACEHOLDER:discover-product-context -->` (created by discovery bootstrap):
 
 <file_structure>
   .agent-os/
@@ -203,6 +203,11 @@ Use the file-creator subagent to create the file: .agent-os/product/tech-stack.m
   - deployment_solution: string
   - code_repository_url: string
 </required_items>
+
+<overwrite_rules>
+  - If `.agent-os/product/tech-stack.md` exists and contains `<!-- PLACEHOLDER:discover-product-context -->` on the first 5 lines, overwrite it with the generated content.
+  - Otherwise, do not overwrite an existing file; append missing required items guidance at the end if needed.
+</overwrite_rules>
 
 <data_resolution>
   IF has_context_fetcher:

@@ -19,12 +19,14 @@ Goals
 Discovery order
 ---------------
 
-1. `.agent-os/product/context/context.json` (cache)
-2. `.agent-os/product/` docs: `mission.md`, `tech-stack.md`, `roadmap.md`, `decisions.md`, `context/facts.md`
+1. Explicit `--source-file` (highest precedence)
+2. `.agent-os/product/context/context.json` (cache)
 3. `CLAUDE.md` → "Project Overview" section
-4. `docs/architecture.md`, `docs/index.md`
-5. `README.md` (top paragraphs)
-6. Heuristics from build/config files (`package.json`, `pyproject.toml`, `Gemfile`, `pom.xml`, `build.gradle*`, `go.mod`, `Cargo.toml`, `composer.json`, `*.csproj`)
+4. Adaptive fuzzy discovery of likely technical docs (docs/, design/, architecture/, spec/, specs/, root)
+5. `.agent-os/product/` docs: `mission.md`, `tech-stack.md`, `roadmap.md`, `decisions.md`, `context/facts.md`
+6. `docs/architecture.md`, `docs/index.md`
+7. `README.md` (top paragraphs)
+8. Heuristics from build/config files (`package.json`, `pyproject.toml`, `Gemfile`, `pom.xml`, `build.gradle*`, `go.mod`, `Cargo.toml`, `composer.json`, `*.csproj`)
 
 Output shape
 ------------
@@ -38,6 +40,10 @@ Run from project root:
 
 ```bash
 bash tools/discover-product-context.sh --write-if-missing
+
+# Prefer a specific source document
+bash tools/discover-product-context.sh --source-file ./CLAUDE.md --write-if-missing
+
 ```
 
 Options:
@@ -45,6 +51,7 @@ Options:
 - `--write`: persist to `.agent-os/product/context/context.json`
 - `--write-if-missing`: only write if cache file is absent
 - `--init-product`: if context is insufficient, create minimal `.agent-os/product/` skeleton and a lite `context/facts.md`
+- `--source-file PATH`: treat PATH as the primary source of technical specs (Markdown/text)
 
 Integration notes
 -----------------

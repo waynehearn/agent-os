@@ -67,14 +67,19 @@ Perform a deep analysis of the codebase to understand the current state before g
 
 ### Step 2: Gather Product Context (with discovery first)
 
-Before asking the user, attempt non-destructive discovery of existing product context from the repository using the Bash utility:
+Before asking the user, attempt non-destructive discovery of existing product context from the repository using the Bash utility (prefer an explicit source document or CLAUDE.md when available; the tool also tries to find likely docs automatically):
 
 ```
-shell: bash tools/discover-product-context.sh --write-if-missing
+shell: bash ~agent-os/tools/discover-product-context.sh --write-if-missing
+
+# If a canonical spec/overview file exists, prefer it:
+shell: bash tools/discover-product-context.sh --source-file ./CLAUDE.md --write-if-missing
+
 ```
 
 Behavior:
 
+- Precedence: source-file → cache → CLAUDE.md → fuzzy-discovered docs → product docs → architecture/index → README → build heuristics
 - Reads `.agent-os/product/` docs if present, CLAUDE.md, README.md, and build files
 - Writes `.agent-os/product/context/context.json` only if missing (cache)
 - If insufficient context and automation is allowed, you may run with `--init-product` to create a minimal `.agent-os/product/` skeleton; otherwise, proceed to ask the user

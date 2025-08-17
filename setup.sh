@@ -170,6 +170,7 @@ mkdir -p "$HOME/.agent-os/standards/code-style"
 mkdir -p "$HOME/.agent-os/instructions/core"
 mkdir -p "$HOME/.agent-os/instructions/meta"
 mkdir -p "$HOME/.agent-os/docs"
+mkdir -p "$HOME/.agent-os/tools"
 
 # Copy standards
 echo
@@ -246,6 +247,73 @@ else
     echo "  ⚠️  No local 'docs/' folder found in repo; skipping"
 fi
 
+# Copy tools
+echo
+echo "📥 Installing tools to ~/.agent-os/tools/"
+if [[ -d "$script_dir/tools" ]]; then
+    if [[ "$DO_UPGRADE" == true ]]; then
+        sync_dir_changed_only "$script_dir/tools" "$HOME/.agent-os/tools"
+    else
+        if [[ "$DRY_RUN" == true ]]; then
+            echo "  • Would copy tools (preserve existing)"
+        else
+            cp -Rn "$script_dir/tools/." "$HOME/.agent-os/tools/" || true
+            echo "  ✓ Tools copied (existing files preserved)"
+        fi
+    fi
+else
+    echo "  ⚠️  No local 'tools/' folder found in repo; skipping"
+fi
+
+# Ensure ~/.agent-os/tools is on PATH for bash/zsh shells
+if [[ "$DRY_RUN" == false ]]; then
+    echo
+    echo "🛣️  PATH configuration"
+    added=false
+    if [[ -n "${BASH_VERSION:-}" ]]; then
+        if ! grep -q 'PATH="$HOME/.agent-os/tools' "$HOME/.bashrc" 2>/dev/null; then
+            echo 'export PATH="$HOME/.agent-os/tools:$PATH"' >> "$HOME/.bashrc"
+            echo "  ✓ Added to ~/.bashrc"
+            added=true
+        else
+            echo "  • ~/.bashrc already contains tools path"
+        fi
+    fi
+    # Also add for zsh if present
+    if [[ -n "${ZSH_VERSION:-}" || -f "$HOME/.zshrc" ]]; then
+        if ! grep -q 'PATH="$HOME/.agent-os/tools' "$HOME/.zshrc" 2>/dev/null; then
+            echo 'export PATH="$HOME/.agent-os/tools:$PATH"' >> "$HOME/.zshrc"
+            echo "  ✓ Added to ~/.zshrc"
+            added=true
+        else
+            echo "  • ~/.zshrc already contains tools path"
+        fi
+    fi
+    if [[ "$added" == false ]]; then
+        echo "  • No shell profile updated (may be running non-login shell). See docs/installation.md for manual PATH steps."
+    fi
+
+    # Make sure scripts are executable (POSIX shells)
+    if command -v find >/dev/null 2>&1; then
+        find "$HOME/.agent-os/tools" -type f -name "*.sh" -exec chmod +x {} + 2>/dev/null || true
+    fi
+
+    # Attempt to add to Windows User PATH if PowerShell is available
+    if command -v powershell.exe >/dev/null 2>&1; then
+        echo "  ⊞ Windows PATH (User)"
+        pwsh_cmd=''
+        pwsh_cmd+='$toolDir = "$env:USERPROFILE\\.agent-os\\tools";'
+        pwsh_cmd+='$current = [Environment]::GetEnvironmentVariable("PATH","User");'
+        pwsh_cmd+='if ($null -eq $current) { $current = "" }'
+        pwsh_cmd+='if ($current -notlike "*${toolDir}*") { '
+        pwsh_cmd+='  [Environment]::SetEnvironmentVariable("PATH", "$toolDir;" + $current, "User");'
+        pwsh_cmd+='  Write-Output "    ✓ Added to Windows User PATH"'
+        pwsh_cmd+='} else { Write-Output "    • Already present in Windows User PATH" }'
+        powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$pwsh_cmd" 2>/dev/null || true
+        echo "    (Restart terminals to pick up the updated PATH)"
+    fi
+fi
+
 # Write manifest when upgrading
 if [[ "$DRY_RUN" == false ]]; then
     echo
@@ -260,6 +328,7 @@ echo "📁 Files installed to:"
 echo "   ~/.agent-os/standards/     - Your development standards"
 echo "   ~/.agent-os/instructions/  - Spec Agent K instructions"
 echo "   ~/.agent-os/docs/          - Spec Agent K documentation"
+echo "   ~/.agent-os/tools/         - Helper scripts placed on PATH"
 echo
 if [[ "$DO_UPGRADE" == true ]]; then
     echo "🔄 Upgrade mode was used. Changed files were backed up to ~/.agent-os/.backup/$TIMESTAMP"
@@ -274,5 +343,10 @@ echo
 echo "2. Optional editor integrations (run from this repo root):"
 echo "   - Claude Code: bash ./setup-claude-code.sh --upgrade"
 echo "   - Cursor:      bash ./setup-cursor.sh --upgrade (run inside a project repo)"
+echo
+
+echo "3. Ensure '~/.agent-os/tools' is on your PATH:"
+echo "   - Bash/Zsh: open a new terminal or 'exec \"$SHELL\" -l'"
+echo "   - Windows PowerShell: see docs/installation.md for PATH instructions"
 echo
 

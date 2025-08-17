@@ -22,7 +22,7 @@ set -euo pipefail
 # using detected signals. Otherwise, only emit JSON to stdout or to the cache if --write-if-missing.
 #
 # Usage:
-#   tools/discover-product-context.sh [project_root] [--write | --write-if-missing] [--init-product]
+#   tools/discover-product-context.sh [project_root] [--write | --write-if-missing] [--init-product] [--source-file <path>]
 #   tools/discover-product-context.sh --help
 #
 # Output:
@@ -62,12 +62,13 @@ discover-product-context.sh
 Unified, Bash-only product context discovery for Spec Agent K.
 
 Usage:
-  tools/discover-product-context.sh [project_root] [--write | --write-if-missing] [--init-product]
+  tools/discover-product-context.sh [project_root] [--write | --write-if-missing] [--init-product] [--source-file <path>]
 
 Options:
   --write              Write aggregated JSON to .agent-os/product/context/context.json (create dirs as needed)
   --write-if-missing   Only write cache file if it doesn't already exist
   --init-product       If aggregated context is insufficient, create minimal .agent-os/product/ skeleton
+  --source-file PATH   Use an existing document (Markdown/text) as the primary source of technical specs (highest precedence)
   --help               Show this help
 
 Environment:
@@ -95,16 +96,20 @@ esac
 
 WRITE_MODE="none"    # none|write|write-if-missing
 INIT_PRODUCT=false
+SOURCE_FILE=""
 
 # Parse flags (start at $2 if root provided)
 shift || true
-for arg in "$@"; do
-  case "$arg" in
-    --write) WRITE_MODE="write" ;;
-    --write-if-missing) WRITE_MODE="write-if-missing" ;;
-    --init-product) INIT_PRODUCT=true ;;
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --write) WRITE_MODE="write"; shift ;;
+    --write-if-missing) WRITE_MODE="write-if-missing"; shift ;;
+    --init-product) INIT_PRODUCT=true; shift ;;
+    --source-file)
+      [[ $# -ge 2 ]] || die "--source-file requires a path"
+      SOURCE_FILE="$2"; shift 2 ;;
     --help) usage; exit 0 ;;
-    *) ;;
+    *) shift ;;
   esac
 done
 
@@ -135,6 +140,16 @@ if [[ "$PROJECT_ROOT" != /* ]]; then
   PROJECT_ROOT="$(cd "$PROJECT_ROOT" && pwd)"
 fi
 [[ -d "$PROJECT_ROOT" ]] || die "Project root not found: $PROJECT_ROOT"
+
+# Normalize and resolve source file path if provided
+if [[ -n "$SOURCE_FILE" ]]; then
+  if [[ "$is_wsl" == true ]]; then
+    SOURCE_FILE="$(win_to_wsl_path "$SOURCE_FILE")"
+  fi
+  if [[ "$SOURCE_FILE" != /* ]]; then
+    SOURCE_FILE="$PROJECT_ROOT/${SOURCE_FILE}"
+  fi
+fi
 
 # Helpers
 read_text_if_exists() { # path -> sets REPLY to file content (raw); empty if missing
@@ -186,7 +201,43 @@ merge_array_unique() { # field jsonArray
   AGG="$(jq --argjson arr "$arrJson" --arg field "$field" '.[$field] = (.[$field] + $arr | unique)' <<<"$AGG")"
 }
 
-# 1) Cached JSON (if valid)
+# Adaptive fuzzy document discovery: try to locate a likely technical doc
+discover_fuzzy_doc() {
+  local root="$PROJECT_ROOT" max=0 best=""
+  # Candidate dirs (searched first):
+  local -a dirs=("$root/docs" "$root/design" "$root/architecture" "$root/spec" "$root/specs" "$root")
+  local exclude='(\.git|node_modules|dist|build|out|coverage|vendor|target|bin|obj)'
+  local regex='.*\.(md|markdown|txt)$'
+  for d in "${dirs[@]}"; do
+    [[ -d "$d" ]] || continue
+    while IFS= read -r -d '' f; do
+      # Score by filename keywords and content hints
+      local base score kcount hcount size
+      base="$(basename "$f" | tr '[:upper:]' '[:lower:]')"
+      score=0
+      [[ "$base" =~ tech.*stack|architecture|system|design|spec|overview ]] && score=$((score+5))
+      hcount=$(grep -Eic '^(#|##)\s*(Architecture|Tech|System|Design|Specification|Overview|Platform|Infrastructure)\b' "$f" 2>/dev/null || echo 0)
+      kcount=$(grep -Eic '\b(architecture|tech( |-)?stack|system|design|spec(ification)?|overview|platform|infrastructure)\b' "$f" 2>/dev/null || echo 0)
+      size=$(wc -c < "$f" 2>/dev/null || echo 0)
+      # normalized size factor (favor non-trivial docs)
+      [[ "$size" -gt 1024 ]] && score=$((score+2))
+      score=$((score + hcount + (kcount>50?50:kcount)))
+      if [[ "$score" -gt "$max" ]]; then max="$score"; best="$f"; fi
+    done < <(find "$d" -type d -regex ".*/$exclude" -prune -o -type f -iregex "$regex" -print0 2>/dev/null)
+  done
+  if [[ -n "$best" && "$max" -ge 5 ]]; then
+    add_source "fuzzy:${best#$PROJECT_ROOT/}"
+    read_text_if_exists "$best"; set_overview_if_empty "$REPLY"
+  fi
+}
+
+# 1) Direct source file (highest precedence)
+if [[ -n "$SOURCE_FILE" && -f "$SOURCE_FILE" ]]; then
+  add_source "$(realpath "$SOURCE_FILE" 2>/dev/null || echo "$SOURCE_FILE")"
+  read_text_if_exists "$SOURCE_FILE"; set_overview_if_empty "$REPLY"
+fi
+
+# 2) Cached JSON (if valid)
 if [[ -f "$CACHE_JSON" ]]; then
   if jq empty "$CACHE_JSON" >/dev/null 2>&1; then
     add_source ".agent-os/product/context/context.json"
@@ -207,7 +258,23 @@ if [[ -f "$CACHE_JSON" ]]; then
   fi
 fi
 
-# 2) Product docs
+# 3) CLAUDE.md (Project Overview section) — prefer before product docs/init
+CLAUDE_MD="$PROJECT_ROOT/CLAUDE.md"
+if [[ -f "$CLAUDE_MD" ]]; then
+  # Extract between '## Project Overview' and next '##'
+  section=$(awk '/^##\s+Project Overview/{flag=1; next} /^##\s+/{flag=0} flag{print}' "$CLAUDE_MD" || true)
+  if [[ -n "${section//[[:space:]]/}" ]]; then
+    add_source "CLAUDE.md"
+    set_overview_if_empty "$section"
+  fi
+fi
+
+# 4) Adaptive fuzzy discovery — if overview still empty
+if jq -e '.overview == null or .overview == ""' >/dev/null <<<"$AGG"; then
+  discover_fuzzy_doc
+fi
+
+# 5) Product docs
 MISSION="$PRODUCT_DIR/mission.md"
 TECH="$PRODUCT_DIR/tech-stack.md"
 ROADMAP="$PRODUCT_DIR/roadmap.md"
@@ -256,20 +323,7 @@ if [[ -f "$DECISIONS" ]]; then
 ' "${decs[@]}" | jq -Rs 'split("\n") | map(select(length>0))')"
     merge_array_unique decisions "$js"
   fi
-fi
-
-# 3) CLAUDE.md (Project Overview section)
-CLAUDE_MD="$PROJECT_ROOT/CLAUDE.md"
-if [[ -f "$CLAUDE_MD" ]]; then
-  # Extract between '## Project Overview' and next '##'
-  section=$(awk '/^##\s+Project Overview/{flag=1; next} /^##\s+/{flag=0} flag{print}' "$CLAUDE_MD" || true)
-  if [[ -n "${section//[[:space:]]/}" ]]; then
-    add_source "CLAUDE.md"
-    set_overview_if_empty "$section"
-  fi
-fi
-
-# 4) docs/architecture.md, docs/index.md
+# 6) docs/architecture.md, docs/index.md
 if [[ -f "$PROJECT_ROOT/docs/architecture.md" ]]; then
   add_source "docs/architecture.md"
   read_text_if_exists "$PROJECT_ROOT/docs/architecture.md"; set_overview_if_empty "$REPLY"
@@ -279,7 +333,7 @@ if [[ -f "$PROJECT_ROOT/docs/index.md" ]]; then
   read_text_if_exists "$PROJECT_ROOT/docs/index.md"; set_overview_if_empty "$REPLY"
 fi
 
-# 5) README.md (top paragraphs)
+# 7) README.md (top paragraphs)
 if [[ -f "$PROJECT_ROOT/README.md" ]]; then
   add_source "README.md"
   head_text=$(head -n 80 "$PROJECT_ROOT/README.md" || true)
@@ -405,89 +459,72 @@ if [[ "$maybe_write" == true ]]; then
   printf '%s' "$AGG" > "$CACHE_JSON"
 fi
 
-# If insufficient and --init-product, create minimal skeleton
+# If insufficient and --init-product, create meaningful docs only (no placeholders)
 created_files=()
 if [[ "$sufficient" != true && "$INIT_PRODUCT" == true ]]; then
   ensure_dir "$PRODUCT_DIR"
   ensure_dir "$CTX_DIR"
 
-  if [[ ! -f "$MISSION" ]]; then
-    printf '# Mission\n\n' > "$MISSION"
-    # Use overview if we have any, else placeholder
-    if jq -e '.overview != null and .overview != ""' >/dev/null <<<"$AGG"; then
-      jq -r '.overview' <<<"$AGG" >> "$MISSION"
-    else
-      printf 'TBD: Add a 1–2 paragraph mission/overview here.\n' >> "$MISSION"
-    fi
-    created_files+=("$MISSION")
-  fi
-
-  if [[ ! -f "$TECH" ]]; then
-    printf '# Tech Stack\n\n' > "$TECH"
-    if jq -e '(.tech_stack // []) | length > 0' >/dev/null <<<"$AGG"; then
-      jq -r '.tech_stack[] | "- " + .' <<<"$AGG" >> "$TECH"
-    else
-      printf '- TBD (add languages, frameworks, DB, hosting)\n' >> "$TECH"
-    fi
+  # tech-stack.md only if we detected any stack entries
+  if [[ ! -f "$TECH" ]] && jq -e '(.tech_stack // []) | length > 0' >/dev/null <<<"$AGG"; then
+    {
+      printf '# Tech Stack\n\n'
+      jq -r '.tech_stack[] | "- " + .' <<<"$AGG"
+    } > "$TECH"
     created_files+=("$TECH")
   fi
 
-  if [[ ! -f "$ROADMAP" ]]; then
-    cat > "$ROADMAP" <<'RM'
-# Roadmap
-
-## Phase 0: Already Completed
-
-- [ ] (Add implemented items)
-
-## Phase 1: Current Development
-
-- [ ] (Add in-progress items)
-
-## Phase 2+: Planned
-
-- [ ] (Add planned items)
-RM
+  # roadmap.md only if we have implemented or planned features
+  if [[ ! -f "$ROADMAP" ]] && jq -e '((.implemented_features // []) | length > 0) or ((.planned_features // []) | length > 0)' >/dev/null <<<"$AGG"; then
+    {
+      printf '# Product Roadmap\n\n'
+      if jq -e '(.implemented_features // []) | length > 0' >/dev/null <<<"$AGG"; then
+        printf '## Implemented\n\n'
+        jq -r '.implemented_features[] | "- " + .' <<<"$AGG"
+        printf '\n'
+      fi
+      if jq -e '(.planned_features // []) | length > 0' >/dev/null <<<"$AGG"; then
+        printf '## Planned\n\n'
+        jq -r '.planned_features[] | "- " + .' <<<"$AGG"
+        printf '\n'
+      fi
+    } > "$ROADMAP"
     created_files+=("$ROADMAP")
   fi
 
-  if [[ ! -f "$DECISIONS" ]]; then
-    cat > "$DECISIONS" <<'DM'
-# Decisions
-
-- (Add important technical/product decisions with rationale and date)
-DM
+  # decisions.md only if we captured any decision summaries
+  if [[ ! -f "$DECISIONS" ]] && jq -e '(.decisions // []) | length > 0' >/dev/null <<<"$AGG"; then
+    {
+      printf '# Decisions\n\n'
+      jq -r '.decisions[] | "- " + .' <<<"$AGG"
+    } > "$DECISIONS"
     created_files+=("$DECISIONS")
   fi
 
-  # Generate facts.md from AGG (lite summary)
-  if [[ ! -f "$FACTS" ]]; then
+  # facts.md only if we have any non-empty content
+  if [[ ! -f "$FACTS" ]] && jq -e '((.overview // "") != "") or ((.tech_stack // []) | length > 0) or ((.implemented_features // []) | length > 0) or ((.planned_features // []) | length > 0)' >/dev/null <<<"$AGG"; then
     ensure_dir "$(dirname "$FACTS")"
     {
       printf '## Facts (lite)\n\n'
-      printf '### Overview\n\n'
-      if jq -e '.overview != null and .overview != ""' >/dev/null <<<"$AGG"; then
+      if jq -e '(.overview // "") != ""' >/dev/null <<<"$AGG"; then
+        printf '### Overview\n\n'
         jq -r '.overview' <<<"$AGG"
-      else
-        printf 'N/A\n'
+        printf '\n'
       fi
-      printf '\n### Tech Stack\n\n'
       if jq -e '(.tech_stack // []) | length > 0' >/dev/null <<<"$AGG"; then
+        printf '### Tech Stack\n\n'
         jq -r '.tech_stack[] | "- " + .' <<<"$AGG"
-      else
-        printf '- N/A\n'
+        printf '\n'
       fi
-      printf '\n### Implemented Features\n\n'
       if jq -e '(.implemented_features // []) | length > 0' >/dev/null <<<"$AGG"; then
+        printf '### Implemented Features\n\n'
         jq -r '.implemented_features[] | "- " + .' <<<"$AGG"
-      else
-        printf '- N/A\n'
+        printf '\n'
       fi
-      printf '\n### Planned Features\n\n'
       if jq -e '(.planned_features // []) | length > 0' >/dev/null <<<"$AGG"; then
+        printf '### Planned Features\n\n'
         jq -r '.planned_features[] | "- " + .' <<<"$AGG"
-      else
-        printf '- N/A\n'
+        printf '\n'
       fi
     } > "$FACTS"
     created_files+=("$FACTS")

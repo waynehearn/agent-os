@@ -12,6 +12,7 @@ REMOVE_ALL=false
 ONLY_INSTRUCTIONS=false
 ONLY_STANDARDS=false
 ONLY_DOCS=false
+ONLY_TOOLS=false
 PURGE_BACKUPS=false
 
 TIMESTAMP="$(date -u +%Y%m%d-%H%M%SZ)"
@@ -75,6 +76,7 @@ Options:
   --only-instructions Remove only instructions (~/.agent-os/instructions)
   --only-standards    Remove only standards (~/.agent-os/standards)
   --only-docs         Remove only docs (~/.agent-os/docs)
+  --only-tools        Remove only tools (~/.agent-os/tools)
   --purge-backups     Additionally remove ~/.agent-os/.backup (use with --all)
   -h, --help          Show help
 
@@ -93,6 +95,7 @@ while [[ $# -gt 0 ]]; do
     --only-instructions) ONLY_INSTRUCTIONS=true; shift ;;
     --only-standards) ONLY_STANDARDS=true; shift ;;
     --only-docs) ONLY_DOCS=true; shift ;;
+  --only-tools) ONLY_TOOLS=true; shift ;;
     --purge-backups) PURGE_BACKUPS=true; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown option: $1" >&2; usage; exit 1 ;;
@@ -136,12 +139,16 @@ fi
 if [[ "$ONLY_DOCS" == true ]]; then
   remove_path "$target_root/docs"
 fi
+if [[ "$ONLY_TOOLS" == true ]]; then
+  remove_path "$target_root/tools"
+fi
 
-if [[ "$ONLY_INSTRUCTIONS" == false && "$ONLY_STANDARDS" == false && "$ONLY_DOCS" == false ]]; then
+if [[ "$ONLY_INSTRUCTIONS" == false && "$ONLY_STANDARDS" == false && "$ONLY_DOCS" == false && "$ONLY_TOOLS" == false ]]; then
   # Default: remove the managed subfolders
   remove_path "$target_root/instructions"
   remove_path "$target_root/standards"
   remove_path "$target_root/docs"
+  remove_path "$target_root/tools"
 fi
 
 echo
