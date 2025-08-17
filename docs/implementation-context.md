@@ -72,7 +72,7 @@ This section captures the latest changes so we can resume the plan without retra
     - [x] execute-tasks.sh: minimal loop writes snippet/summary/heuristics and refreshes manifest
   - [x] run-execute-task.sh: selective-reading + heuristics + debug trace
   - [x] run-execute-task.sh: minimal TDD loop hook (behind flag) + summary
-  - [ ] run-execute-task.sh: focused test selection patterns and retries
+  - [x] run-execute-task.sh: focused test selection patterns and retries
   - [x] execute-tasks usage doc (docs/execute-tasks-usage.md)
 
   - Shared context management
@@ -86,7 +86,8 @@ This section captures the latest changes so we can resume the plan without retra
   - Test framework
     - [x] Smoke test for execute-tasks (test/test-execute-tasks.sh)
     - [x] Focused test for per-task runner selective-reading (test/test-run-execute-task.sh)
-    - [ ] Focused tests for TDD loop hook (ENABLE_TDD_LOOP, TEST_CMD)
+    - [x] Focused tests for TDD loop hook (ENABLE_TDD_LOOP, TEST_CMD)
+      - Added `test/test-test-runner-retries.sh` to validate retry behavior and summary JSON
     - [ ] CRLF portability test coverage
 
   Phase 3 — Advanced Features (planned)
@@ -328,24 +329,29 @@ Immediate next tasks (focused):
 
 Based on the completed work with command router enhancements, context gathering, and section hashing, the next focus should be on updating additional commands as outlined in Phase 2. The following outlines what needs to be accomplished:
 
-### Execute Tasks: TDD loop and focused tests (next)
+### Execute Tasks: TDD loop and focused tests (status)
 
-Now that selective reading and heuristics gating are implemented in `tools/run-execute-task.sh`, focus on the TDD loop and focused test verification per `instructions/core/execute-task.md` Steps 5–6:
+Baseline TDD loop support is implemented in `tools/run-execute-task.sh` and `tools/test-runner.sh` per Steps 5–6:
 
-1) TDD loop scaffolding (behind a flag):
+1) TDD loop (behind a flag):
 
-- Add an optional call-out to a `tools/test-runner.sh` when `ENABLE_TDD_LOOP=1`.
-- Scope: run only tests relevant to current parent task (pattern-based or config-driven).
-- Emit NDJSON trace summaries (pass/fail, truncated details).
+- Optional call-out to `tools/test-runner.sh` when `ENABLE_TDD_LOOP=1`.
+- Supports focused selection via `TEST_PATTERN` (also seeded from the first line of `execution_notes`).
+- Supports retries via `TEST_RETRIES`; summary written to `[spec]/context/test-run-summary.json`.
 
 2) Focused test verification:
 
-- Provide a minimal implementation to re-run failed tests and confirm green.
-- Keep cross-platform (Windows Git Bash) and no-op gracefully when no test runner is available.
+- Minimal retry loop added; environment-driven `TEST_CMD` executes user tests.
+- Cross-platform (Windows Git Bash) and no-op when no command provided.
 
 3) Documentation update:
 
-- Expand `execute-tasks-usage.md` to include the optional TDD loop flags and expectations.
+- `commands/execute-tasks.md` documents `ENABLE_TDD_LOOP`, `TEST_CMD`, `TEST_PATTERN`, and `TEST_RETRIES` with example usage.
+
+Next follow-ups:
+
+- Enhance pattern inference (map titles/subtasks to common test file globs).
+- Add CRLF portability coverage and richer NDJSON failure summaries.
 
 Leverage existing components (context estimator, cache manager, manifest hashing) and keep the default behavior unchanged unless the TDD flag is enabled.
 

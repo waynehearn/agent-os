@@ -25,10 +25,10 @@ while [[ $# -gt 0 ]]; do
     --spec-folder) SPEC_FOLDER="$2"; shift 2;;
     --parent) PARENT_NUM="$2"; shift 2;;
     --pattern) PATTERN="$2"; shift 2;;
-  --retries) RETRIES="$2"; shift 2;;
+    --retries) RETRIES="$2"; shift 2;;
     *) warn "Unknown arg: $1"; shift;;
   esac
-endonecho
+done
 
 [[ -n "$SPEC_FOLDER" && -d "$SPEC_FOLDER" ]] || { err "Missing/invalid --spec-folder"; exit 2; }
 [[ -n "$PARENT_NUM" ]] || { err "Missing --parent"; exit 2; }
