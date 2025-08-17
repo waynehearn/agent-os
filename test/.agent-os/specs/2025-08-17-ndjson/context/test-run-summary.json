@@ -1,0 +1,1 @@
+{"updatedAt":"2025-08-17T23:04:57Z","parentTask":1,"success":true,"runner":"noop","durationMs":0,"attempts":1,"pattern":"ndjson.*summary","filesHint":"test/**/*"}

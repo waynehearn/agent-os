@@ -52,6 +52,7 @@ This section captures the latest changes so we can resume the plan without retra
 - Tests:
   - `test/test-execute-tasks.sh` smoke test added (asserts snippet, summary, heuristics); passing on Windows Git Bash
   - Clean output achieved (no grep/sed warnings)
+  - Golden example hashing expanded to include `sub-specs/api-spec.md` and `sub-specs/database-schema.md` (manifest updates validated)
 
   ## Roadmap and Status — Aug 17, 2025
 
@@ -88,6 +89,7 @@ This section captures the latest changes so we can resume the plan without retra
     - [x] Focused test for per-task runner selective-reading (test/test-run-execute-task.sh)
     - [x] Focused tests for TDD loop hook (ENABLE_TDD_LOOP, TEST_CMD)
       - Added `test/test-test-runner-retries.sh` to validate retry behavior and summary JSON
+      - Basic pattern inference added to `tools/test-runner.sh` (derives compact default from parent task title)
     - [ ] CRLF portability test coverage
 
   Phase 3 — Advanced Features (planned)

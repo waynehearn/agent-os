@@ -129,13 +129,15 @@ write_tasks_heuristics_json() {
 
   if command -v jq >/dev/null 2>&1; then
     for t in "${api_terms[@]}"; do
-      if printf "%s" "$lower" | grep -q "\b${t}\b"; then
+      rx=$(term_to_regex "$t")
+      if printf "%s" "$lower" | grep -Ei "$rx" >/dev/null; then
         requires_api=true
         api_hits=$(printf '%s' "$api_hits" | jq --arg t "$t" '. + [$t]')
       fi
     done
     for t in "${db_terms[@]}"; do
-      if printf "%s" "$lower" | grep -q "\b${t}\b"; then
+      rx=$(term_to_regex "$t")
+      if printf "%s" "$lower" | grep -Ei "$rx" >/dev/null; then
         requires_db=true
         db_hits=$(printf '%s' "$db_hits" | jq --arg t "$t" '. + [$t]')
       fi
@@ -356,7 +358,7 @@ parse_execution_context() {
   
   # Extract execution context section
   local execution_context
-  execution_context=$(sed -n '/\[execution_context\]/,/\[\/execution_context\]/p' "$input_file")
+  execution_context=$(sed -n '/\[execution_context\]/,/\[\/execution_context\]/p' "$input_file" | tr -d '\r')
   
   if [[ -z "$execution_context" ]]; then
     error "No execution context found in: $input_file"
@@ -364,7 +366,7 @@ parse_execution_context() {
   fi
   
   # Extract spec_folder_path
-  SPEC_FOLDER_PATH=$(echo "$execution_context" | grep 'spec_folder_path:' | sed 's/spec_folder_path: *//;s/"//g' | sed 's/@/./')
+  SPEC_FOLDER_PATH=$(echo "$execution_context" | grep 'spec_folder_path:' | sed 's/spec_folder_path: *//;s/\r//;s/"//g' | sed 's/@/./')
   
   if [[ -z "$SPEC_FOLDER_PATH" ]]; then
     error "Missing required field: spec_folder_path"
@@ -372,16 +374,23 @@ parse_execution_context() {
   fi
   
   # Extract specific_tasks if present
-  SPECIFIC_TASKS=$(echo "$execution_context" | grep -A 10 'specific_tasks:' | grep -v 'specific_tasks:' | grep -v '\[\/execution_context\]' | grep -v '^execution_notes:' | grep -E '^ *- ' | sed 's/ *- //')
+  SPECIFIC_TASKS=$(echo "$execution_context" | grep -A 10 'specific_tasks:' | grep -v 'specific_tasks:' | grep -v '\[\/execution_context\]' | grep -v '^execution_notes:' | grep -E '^ *- ' | sed 's/\r//;s/ *- //')
   
   # Extract execution_notes if present
-  EXECUTION_NOTES=$(echo "$execution_context" | grep -A 10 'execution_notes:' | grep -v 'execution_notes:' | grep -v '\[\/execution_context\]' | grep -v '^ *- ')
+  EXECUTION_NOTES=$(echo "$execution_context" | grep -A 10 'execution_notes:' | grep -v 'execution_notes:' | grep -v '\[\/execution_context\]' | grep -v '^ *- ' | sed 's/\r$//')
   
   debug "Parsed spec_folder_path: $SPEC_FOLDER_PATH"
   debug "Parsed specific_tasks: $SPECIFIC_TASKS"
   debug "Parsed execution_notes: $EXECUTION_NOTES"
   
   return 0
+}
+
+# Portable, case-insensitive term detection without \b word-boundaries
+term_to_regex() {
+  local t="$1"
+  t=$(echo "$t" | sed 's/[].[^$*\\/]/\\&/g; s/ /[[:space:]]\+/g')
+  printf '(^|[^a-z0-9])%s([^a-z0-9]|$)' "$t"
 }
 
 # Function: list_tasks

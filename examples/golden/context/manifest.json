@@ -38,12 +38,48 @@
           "lines": "29-35"
         }
       }
+    },
+    "sub-specs/api-spec.md": {
+      "sections": {
+        "greeting_api": {
+          "hash": "0235794d49653a5370249e536c82f76749d1a3378730c8cdf3ff06f5675ab8e9",
+          "tokens": 25,
+          "lines": "3-7"
+        },
+        "health_api": {
+          "hash": "4a84a90b291bd4409c7fb513f74e4a0503927a3d2e4563dd996deb752ab63cfe",
+          "tokens": 21,
+          "lines": "8-11"
+        }
+      }
+    },
+    "sub-specs/database-schema.md": {
+      "sections": {
+        "user_table": {
+          "hash": "c525d49078e939429d999253912aac97b2fc1b6256df5d4e91915be625638521",
+          "tokens": 24,
+          "lines": "3-7"
+        },
+        "audit_table": {
+          "hash": "33c6221a13ef6978b1a7589245f2df6a1fd299114e2663fe48e64d8d0e52fd00",
+          "tokens": 17,
+          "lines": "8-10"
+        }
+      }
     }
   },
   "files": {
     "spec.md": {
       "sha256": "72f4e5336a512a41c094796167f148e503d45bf0111354563e5b392112b0c5eb",
       "lastModified": "2025-08-16T17:11:32Z"
+    },
+    "sub-specs/api-spec.md": {
+      "sha256": "fedcdb70fa9dcb17429a3eb2b54462a22080500e7ef59504e500bb787e8d8364",
+      "lastModified": "2025-08-17T22:59:54Z"
+    },
+    "sub-specs/database-schema.md": {
+      "sha256": "8618f7f42caf70c644eec43ae7557d3c77c14da44ebb9afa930ab58bbd5e2b5a",
+      "lastModified": "2025-08-17T22:59:54Z"
     }
   }
 }

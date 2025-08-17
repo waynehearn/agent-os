@@ -114,7 +114,8 @@ extract_section() {
 
   # Use sed to extract content between section headers (## Section)
   # This handles both "## Section" and "## Section Name with Spaces"
-  sed -n "/^## $section_name/,/^## /p" "$file" | sed '$d'
+  # Normalize CRLF (remove carriage returns) to be robust on Windows checkouts
+  sed -n "/^## $section_name/,/^## /p" "$file" | sed '$d' | sed -e 's/\r$//'
 }
 
 # Calculate token count estimate for a text
@@ -136,8 +137,10 @@ hash_section() {
   fi
 
   # Extract section, normalize whitespace, and hash
-  extract_section "$file" "$section_name" | 
-    tr -s '[:space:]' | 
+  # Normalize CRLF before hashing to ensure stable hashes across platforms
+  extract_section "$file" "$section_name" |
+    tr -d '\r' |
+    tr -s '[:space:]' |
     sha256_text
 }
 

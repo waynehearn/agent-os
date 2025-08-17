@@ -1,0 +1,6 @@
+{
+  "specFolderPath": "/c/Users/Wayne.Hearn/data/code/github/myagentos/test/.agent-os/specs/2025-08-17-crlf",
+  "updatedAt": "2025-08-17T23:15:38Z",
+  "parentTask": {"number": 1, "title": "Check CRLF handling"},
+  "subtasks": {"count": 0, "hasFirst": false, "hasLast": false, "first": "", "last": ""}
+}

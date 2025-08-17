@@ -35,7 +35,8 @@ extract_section() {
   fi
 
   # Use sed to extract content between section headers (## Section)
-  sed -n "/^## $section_name/,/^## /p" "$file" | sed '$d'
+  # Normalize CRLF to be robust on Windows checkouts
+  sed -n "/^## $section_name/,/^## /p" "$file" | sed '$d' | sed -e 's/\r$//'
 }
 
 # Gather essential context

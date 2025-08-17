@@ -36,6 +36,51 @@ done
 CTX_DIR="$SPEC_FOLDER/context"; mkdir -p "$CTX_DIR"
 OUT_JSON="$CTX_DIR/test-run-summary.json"
 
+# If no explicit pattern provided, derive a lightweight default from the parent task title
+derive_pattern_from_title(){
+  local snippet="$CTX_DIR/current-task.md"
+  local tasks_file="$SPEC_FOLDER/tasks.md"
+  local title=""
+  if [[ -f "$snippet" ]]; then
+    title=$(sed -n '1,3p' "$snippet" | grep -E '^## Task [0-9]+' | sed 's/^## Task [0-9][0-9]*: *//')
+  elif [[ -f "$tasks_file" ]]; then
+    title=$(grep -m1 "^## Task ${PARENT_NUM}:" "$tasks_file" | sed 's/^## Task [0-9][0-9]*: *//')
+  fi
+  title=$(echo "$title" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9 ]/ /g')
+  # choose first 1-2 words of length >=3 to keep the pattern compact
+  local w1="" w2=""
+  while IFS= read -r w; do
+    [[ -z "$w1" && ${#w} -ge 3 ]] && { w1="$w"; continue; }
+    [[ -z "$w2" && ${#w} -ge 3 ]] && { w2="$w"; break; }
+  done < <(echo "$title" | tr ' ' '\n' | grep -E '.+')
+  if [[ -n "$w1" && -n "$w2" ]]; then
+    echo "${w1}.*${w2}"
+  elif [[ -n "$w1" ]]; then
+    echo "$w1"
+  else
+    echo ""
+  fi
+}
+
+if [[ -z "$PATTERN" ]]; then
+  PATTERN=$(derive_pattern_from_title || true)
+fi
+
+# Provide a files hint for common test layouts when not supplied by the user
+derive_files_hint(){
+  local root
+  root=$(cd "$SPEC_FOLDER/.." && pwd)
+  if [[ -d "$root/test" ]]; then echo "test/**/*"; return; fi
+  if [[ -d "$root/tests" ]]; then echo "tests/**/*"; return; fi
+  if [[ -d "$root/src/test" ]]; then echo "src/test/**/*"; return; fi
+  echo "test/**/*"
+}
+
+FILES_HINT=${TEST_FILES_HINT:-}
+if [[ -z "$FILES_HINT" ]]; then
+  FILES_HINT=$(derive_files_hint)
+fi
+
 runner="noop"
 attempts=0
 start=$(date +%s)
@@ -44,6 +89,7 @@ rc=0
 # Expose helpful env to TEST_CMD
 export PARENT_TASK="$PARENT_NUM"
 export PATTERN
+export TEST_FILES_HINT="$FILES_HINT"
 
 if [[ -n "${TEST_CMD:-}" ]]; then
   runner="env:TEST_CMD"
@@ -70,7 +116,7 @@ dur=$(( (end - start) * 1000 ))
 ts=$(now_iso)
 success=false; [[ $rc -eq 0 ]] && success=true
 cat > "$OUT_JSON" <<JSON
-{"updatedAt":"$ts","parentTask":$PARENT_NUM,"success":$success,"runner":"$runner","durationMs":$dur,"attempts":$attempts,"pattern":"$PATTERN"}
+{"updatedAt":"$ts","parentTask":$PARENT_NUM,"success":$success,"runner":"$runner","durationMs":$dur,"attempts":$attempts,"pattern":"$PATTERN","filesHint":"$FILES_HINT"}
 JSON
 
 log "Wrote summary: $OUT_JSON (success=$success)"

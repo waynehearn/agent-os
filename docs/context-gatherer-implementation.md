@@ -178,3 +178,12 @@ The implementation has been verified to correctly:
 5. Cache section hashes for efficient context reuse
 
 This implementation satisfies Phase 1 requirements from the implementation plan.
+
+## Cross-platform line endings (CRLF) handling
+
+When extracting and hashing markdown sections, the gatherers normalize Windows-style CRLF to LF to avoid cross-platform drift:
+
+- Section extraction strips trailing carriage returns per line during sed piping.
+- Section hashing removes any remaining "\r" before computing SHA-256.
+
+This ensures the same section content yields identical hashes on Windows (Git Bash) and Unix-like environments, and prevents parsing quirks where header matching or token estimates could be affected by CR characters.

@@ -108,12 +108,11 @@ discover_next_parent_task() {
   local tasks_file="$1"
   local line
   line=$(grep -n '^## Task [0-9]' "$tasks_file" | while IFS=: read -r ln _; do
-  if ! grep -Fq -- '- [x]' <(sed -n "${ln},+20p" "$tasks_file"); then echo "$ln"; break; fi
+    if ! grep -Fq -- '- [x]' <(sed -n "${ln},+20p" "$tasks_file"); then echo "$ln"; break; fi
   done)
   [[ -z "$line" ]] && return 1
   sed -n "${line}p" "$tasks_file" | grep -o '^## Task [0-9][0-9]*' | grep -o '[0-9][0-9]*'
 }
-
 # Read heuristics JSON if present -> sets REQUIRES_API, REQUIRES_DB, API_INDICATORS, DB_INDICATORS
 load_heuristics() {
   local spec_folder="$1"
@@ -167,7 +166,7 @@ extract_sections_matching() {
 # Decide if we should consider API/DB based on heuristics OR scanning the current task snippet
 decide_gates_from_snippet() {
   local snippet="$1"
-  local lower; lower=$(tr '[:upper:]' '[:lower:]' < "$snippet")
+  local lower; lower=$(tr '[:upper:]' '[:lower:]' < "$snippet" | tr -d '\r')
   local api=false db=false
   printf "%s" "$lower" | grep -Ei '(api|endpoint|controller|route|router|openapi|swagger|rest|graphql|(^|[^a-z])get([^a-z]|$)|(^|[^a-z])post([^a-z]|$)|(^|[^a-z])put([^a-z]|$)|(^|[^a-z])patch([^a-z]|$)|(^|[^a-z])delete([^a-z]|$))' >/dev/null && api=true || true
   printf "%s" "$lower" | grep -Ei '(db|database|schema|migration|migrate|table|column|index|constraint|foreign key|sql|ddl|prisma|liquibase|flyway)' >/dev/null && db=true || true
@@ -317,6 +316,23 @@ main() {
       [[ -n "${TEST_RETRIES:-}" ]] && tr_args+=( --retries "$TEST_RETRIES" ) || true
       # shellcheck disable=SC2068
       bash "$SCRIPT_DIR/test-runner.sh" ${tr_args[@]} || runner_rc=$?
+      # If summary exists, emit a compact NDJSON line
+      local sum="$spec_folder_path/context/test-run-summary.json"
+      if [[ -f "$sum" && "$TRACE_ENABLED" == true ]]; then
+        local ok patt att fh
+        if command -v jq >/dev/null 2>&1; then
+          ok=$(jq -r '.success' "$sum" 2>/dev/null || echo "")
+          patt=$(jq -r '.pattern' "$sum" 2>/dev/null || echo "")
+          att=$(jq -r '.attempts' "$sum" 2>/dev/null || echo "")
+          fh=$(jq -r '.filesHint' "$sum" 2>/dev/null || echo "")
+        else
+          ok=$(grep -o '"success":[^,]*' "$sum" | head -1 | cut -d: -f2)
+          patt=$(grep -o '"pattern":"[^"]*"' "$sum" | head -1 | cut -d: -f2 | tr -d '"')
+          att=$(grep -o '"attempts":[0-9]*' "$sum" | head -1 | cut -d: -f2)
+          fh=$(grep -o '"filesHint":"[^"]*"' "$sum" | head -1 | cut -d: -f2 | tr -d '"')
+        fi
+        trace_event "{\"ts\":\"$(now_iso)\",\"step\":6,\"action\":\"task-tests-summary\",\"success\":$ok,\"attempts\":$att,\"pattern\":\"$patt\",\"filesHint\":\"$fh\"}"
+      fi
     else
       warning "test-runner.sh not found; skipping TDD loop"
     fi

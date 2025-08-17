@@ -1,0 +1,6 @@
+{
+  "specFolderPath": "/c/Users/Wayne.Hearn/data/code/github/myagentos/test/.agent-os/specs/2025-08-17-ndjson",
+  "updatedAt": "2025-08-17T23:04:56Z",
+  "parentTask": {"number": 1, "title": "NDJSON summary emission"},
+  "subtasks": {"count": 0, "hasFirst": false, "hasLast": false, "first": "", "last": ""}
+}

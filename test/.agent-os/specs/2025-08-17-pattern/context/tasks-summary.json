@@ -1,0 +1,6 @@
+{
+  "specFolderPath": "/c/Users/Wayne.Hearn/data/code/github/myagentos/test/.agent-os/specs/2025-08-17-pattern",
+  "updatedAt": "2025-08-17T23:08:02Z",
+  "parentTask": {"number": 1, "title": "Implement greeting endpoint"},
+  "subtasks": {"count": 0, "hasFirst": false, "hasLast": false, "first": "", "last": ""}
+}

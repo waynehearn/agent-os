@@ -25,6 +25,7 @@ Optional TDD loop (script-mode):
 - Optional envs:
   - `TEST_PATTERN` to pass a test selector (also seeds from the first line of `execution_notes` when present)
   - `TEST_RETRIES` to retry failing runs a few times (default: 0)
+  - If `TEST_PATTERN` is not provided, a compact default is inferred from the parent task title (first 1–2 meaningful words)
 
 Examples:
 

@@ -54,7 +54,8 @@ extract_section() {
   fi
 
   # Use sed to extract content between section headers (## Section)
-  sed -n "/^## $section_name/,/^## /p" "$file" | sed '$d'
+  # Normalize CRLF for cross-platform robustness
+  sed -n "/^## $section_name/,/^## /p" "$file" | sed '$d' | sed -e 's/\r$//'
 }
 
 # Hash a section
@@ -62,7 +63,8 @@ hash_section() {
   local file="$1"
   local section_name="$2"
   
-  extract_section "$file" "$section_name" | sha256_text
+  # Normalize CRLF before hashing to ensure stability across platforms
+  extract_section "$file" "$section_name" | tr -d '\r' | sha256_text
 }
 
 # Initialize cache
