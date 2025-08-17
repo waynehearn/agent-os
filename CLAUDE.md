@@ -97,6 +97,21 @@ When working with Spec Agent K projects, use these defaults unless overridden in
 - Create feature spec: `/create-spec`
 - Implement feature: `/execute-tasks`
 
+#### Execute Tasks flags inside Claude Code
+
+- Provide `execution_context` with at least:
+  - `spec_folder_path`
+  - Optional: `specific_tasks`, `execution_notes`
+- Debug options:
+  - `debug_subagents: true` to emit NDJSON events under `debug/exec-trace/`
+  - `debug_trace_redact_secrets`, `debug_trace_include_bodies`
+- Script-mode TDD loop (run in terminal when desired):
+  - `ENABLE_TDD_LOOP=1` to enable tests
+  - `TEST_CMD` (e.g., `npm test -- -t "Greeting"`)
+  - `TEST_PATTERN` (auto-inferred from parent title if omitted)
+  - `TEST_RETRIES` (default 0/1)
+
+
 ### Direct Setup (compact)
 
 ```bash

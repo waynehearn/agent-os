@@ -25,6 +25,9 @@ Run next uncompleted parent task for a spec:
 
 [execution_context]
 spec_folder_path: @.agent-os/specs/YYYY-MM-DD-spec-name
+debug_subagents: false   # set true to emit NDJSON trace under debug/exec-trace
+debug_trace_redact_secrets: true
+debug_trace_include_bodies: false
 [/execution_context]
 ```
 
@@ -49,6 +52,29 @@ Inspect the tasks summary after a run:
 ```bash
 jq . ".agent-os/specs/YYYY-MM-DD-spec-name/context/tasks-summary.json"
 ```
+
+## Run inside Claude Code
+
+Use the same instruction block as a slash-command message. Claude Code will read `@~/.agent-os/instructions/core/execute-tasks.md` and apply the `execution_context` you provide.
+
+- Required: `spec_folder_path`
+- Optional: `specific_tasks`, `execution_notes`
+- Debugging:
+  - Set `debug_subagents: true` to emit NDJSON events under `debug/exec-trace/` for the current spec
+  - Optional redaction and body inclusion via `debug_trace_redact_secrets`, `debug_trace_include_bodies`
+
+TDD loop note (script-mode only): If you prefer the script implementation while in Claude Code, open the integrated terminal and run the per-task runner with environment flags:
+
+- `ENABLE_TDD_LOOP=1` to enable focused test runs
+- `TEST_CMD` to specify your test command
+- `TEST_PATTERN` to focus tests (auto-inferred from parent title if omitted)
+- `TEST_RETRIES` to retry failing runs
+
+Artifacts (same regardless of where you invoke it):
+
+- context/current-task.md, context/tasks-summary.json, context/tasks-heuristics.json
+- context/selected-technical.md; context/selected-api.md/context/selected-db.md when gated
+- context/test-run-summary.json when TDD loop is enabled (script-mode)
 
 Run specific parents or a targeted subtask:
 
@@ -107,7 +133,8 @@ From `instructions/core/execute-task.md`:
 - `spec_folder_path` (required)
 - `specific_tasks` (optional) – list of parent numbers
 - `execution_notes` (optional) – scope to a subtask; stop after focused tests
-- Debug flags: `debug_subagents`, `debug_trace_redact_secrets`, `debug_trace_include_bodies`
+- Debug flags (Claude Code or script-mode): `debug_subagents`, `debug_trace_redact_secrets`, `debug_trace_include_bodies`
+- Script-mode TDD envs (optional): `ENABLE_TDD_LOOP`, `TEST_CMD`, `TEST_PATTERN`, `TEST_RETRIES`
 
 ## Extensibility and customization
 

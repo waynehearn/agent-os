@@ -61,6 +61,13 @@ Peek at the condensed mission:
 head -n 50 .agent-os/product/mission-lite.md
 ```
 
+## Run inside Claude Code
+
+Paste the Basic usage block into Claude Code. It reads `@~/.agent-os/instructions/core/plan-product.md` and uses your `[plan_inputs]`.
+
+- Required: `main_idea`, `key_features` (≥3), `target_users` (≥1)
+- Optional: `tech_stack_preferences`, `project_initialized`
+
 ## What it does (steps)
 
 From `instructions/core/plan-product.md`:

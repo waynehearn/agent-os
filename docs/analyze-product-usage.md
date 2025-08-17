@@ -59,6 +59,13 @@ bash tools/discover-product-context.sh --init-product --write
 
 Then open your editor and paste the Basic usage block into a new message to run analyze‑product.
 
+## Run inside Claude Code
+
+Paste the Basic usage block into Claude Code. It reads `@~/.agent-os/instructions/core/analyze-product.md` and uses your `[analyze_inputs]`.
+
+- Required: none (but inputs improve quality)
+- Optional inputs: `context_notes`, `auto_init_product` (see above)
+
 ## What it does (steps)
 
 From `instructions/core/analyze-product.md`:
