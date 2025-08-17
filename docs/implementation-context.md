@@ -11,6 +11,60 @@ This document provides a comprehensive yet token-efficient guide for implementin
 - 50% reduction in memory usage
 - 80%+ cache hit ratio for unchanged sections
 
+## Progress Update — Aug 17, 2025
+
+This section captures the latest changes so we can resume the plan without retracing steps.
+
+- Discovery flow simplified: `tools/discover-product-context.sh` is now a deterministic, stable writer that:
+  - Writes `.agent-os/product/context/context.json`
+  - Respects `--write-if-missing` (won’t overwrite manual edits)
+  - Supports `--write` (explicit overwrite) and `--init-product` (creates minimal product docs)
+- Analyze workflow working end-to-end: `tools/analyze-product.sh` now
+  - Uses the official discovery script path
+  - Avoids forced overwrites of `context.json`
+  - Fixes inputs parsing to prevent closing-tag leakage and supports single-line fields
+  - Generates docs to any output dir (e.g., `docs/analysis5`) with Mission, Tech Stack, Architecture, Roadmap
+- Inputs and linting:
+  - `analyze-inputs.md` updated and lint-healthy (MD032 resolved)
+  - Sample runs validated on Windows (bash) without errors
+
+Compact context snapshot (for continuity):
+
+- Branch: `jira`; Default: `main`
+- Discovery: simple, deterministic; honors `--write-if-missing`
+- Analyze: successful runs created `docs/analysis`, `docs/analysis2`, `docs/analysis3`, `docs/analysis4`, `docs/analysis5`
+- Command Router + Cache Manager: implemented previously; unchanged
+- Section hashing utilities present; golden hashing task available but inactive
+- User noted manual edits to:
+  - `examples/analyze-product-test-input.md`
+  - `analyze-inputs.md`
+  - `.agent-os/product/context/context.json`
+  These are preserved; discovery won’t overwrite unless `--write` is provided.
+
+How to resume from here (quick steps):
+
+1) Verify discovery and analyze paths (no overwrite by default):
+
+```bash
+bash tools/analyze-product.sh --output-dir docs/analysis6 analyze-inputs.md
+```
+
+2) Proceed to implement Execute Tasks (next milestone):
+   - Create `tools/execute-tasks.sh` with the token-efficient pattern
+   - Reuse Context Estimator and Cache Manager; prefer deterministic steps
+   - Add a minimal usage doc: `docs/execute-tasks-usage.md`
+3) Optional: run golden example section hashing to validate hashing utilities:
+
+```bash
+bash tools/section-hash.sh "c:/Users/Wayne.Hearn/data/code/github/myagentos/examples/golden"
+```
+
+Immediate next tasks (focused):
+
+- [ ] Implement `tools/execute-tasks.sh` (core loop + minimal task runner)
+- [ ] Add `docs/execute-tasks-usage.md` (how-to and flags)
+- [ ] Add 1-2 smoke tests to `test/` that validate execute flow without network
+
 ## Current Implementation Status
 
 ### Completed Components
@@ -135,14 +189,14 @@ This document provides a comprehensive yet token-efficient guide for implementin
 ### Phase 2: Expansion (Near-Term - Oct-Nov 2025)
 
 - [ ] **Update additional commands**:
-  - [ ] `analyze-product.sh`: Product analysis with optimized context
+  - [x] `analyze-product.sh`: Product analysis with optimized context (Completed Aug 18, 2025)
   - [ ] `execute-tasks.sh`: Task execution with minimal context reloading
   - [ ] `execute-task.sh`: Individual task handler with focused context
-  - [ ] `plan-product.sh`: Roadmap planning with efficient context
+  - [x] `plan-product.sh`: Roadmap planning with efficient context (Completed Aug 18, 2025)
   - **Documentation**:
-    - `analyze-product-usage.md` user guide
+    - `analyze-product-usage.md` user guide (existing)
     - `execute-tasks-usage.md` user guide
-    - `plan-product-usage.md` user guide
+    - `plan-product-usage.md` user guide (existing)
     - `token-efficiency-user-guide.md` comprehensive usage guide
 
 - [ ] **Implement shared context management**
@@ -221,6 +275,7 @@ The next step is to update the additional command scripts to utilize the token-e
    - Add support for milestone tracking and estimation
 
 These updates should leverage the existing infrastructure components:
+
 - Context estimator for profiling
 - Context cache manager for operation caching
 - Command router for intelligent operation routing
@@ -637,6 +692,40 @@ All documentation will be generated using these templates to maintain consistenc
 2. Cross-referenced with related documentation
 3. Formatted for both human and LLM consumption
 4. Validated with Markdown linting tools
+
+---
+
+## Future Enhancements: Best of Both Worlds
+
+While the current implementation focuses primarily on token efficiency through deterministic script-based operations, future enhancements could provide a more balanced approach that preserves efficiency while adding flexibility. The following improvements are planned for consideration in future phases:
+
+### Phase 4: Adaptive Processing (March-May 2026)
+
+- [ ] **Schema-Driven Document Processing**
+  - Implement configurable JSON schemas for document formats
+  - Allow extension points without code changes
+  - Support schema versioning and backwards compatibility
+  - **Documentation**: `schema-driven-processing.md` technical guide
+
+- [ ] **Tiered Processing Framework**
+  - Create multi-level parsing pipeline (deterministic → flexible → LLM)
+  - Implement progressive fallback for handling format variations
+  - Add telemetry to identify common fallback patterns
+  - **Documentation**: `tiered-processing-framework.md` architecture guide
+
+- [ ] **Metadata-Based Extensibility**
+  - Support front-matter declarations for document structure
+  - Implement plugin system for custom section processors
+  - Create format detection for legacy documents
+  - **Documentation**: `metadata-extensibility.md` developer guide
+
+- [ ] **Format Learning Mechanism**
+  - Implement feedback loop to identify recurring patterns
+  - Create automated generation of parsing rules from examples
+  - Add format versioning for progressive enhancement
+  - **Documentation**: `format-learning-system.md` technical specification
+
+This balanced approach will combine the token efficiency benefits of deterministic processing with the flexibility of LLM-based interpretation, creating a system that adapts to user needs while maintaining performance and cost efficiency.
 
 ---
 

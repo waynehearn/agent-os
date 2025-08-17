@@ -1,55 +1,85 @@
 #!/usr/bin/env bash
+# Simple mock discover-product-context.sh script for testing
+# Simplified implementation to work with analyze-product.sh
+
 set -euo pipefail
 
-# discover-product-context.sh — simplified, stable implementation for analysis flows
-# Writes a deterministic context.json and optionally creates minimal product docs.
-
+# Color output
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
-NC='\033[0m'
+NC='\033[0m' # No Color
+
 log() { echo -e "${BLUE}[discover-context]${NC} $*"; }
 success() { echo -e "${GREEN}[discover-context][SUCCESS]${NC} $*"; }
 warning() { echo -e "${YELLOW}[discover-context][WARNING]${NC} $*"; }
 
-# Parse args
+# Parse arguments
 PROJECT_ROOT="${1:-$(pwd)}"
 WRITE=false
 WRITE_IF_MISSING=false
 INIT_PRODUCT=false
 
+# If first arg doesn't start with --, it's the project root
 if [[ "$PROJECT_ROOT" == --* ]]; then
-  PROJECT_ROOT="$(pwd)"; set -- "$PROJECT_ROOT" "$@"
+  PROJECT_ROOT="$(pwd)"
+  # Put the argument back to be processed
+  set -- "$PROJECT_ROOT" "$@"
 fi
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --help)
-      cat <<EOF
-Usage: $0 [project_root] [--write | --write-if-missing] [--init-product]
-Writes discovery to .agent-os/product/context/context.json and prints JSON to stdout.
-EOF
-      exit 0 ;;
-    --write) WRITE=true; shift ;;
-    --write-if-missing) WRITE_IF_MISSING=true; shift ;;
-    --init-product) INIT_PRODUCT=true; shift ;;
-    *) if [[ "$1" != "$PROJECT_ROOT" ]]; then PROJECT_ROOT="$1"; fi; shift ;;
+      echo "Usage: $0 [project_root] [--write | --write-if-missing] [--init-product]"
+      exit 0
+      ;;
+    --write)
+      WRITE=true
+      shift
+      ;;
+    --write-if-missing)
+      WRITE_IF_MISSING=true
+      shift
+      ;;
+    --init-product)
+      INIT_PRODUCT=true
+      shift
+      ;;
+    *)
+      if [[ "$1" != "$PROJECT_ROOT" ]]; then
+        PROJECT_ROOT="$1"
+      fi
+      shift
+      ;;
   esac
 done
 
+# Make sure target directory exists
 CONTEXT_DIR="$PROJECT_ROOT/.agent-os/product/context"
 CONTEXT_FILE="$CONTEXT_DIR/context.json"
+
+# Create directory if needed
 mkdir -p "$CONTEXT_DIR"
 
+# Check if file exists and if we should write
 if [[ -f "$CONTEXT_FILE" && "$WRITE" != "true" && "$WRITE_IF_MISSING" != "true" ]]; then
   log "Using existing context file: $CONTEXT_FILE"
   cat "$CONTEXT_FILE"
-else
-  if [[ -f "$CONTEXT_FILE" && "$WRITE_IF_MISSING" == "true" && "$WRITE" != "true" ]]; then
-    log "Context file already exists, skipping write: $CONTEXT_FILE"
-  else
-    log "Generating context file: $CONTEXT_FILE"
-    cat > "$CONTEXT_FILE" << EOF
+  exit 0
+fi
+
+if [[ -f "$CONTEXT_FILE" && "$WRITE_IF_MISSING" == "true" ]]; then
+  log "Context file already exists, skipping write: $CONTEXT_FILE"
+  cat "$CONTEXT_FILE"
+  exit 0
+fi
+
+# Create a sample context file if it doesn't exist or --write was specified
+if [[ ! -f "$CONTEXT_FILE" || "$WRITE" == "true" ]]; then
+  log "Generating context file: $CONTEXT_FILE"
+  
+  # Create sample context
+  cat > "$CONTEXT_FILE" << EOF
 {
   "project": {
     "name": "Agent OS",
@@ -77,15 +107,22 @@ else
   }
 }
 EOF
-    success "Context file generated successfully"
-  fi
-  cat "$CONTEXT_FILE"
+
+  success "Context file generated successfully"
 fi
 
+# Output the context file
+cat "$CONTEXT_FILE"
+
+# Handle product initialization if requested
 if [[ "$INIT_PRODUCT" == "true" ]]; then
   PRODUCT_DIR="$PROJECT_ROOT/.agent-os/product"
+  
   log "Initializing minimal product docs in $PRODUCT_DIR"
+  
+  # Create minimal product docs
   mkdir -p "$PRODUCT_DIR"
+  
   if [[ ! -f "$PRODUCT_DIR/mission.md" ]]; then
     cat > "$PRODUCT_DIR/mission.md" << EOF
 # Mission Statement
@@ -100,6 +137,7 @@ Based on code analysis, this project appears to be a software application that p
 EOF
     success "Created $PRODUCT_DIR/mission.md"
   fi
+  
   if [[ ! -f "$PRODUCT_DIR/tech-stack.md" ]]; then
     cat > "$PRODUCT_DIR/tech-stack.md" << EOF
 # Technology Stack
@@ -116,6 +154,7 @@ EOF
 EOF
     success "Created $PRODUCT_DIR/tech-stack.md"
   fi
+  
   success "Product initialization completed"
 fi
 

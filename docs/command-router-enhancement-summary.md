@@ -37,7 +37,7 @@ This document summarizes the implementation of the Command Router Enhancement as
 is_deterministic_operation() {
   local command="$1"
   local input_file="$2"
-  
+
   # Check command and arguments against known patterns
   case "$command" in
     "create-spec")
@@ -81,23 +81,23 @@ is_deterministic_operation() {
 generate_cache_key() {
   local command="$1"
   shift
-  
+
   local key="$command"
   local args_hash=$(echo "$*" | md5sum | cut -d' ' -f1)
   key="${key}_${args_hash}"
-  
+
   if [[ -f "$1" ]]; then
     local content_hash=$(md5sum "$1" | cut -d' ' -f1)
     key="${key}_${content_hash}"
   fi
-  
+
   echo "$key"
 }
 
 # Execution with caching
 if [[ "${USE_CACHE:-true}" == "true" ]]; then
   local cache_key=$(generate_cache_key "$command" "$input_file" "$mode")
-  
+
   if is_cache_valid "$cache_key"; then
     log "Found valid cached result for $command operation"
     get_cached_result "$cache_key"
@@ -111,25 +111,25 @@ fi
 ```bash
 should_use_jira_integration() {
   local input_file="$1"
-  
+
   # First check if Jira integration is globally enabled
   if [[ "${JIRA_ENABLED:-true}" != "true" ]]; then
     log_debug "Jira integration is globally disabled"
     return 1
   fi
-  
+
   # Check if file contains Jira inputs section
   if ! grep -q '\[jira_inputs\]' "$input_file" 2>/dev/null; then
     log_debug "No Jira inputs found in $input_file"
     return 1
   fi
-  
+
   # Check if Atlassian MCP is available
   if ! check_mcp_available "atlassian"; then
     log_warn "Atlassian MCP requested but not available. Continuing without Jira integration."
     return 1
   fi
-  
+
   # All conditions met, Jira integration should be used
   return 0
 }

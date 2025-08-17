@@ -1,0 +1,26 @@
+{
+  "project": {
+    "name": "Agent OS",
+    "description": "A token-efficient hybrid approach for agent operations",
+    "techStack": ["Bash", "Markdown", "JSON"],
+    "features": [
+      "Token-efficient operation routing",
+      "Context management and caching",
+      "Section-level content hashing",
+      "Hybrid AI and script processing"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/waynehearn/agent-os",
+    "mainBranch": "main",
+    "currentBranch": "jira"
+  },
+  "discovery": {
+    "timestamp": "2025-08-18T10:00:00Z",
+    "sources": ["README.md", "docs/architecture.md", "package.json"],
+    "sourcesFound": 3,
+    "sourcesUsed": 3,
+    "confidence": "high"
+  }
+}
