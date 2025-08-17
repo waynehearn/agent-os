@@ -3,38 +3,38 @@
     "spec.md": {
       "sections": {
         "api_spec": {
+          "hash": "e2d9d1088c9723178193065065c14ff3b852322e221f1e1a4d2eab975cf2db23",
           "tokens": 49,
-          "hash": "8191ec2a9dac2b43da14d9beac206fe07834ed0c2ccaee7f15b286c2b543aee3",
           "lines": "50-60"
         },
         "scope": {
-          "tokens": 67,
-          "hash": "1f1c7929502d69baf8de43b437b94cd8aa299cc78b4558db2fe95b391a1bc955",
+          "hash": "1c07877d0b90d5ea5ec026dd4d4e29e70481b35c858c090d1f1a45937cb0d1c2",
+          "tokens": 66,
           "lines": "14-28"
         },
         "database_changes": {
-          "tokens": 18,
           "hash": "f60ebcce9a92bc0a1f99192df59171ce3b555397e7295bbfca1e4fb7b157bcca",
+          "tokens": 18,
           "lines": "61-63"
         },
         "technical_details": {
+          "hash": "261a3dbf70ef1051901d60f500bbab28f87c04022acf480769a8f3c180c79191",
           "tokens": 73,
-          "hash": "9802ded32f5c17ed75c9a49edeec8e806334e23d0ff4a19d9d007ebbb8593f17",
           "lines": "36-49"
         },
         "overview": {
+          "hash": "0de5736f9b2224090fa8d42c58f6fa0650b0c310cda6cf819663dbd8a9e0ecfa",
           "tokens": 32,
-          "hash": "d2d8200a82040d48005cc39ad3da09bfd2a99753e53a0371fa441ca18d44f0da",
           "lines": "3-6"
         },
         "user_stories": {
+          "hash": "35b78dfcd24c4df2fc74eed53feb9172638c1c1e3166eb1cdb20bb9cfd40f440",
           "tokens": 88,
-          "hash": "55d9d927a0369e439a34fc1c43b8f57217fc0f42f4867fff186b1e5487b6048e",
           "lines": "7-13"
         },
         "deliverables": {
+          "hash": "004b98f356536dc92763ec67662601bff3ca726b5cb89c80e42ee34636204768",
           "tokens": 62,
-          "hash": "ed23c71016615fe04d409ff4149cd35ef5ed877d32d05e8245d2f2a1ce5cad6f",
           "lines": "29-35"
         }
       }
@@ -42,8 +42,8 @@
   },
   "files": {
     "spec.md": {
-      "lastModified": "2025-08-16T17:11:32Z",
-      "sha256": "72f4e5336a512a41c094796167f148e503d45bf0111354563e5b392112b0c5eb"
+      "sha256": "72f4e5336a512a41c094796167f148e503d45bf0111354563e5b392112b0c5eb",
+      "lastModified": "2025-08-16T17:11:32Z"
     }
   }
 }

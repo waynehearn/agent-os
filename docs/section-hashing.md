@@ -25,6 +25,48 @@ When to run it
 - In CI, as a pre-step for workflows that consume spec context
 - After resolving merge conflicts that touched spec files
 
+Implementation Details
+---------------------
+
+We have integrated section hashing into our context gathering system with these key components:
+
+1. **Section Hash Tracking**
+
+   ```bash
+   hash_section() {
+     local file="$1"
+     local section_name="$2"
+     extract_section "$file" "$section_name" | sha256_text
+   }
+   ```
+
+2. **Change Detection**
+
+   ```bash
+   section_changed() {
+     local file="$1"
+     local section="$2"
+     # Compare current hash with cached hash
+     # Return true if changed, false if unchanged
+   }
+   ```
+
+3. **Integration with Hierarchical Loading**
+
+   ```bash
+   gather_essential() {
+     # ...
+     if section_changed "$file" "Overview"; then
+       # Process updated content
+     else
+       # Use cached content
+     fi
+     # ...
+   }
+   ```
+
+The implementation satisfies the Phase 1 requirements in our implementation plan, enabling efficient context reuse and token optimization.
+
 What it updates
 ---------------
 

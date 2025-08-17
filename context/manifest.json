@@ -1,0 +1,29 @@
+{
+  "files": {
+    "temp-test-sections.md": {
+      "sha256": "3d49273c24d49e89115514f757dacca16099edb6c18fb5626e72dd4ce1512d5f",
+      "lastModified": "2025-08-17T18:57:09Z"
+    }
+  },
+  "sections": {
+    "temp-test-sections.md": {
+      "sections": {
+        "overview": {
+          "hash": "4dee95a25f8f16685cc3f2e726152046f6995d65207cd7312467ad9f834ce2e7",
+          "tokens": 27,
+          "lines": "5-10"
+        },
+        "requirements": {
+          "hash": "4d128a1c43a3d912af13bd831ed6476fd5891d8bb60aa0ff23e801731e4703ed",
+          "tokens": 40,
+          "lines": "11-17"
+        },
+        "technical_details": {
+          "hash": "142c7f457ae87849d9b157d9cfb4b59981433d0ed477582889d0268163561433",
+          "tokens": 40,
+          "lines": "18-23"
+        }
+      }
+    }
+  }
+}

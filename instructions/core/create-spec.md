@@ -373,25 +373,35 @@ Use the context-fetcher subagent to clarify scope boundaries and technical consi
 
 </step>
 
-<step number="4" subagent="date-checker" name="date_determination">
+<step number="4" name="date_determination">
 
 ### Step 4: Date Determination
 
-Use the date-checker subagent to determine the current date in YYYY-MM-DD format for folder naming. The subagent will output today's date which will be used in subsequent steps.
+Use the date-checker script to determine the current date in YYYY-MM-DD format for folder naming:
 
-<subagent_output>
-  The date-checker subagent will provide the current date in YYYY-MM-DD format at the end of its response. Store this date for use in folder naming in step 5.
-</subagent_output>
+```bash
+CURRENT_DATE=$(bash tools/date-checker.sh)
+echo "Current date for folder naming: $CURRENT_DATE"
+```
+
+Store this date value for use in folder naming in step 5.
+
+Note: This step uses a script call instead of a subagent for better token efficiency.
 
 </step>
 
-<step number="5" subagent="file-creator" name="spec_folder_creation">
+<step number="5" name="spec_folder_creation">
 
 ### Step 5: Spec Folder Creation
 
-Use the file-creator subagent to create directory: .agent-os/specs/YYYY-MM-DD-spec-name/ using the date from step 4.
+Use the folder-creator script to create the specification directory:
+
+    SPEC_NAME=$(echo "$MAIN_IDEA" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | head -c 40)
+    bash tools/folder-creator.sh "$CURRENT_DATE" "$SPEC_NAME"
 
 Use kebab-case for spec name. Maximum 5 words in name.
+
+Note: This step uses a script call instead of a subagent for better token efficiency.
 
 <folder_naming>
   <format>YYYY-MM-DD-spec-name</format>
