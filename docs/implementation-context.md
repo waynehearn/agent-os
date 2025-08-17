@@ -122,16 +122,15 @@ This document provides a comprehensive yet token-efficient guide for implementin
     - `context-gatherer-implementation.md`: Complete implementation guide
     - `section-hashing.md`: Updated with integration details
 
-- [ ] **Command-router script updates** (Next Focus)
-  - Add intelligent operation type detection
-  - Implement caching for repeated operations
-  - Add optional Jira integration support with proper fallback mechanisms
-  - Ensure all extensions under `instructions/extensions` are treated as optional
-  - Implement graceful fallback when extensions are unavailable
+- [x] **Command-router script updates** (Completed Aug 17, 2025)
+  - Added intelligent operation type detection with deterministic operation detection
+  - Implemented caching system in context-cache-manager.sh for repeated operations
+  - Added optional Jira integration support in tools/extensions/jira-integration.sh
+  - Ensured all extensions under `tools/extensions` are treated as optional
+  - Implemented graceful fallback when extensions are unavailable
   - **Documentation**:
-    - `command-router-implementation.md` technical guide
-    - `optional-jira-integration-design.md` for Jira extension
-    - `extensions-quickstart.md` guide for creating optional extensions
+    - `command-router-enhancement-summary.md` implementation summary
+    - `optional-jira-integration-design.md` Jira extension design document
 
 ### Phase 2: Expansion (Near-Term - Oct-Nov 2025)
 
@@ -200,58 +199,32 @@ This document provides a comprehensive yet token-efficient guide for implementin
 
 ## Next Implementation Focus
 
-Based on the completed work with context gathering and section hashing, the next focus should be on the command router implementation. The following outlines what needs to be accomplished:
+Based on the completed work with command router enhancements, context gathering, and section hashing, the next focus should be on updating additional commands as outlined in Phase 2. The following outlines what needs to be accomplished:
 
-### Command Router Enhancement
+### Update Additional Commands
 
-The `command-router.sh` script needs to be updated to intelligently decide between script and AI operations based on:
+The next step is to update the additional command scripts to utilize the token-efficient hybrid approach:
 
-1. **Operation characteristics**: Deterministic vs. reasoning-heavy tasks
-2. **Available context**: Current state of cached and fresh context
-3. **Performance metrics**: Historical execution time and token usage
+1. **Analyze Product Command**:
+   - Update `analyze-product.sh` to use optimized context loading
+   - Integrate with the context cache manager
+   - Implement deterministic operations for metrics reporting
 
-Key implementation details:
+2. **Execute Tasks Command**:
+   - Enhance `execute-tasks.sh` with minimal context reloading
+   - Implement task dependency tracking
+   - Add support for parallel task execution where possible
 
-```bash
-# Intelligent operation type detection
-detect_operation_type() {
-  local command="$1"
-  local input_file="$2"
+3. **Plan Product Command**:
+   - Update `plan-product.sh` with efficient roadmap planning
+   - Implement template-based planning documents
+   - Add support for milestone tracking and estimation
 
-  # Analyze command and input to determine optimal processing path
-  if [[ -f "$SCRIPT_DIR/$command.sh" && ($PREFER_SCRIPT || simple_operation "$command" "$input_file") ]]; then
-    echo "script"
-  else
-    echo "ai"
-  fi
-}
-
-# Caching for repeated operations
-get_cached_result() {
-  local command="$1"
-  local input_file="$2"
-  local input_hash=$(sha256_file "$input_file")
-
-  # Check if we have a valid cached result
-  if [[ -f "$CACHE_DIR/$command/$input_hash.result" ]]; then
-    if [[ $(file_age_seconds "$CACHE_DIR/$command/$input_hash.result") -lt $CACHE_TTL ]]; then
-      cat "$CACHE_DIR/$command/$input_hash.result"
-      return 0
-    fi
-  fi
-  return 1  # No valid cache
-}
-```
-
-### Jira Integration Support
-
-Design a proper integration with Atlassian Jira that:
-
-1. Maintains full functionality when Jira is not available
-2. Uses Model Context Protocol (MCP) when available
-3. Falls back gracefully to standard operation when MCP is unavailable
-
-This work should be documented in `command-router-implementation.md` and `optional-jira-integration-design.md`.
+These updates should leverage the existing infrastructure components:
+- Context estimator for profiling
+- Context cache manager for operation caching
+- Command router for intelligent operation routing
+- Section hashing for efficient content tracking
 
 ## Key Files and Structure
 
