@@ -396,3 +396,19 @@ See examples above for performance/security.
 - Configuration: [configuration.md](./configuration.md)
 - Installation: [installation.md](./installation.md)
 - Execute tasks: [execute-tasks-usage.md](./execute-tasks-usage.md)
+
+## Runtime: Extension step execution
+
+When extensions are enabled, loaded extension steps execute at numeric boundaries during the run:
+
+- Steps with numbers < 1 run after the spec folder is created and before Step 1 completes.
+- Steps 1.x run after the product context discovery sub-step.
+- Steps 2.x, 3.x, 4.x, 5.x each run after their respective core steps.
+- Steps 6.x, 7.x, 8.x run after the respective late steps.
+- Any remaining steps (e.g., > 8.999) run after the Conclusion.
+
+Notes
+
+- Step numbers come from `<step number="X[.Y]" name="...">` tags in core and extension instruction files.
+- Execution currently logs a placeholder per step; dispatch to specific subagents can be added later using extension metadata.
+- Discovery and execution honor `EXTENSION_SCOPE`, `RUNTIME_CAPABILITIES`, and `EXTENSION_EXTRA_ROOTS`.
