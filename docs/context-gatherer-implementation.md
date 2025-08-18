@@ -10,6 +10,33 @@ The context gatherer now implements a three-tiered approach to context loading:
 2. **Conditional Context** (Tier 2) - Loaded based on operation type
 3. **Reference Context** (Tier 3) - Only loaded when explicitly requested
 
+## Shared Operation Cache (TTL + Dedup)
+
+The full gatherer supports a lightweight TTL-based cache that skips redundant work between runs.
+
+- Scope: operation + context type + tier + key options
+- Validation: TTL expiry and input content hash (README/spec/section-manifest when available)
+- Location: `.agent-os/cache/operations/*.json` (managed by `tools/context-cache-manager.sh`)
+- Requirements: `jq` for robust cache validity; without jq, caching degrades gracefully
+
+Controls
+
+- Flags: `--use-cache` (default), `--no-cache`, `--cache-ttl <seconds>`
+- Env: `USE_CACHE=1|0`, `OPERATION_CACHE_TTL=<seconds>`
+
+Examples
+
+```bash
+# Default cache (TTL 1h)
+bash tools/context-gatherer.sh --operation execute-tasks gather-context spec out.md
+
+# Disable cache for a run
+bash tools/context-gatherer.sh --no-cache gather-context spec out.md
+
+# Custom TTL (5 minutes)
+OPERATION_CACHE_TTL=300 bash tools/context-gatherer.sh gather-context product out.md
+```
+
 ## Key Features Implemented
 
 ### 1. Hierarchical Loading Strategy

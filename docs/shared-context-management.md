@@ -305,6 +305,8 @@ get_extension() {
 }
 ```
 
+Note: In this repository, `tools/extensions/extension-scanner.sh` implements the front-matter-only scan with an optional shared TTL cache. It filters candidates by `targets` (flow) and `requires` (capabilities) using only the header, and emits a JSON report used by higher-level flows for discovery/debugging.
+
 ### 4. Context Optimizer
 
 The Context Optimizer eliminates redundancy in context data:

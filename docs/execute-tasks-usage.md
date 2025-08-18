@@ -136,6 +136,24 @@ From `instructions/core/execute-task.md`:
 - Debug flags (Claude Code or script-mode): `debug_subagents`, `debug_trace_redact_secrets`, `debug_trace_include_bodies`
 - Script-mode TDD envs (optional): `ENABLE_TDD_LOOP`, `TEST_CMD`, `TEST_PATTERN`, `TEST_RETRIES`
 
+Context caching (script-mode)
+
+- The hierarchical context gatherer now supports a shared TTL cache to skip redundant work between runs.
+- Flags: `--use-cache` (default), `--no-cache`, `--cache-ttl <seconds>`
+- Env: `USE_CACHE=1|0`, `OPERATION_CACHE_TTL=<seconds>`
+- Example:
+
+```bash
+# Default cache (TTL 1h)
+bash tools/context-gatherer.sh --operation execute-tasks gather-context spec out.md
+
+# Disable cache for a run
+bash tools/context-gatherer.sh --no-cache gather-context spec out.md
+
+# Custom TTL (5 minutes)
+OPERATION_CACHE_TTL=300 bash tools/context-gatherer.sh gather-context product out.md
+```
+
 ## Extensibility and customization
 
 - No extension loader; instead, behavior is controlled by the task text and selective, manifest‑aware reads of sub‑specs.

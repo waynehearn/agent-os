@@ -77,3 +77,15 @@ vendor: acme
   - Totals loaded vs skipped.
   - A copy is saved to `@[spec_folder_path]/debug/extensions-discovery.txt` for later review.
   - A "Merged step order (preview)" showing the final step sequence (core and extensions) with source tags like `[core]` or `[ext:atlassian]`.
+
+Front-matter-only scanner (script mode)
+--------------------------------------
+
+- The repository provides a fast, front-matter-only scanner at `tools/extensions/extension-scanner.sh`.
+- It reads only the YAML header of candidate files and filters by `targets` and optional `requires` without loading bodies.
+- Basic usage:
+  - `--flow create-spec` to select the flow
+  - `--scope home|project|repo|all` to pick search roots (default: all)
+  - `--capabilities mcp:atlassian,foo` to satisfy `requires` gates
+  - `--no-cache` or `--cache-ttl 3600` to control the TTL cache
+- Output is a JSON report with `loaded` and `skipped` arrays and reasons for skips.

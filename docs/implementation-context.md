@@ -25,8 +25,8 @@ Keep Phase 2 “Execute Tasks” moving with a token-efficient, script-first wor
 - [x] Tests added and passing
   - test/test-execute-tasks.sh (smoke), test/test-run-execute-task.sh (selective reading), test/test-test-runner-retries.sh, test/test-test-runner-pattern-inference.sh, test/test-ndjson-tests-summary.sh, test/test-crlf-portability.sh
 - [ ] Pattern-to-glob mapping: improve inference to common frameworks (Jest, Mocha, PyTest, JUnit)
-- [ ] Shared context cache with TTL + dedup across commands
-- [ ] Front-matter-only extension scanning
+- [x] Shared context cache with TTL + dedup across commands
+- [x] Front-matter-only extension scanning
 - [ ] Extension discovery + compatibility checks + paths
 - [ ] CI bundle for cross-platform test runs (local mini-CI script acceptable as first step)
 - [ ] Advanced context optimizations (compression, semantic chunking, summarization)
@@ -102,6 +102,17 @@ Run high-value checks after changes:
 - CRLF normalization added to context gatherers (simple/with-sections/full) and to hashing paths; validated with smoke test.
 - Golden examples section-hash still green; manifest updates confirmed.
 - Retries and pattern inference tests rerun; all pass on Windows Git Bash.
+
+- Shared TTL cache integrated into context gatherer (tools/context-gatherer.sh):
+  - Flags: --no-cache, --use-cache (default on), --cache-ttl <seconds>; env: USE_CACHE, OPERATION_CACHE_TTL
+  - Uses context-cache-manager for TTL + content-hash validation; cache hit short-circuits gather
+
+- Front-matter-only extension scanning implemented:
+  - New tool: `tools/extensions/extension-scanner.sh` reads only YAML front matter to filter by `targets` and `requires`.
+  - Flags: `--flow`, `--scope home|project|repo|all|none`, `--capabilities`, `--no-cache`, `--cache-ttl`, `--extra-root`, `--debug-lines`.
+  - Integrates with shared TTL cache; emits JSON with `loaded`/`skipped` arrays and reasons.
+  - Minimal test added: `test/test-extension-scanner.sh` (validates capability gating via temp roots).
+  - Docs updated: `docs/extensions-quickstart.md` (scanner usage), `docs/shared-context-management.md` (registry note).
 
 ---
 

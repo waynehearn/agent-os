@@ -26,6 +26,15 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 CACHE_DIR="$ROOT_DIR/.agent-os/cache"
 SECTION_MANIFEST="$CACHE_DIR/section-hashes.json"
 
+# Shared operation cache (TTL + dedup)
+USE_CACHE=${USE_CACHE:-1}
+OPERATION_CACHE_TTL=${OPERATION_CACHE_TTL:-3600}
+# Try to source the shared cache manager if available
+if [[ -f "$SCRIPT_DIR/context-cache-manager.sh" ]]; then
+  # shellcheck disable=SC1090
+  source "$SCRIPT_DIR/context-cache-manager.sh"
+fi
+
 # Ensure cache directory exists
 mkdir -p "$CACHE_DIR"
 
@@ -66,6 +75,9 @@ Options:
   --track-sections      Enable section-level hash tracking
   --verbose             Show detailed context selection information
   --max-tokens N        Set maximum token budget (default: 4000)
+  --no-cache            Disable shared operation cache
+  --use-cache           Enable shared operation cache (default)
+  --cache-ttl N         Override cache TTL seconds (default: 3600)
   --help, -h            Show this help message
 
 Operations:
@@ -727,6 +739,36 @@ gather_context() {
   
   log "Gathering hierarchical context for $context_type (operation: $OPERATION_TYPE)..."
   
+  # Attempt cache hit when enabled
+  local cache_key="" input_file_hint=""
+  if [[ "$USE_CACHE" -eq 1 && $(type -t generate_cache_key || true) == "function" ]]; then
+    cache_key=$(generate_cache_key "gather-context" "$OPERATION_TYPE" "$context_type" "$CONTEXT_TIER" "$TRACK_SECTIONS" "$MAX_TOKENS")
+    case "$context_type" in
+      product)
+        [[ -f "$ROOT_DIR/README.md" ]] && input_file_hint="$ROOT_DIR/README.md" || input_file_hint="" ;;
+      spec)
+        [[ -f "$ROOT_DIR/spec.md" ]] && input_file_hint="$ROOT_DIR/spec.md" || input_file_hint="" ;;
+      repo)
+        input_file_hint="" ;;
+      tasks)
+        [[ -f "$ROOT_DIR/.agent-os/tasks/current-tasks.md" ]] && input_file_hint="$ROOT_DIR/.agent-os/tasks/current-tasks.md" || input_file_hint="" ;;
+    esac
+    if [[ "$TRACK_SECTIONS" == "true" && -f "$SECTION_MANIFEST" ]]; then
+      input_file_hint="$SECTION_MANIFEST"
+    fi
+    export OPERATION_CACHE_TTL
+    if is_cache_valid "$cache_key" && content=$(get_cached_result "$cache_key"); then
+      log "Using cached context (key: $cache_key)"
+      if [[ $use_stdout -eq 1 ]]; then
+        echo "$content"
+      else
+        echo "$content" > "$output_file"
+        success "Hierarchical context written to $output_file (cache-hit)"
+      fi
+      return 0
+    fi
+  fi
+  
   # Start profiling if enabled
   if [[ "$ENABLE_PROFILING" == "1" && -f "$SCRIPT_DIR/context-estimator.sh" ]]; then
     source "$SCRIPT_DIR/context-estimator.sh"
@@ -796,9 +838,21 @@ gather_context() {
   fi
   
   if [[ $use_stdout -eq 1 ]]; then
-    cat "$output_file"
+    # Emit to stdout and cache
+    local __content
+    __content=$(cat "$output_file")
+    echo "$__content"
+    if [[ "$USE_CACHE" -eq 1 && -n "$cache_key" && $(type -t cache_operation || true) == "function" ]]; then
+      cache_operation "$cache_key" "gather-context" "$__content" "${input_file_hint:-}" true || true
+    fi
     rm "$output_file"
   else
+    # Cache file content
+    if [[ "$USE_CACHE" -eq 1 && -n "$cache_key" && $(type -t cache_operation || true) == "function" ]]; then
+      local __content
+      __content=$(cat "$output_file")
+      cache_operation "$cache_key" "gather-context" "$__content" "${input_file_hint:-}" true || true
+    fi
     success "Hierarchical context written to $output_file ($total_tokens tokens)"
   fi
 }
@@ -945,6 +999,23 @@ parse_args() {
           exit 1
         fi
         MAX_TOKENS="$2"
+        shift 2
+        ;;
+      --no-cache)
+        USE_CACHE=0
+        shift
+        ;;
+      --use-cache)
+        USE_CACHE=1
+        shift
+        ;;
+      --cache-ttl)
+        if [[ -z "$2" || "$2" == --* ]]; then
+          error "Missing value for --cache-ttl"
+          show_help
+          exit 1
+        fi
+        OPERATION_CACHE_TTL="$2"
         shift 2
         ;;
       --help|-h)
