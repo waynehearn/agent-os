@@ -46,6 +46,16 @@ VERBOSE="false"
 MAX_TOKENS=4000
 ENABLE_PROFILING="${ENABLE_PROFILING:-0}"
 
+# Optional context optimization (pre-LLM) settings
+CONTEXT_OPTIMIZE=${CONTEXT_OPTIMIZE:-0}           # 1=enable optimization pass
+CONTEXT_OPTIMIZE_MODE=${CONTEXT_OPTIMIZE_MODE:-lossless}  # lossless|aggressive|none
+CONTEXT_SUMMARIZE_THRESHOLD=${CONTEXT_SUMMARIZE_THRESHOLD:-800}
+CONTEXT_MAX_CHUNK_TOKENS=${CONTEXT_MAX_CHUNK_TOKENS:-500}
+CONTEXT_OPTIMIZE_FORCE=${CONTEXT_OPTIMIZE_FORCE:-0}
+
+# Detect Claude Code/subagents environment via env hints
+CLAUDE_CODE=${CLAUDE_CODE:-${RUNNING_IN_CLAUDE:-0}}
+
 # Colorization for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -57,10 +67,10 @@ GRAY='\033[0;90m'
 NC='\033[0m' # No Color
 
 # Logging functions
-log() { echo -e "${BLUE}[context-gatherer]${NC} $*"; }
+log() { echo -e "${BLUE}[context-gatherer]${NC} $*" >&2; }
 error() { echo -e "${RED}[context-gatherer][ERROR]${NC} $*" >&2; }
-success() { echo -e "${GREEN}[context-gatherer][SUCCESS]${NC} $*"; }
-warning() { echo -e "${YELLOW}[context-gatherer][WARNING]${NC} $*"; }
+success() { echo -e "${GREEN}[context-gatherer][SUCCESS]${NC} $*" >&2; }
+warning() { echo -e "${YELLOW}[context-gatherer][WARNING]${NC} $*" >&2; }
 detail() { if [[ "$VERBOSE" == "true" ]]; then echo -e "${GRAY}[context-gatherer][DETAIL]${NC} $*" >&2; fi; }
 token_info() { echo -e "${CYAN}[context-gatherer][TOKENS]${NC} $*" >&2; }
 
@@ -530,12 +540,8 @@ gather_essential_context() {
       # Core structure is essential for repo context
       # Use a simplified project structure
       echo -e "\n## Project Structure\n" >> "$output_file"
-      echo -e "```" >> "$output_file"
-      find "$ROOT_DIR" -maxdepth 2 -type d -not -path "*/\.*" -not -path "*/node_modules/*" | 
-        sort | 
-        sed "s|$ROOT_DIR/||" | 
-        grep -v "^$" | 
-        sed 's/^/  /' >> "$output_file"
+  echo -e "```" >> "$output_file"
+  find "$ROOT_DIR" -maxdepth 2 -type d -not -path "*/\.*" -not -path "*/node_modules/*" | sort | sed "s|$ROOT_DIR/||" | grep -v "^$" | sed 's/^/  /' >> "$output_file"
       echo -e "```\n" >> "$output_file"
       
       # Estimate tokens for structure (rough estimate)
@@ -742,7 +748,7 @@ gather_context() {
   # Attempt cache hit when enabled
   local cache_key="" input_file_hint=""
   if [[ "$USE_CACHE" -eq 1 && $(type -t generate_cache_key || true) == "function" ]]; then
-    cache_key=$(generate_cache_key "gather-context" "$OPERATION_TYPE" "$context_type" "$CONTEXT_TIER" "$TRACK_SECTIONS" "$MAX_TOKENS")
+  cache_key=$(generate_cache_key "gather-context" "$OPERATION_TYPE" "$context_type" "$CONTEXT_TIER" "$TRACK_SECTIONS" "$MAX_TOKENS" "$CONTEXT_OPTIMIZE" "$CONTEXT_OPTIMIZE_MODE" "$CONTEXT_SUMMARIZE_THRESHOLD" "$CONTEXT_MAX_CHUNK_TOKENS" "$CLAUDE_CODE" "$CONTEXT_OPTIMIZE_FORCE")
     case "$context_type" in
       product)
         [[ -f "$ROOT_DIR/README.md" ]] && input_file_hint="$ROOT_DIR/README.md" || input_file_hint="" ;;
@@ -823,7 +829,52 @@ gather_context() {
     fi
   fi
   
-  # Add summary of token usage
+  # Optional optimization pass (pre-LLM)
+  local optimized_meta_tmp=""
+  # Effective optimization toggle: auto-disable under Claude unless forced
+  local _optimize_effective="$CONTEXT_OPTIMIZE"
+  if [[ "$CLAUDE_CODE" == "1" && "$CONTEXT_OPTIMIZE_FORCE" != "1" ]]; then
+    if [[ "$_optimize_effective" == "1" ]]; then
+      warning "Auto-disabling context optimization under Claude environment (set CONTEXT_OPTIMIZE_FORCE=1 to override)"
+    fi
+    _optimize_effective=0
+  fi
+
+  if [[ "$_optimize_effective" == "1" ]]; then
+    if [[ -f "$SCRIPT_DIR/context-optimizer.sh" ]]; then
+      optimized_meta_tmp=$(mktemp)
+      local optimized_tmp
+      optimized_tmp=$(mktemp)
+      bash "$SCRIPT_DIR/context-optimizer.sh" \
+        --input "$output_file" \
+        --output "$optimized_tmp" \
+        --metadata-out "$optimized_meta_tmp" \
+        --compression "$CONTEXT_OPTIMIZE_MODE" \
+        --summarize-threshold "$CONTEXT_SUMMARIZE_THRESHOLD" \
+        --max-chunk-tokens "$CONTEXT_MAX_CHUNK_TOKENS" || true
+      if [[ -s "$optimized_tmp" ]]; then
+        mv "$optimized_tmp" "$output_file"
+        # Attempt to update token summary from meta
+        if command -v jq >/dev/null 2>&1 && [[ -s "$optimized_meta_tmp" ]]; then
+          local after before
+          after=$(jq -r '.total_tokens_after // empty' "$optimized_meta_tmp" 2>/dev/null || echo "")
+          before=$(jq -r '.total_tokens_before // empty' "$optimized_meta_tmp" 2>/dev/null || echo "")
+          if [[ -n "$after" && "$after" != "null" ]]; then
+            total_tokens="$after"
+          fi
+          if [[ -n "$before" && "$before" != "null" ]]; then
+            token_info "Optimization reduced tokens: $before -> $total_tokens"
+          fi
+        else
+          token_info "Optimization pass completed (metadata unavailable)"
+        fi
+      fi
+    else
+      warning "CONTEXT_OPTIMIZE=1 but tools/context-optimizer.sh not found"
+    fi
+  fi
+
+  # Add summary of token usage (after optional optimization)
   echo -e "\n## Context Summary\n" >> "$output_file"
   echo -e "- Context type: $context_type" >> "$output_file"
   echo -e "- Operation: $OPERATION_TYPE" >> "$output_file"

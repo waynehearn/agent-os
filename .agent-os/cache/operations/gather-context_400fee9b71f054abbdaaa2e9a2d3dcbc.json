@@ -1,0 +1,8 @@
+{
+  "command": "gather-context",
+  "result": "\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\n## Context Summary\n\n- Context type: repo\n- Operation: default\n- Total tokens: 16\n- Generated: 2025-08-18 02:17:11 UTC",
+  "input_file": "",
+  "content_hash": "",
+  "success": true,
+  "timestamp": 1755483432
+}

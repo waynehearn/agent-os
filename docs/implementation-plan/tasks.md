@@ -48,12 +48,14 @@
 
 ## Task 4: Shared context management
 
-- [ ] parent checklist
+- [x] parent checklist
 
 ### Subtask 4.1: Cross-command TTL cache + dedup
 
-- [ ] implement shared cache in context-cache-manager
+- [x] implement shared cache in context-cache-manager
+		- Integrated cache usage in `tools/context-gatherer.sh` with flags/envs; uses shared cache manager when present.
 
 ### Subtask 4.2: Front-matter-only extension scanning
 
-- [ ] implement fast scan with skip list
+- [x] implement fast scan with skip list
+		- Added `tools/extensions/extension-scanner.sh` and `test/test-extension-scanner.sh`; emits JSON with loaded/skipped and reasons; TTL cache-aware.

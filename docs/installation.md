@@ -85,6 +85,11 @@ Optional (Windows with MSYS2):
 pacman -S --noconfirm mingw-w64-x86_64-jq
 ```
 
+Claude environment tip
+----------------------
+
+When running flows inside Claude Code, export `CLAUDE_CODE=1` (or `RUNNING_IN_CLAUDE=1`) in your terminal. Pre-LLM context optimization is auto-disabled there to avoid double summarization. See the “Run inside Claude Code” sections in the usage docs (Analyze, Plan, Execute) for the safe override flags and thresholds.
+
 Runtime tools directory and PATH
 --------------------------------
 

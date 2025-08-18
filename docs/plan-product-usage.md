@@ -68,6 +68,12 @@ Paste the Basic usage block into Claude Code. It reads `@~/.agent-os/instruction
 - Required: `main_idea`, `key_features` (≥3), `target_users` (≥1)
 - Optional: `tech_stack_preferences`, `project_initialized`
 
+Claude environment settings (recommended):
+
+- Export `CLAUDE_CODE=1` (or `RUNNING_IN_CLAUDE=1`) in your Claude terminal for this repo.
+- Leave pre-LLM context optimization off (`CONTEXT_OPTIMIZE=0` or unset). Subagents will manage chunking/summarization.
+- Only force optimization for unusually large docs: set `CONTEXT_OPTIMIZE=1 CONTEXT_OPTIMIZE_FORCE=1 CONTEXT_OPTIMIZE_MODE=lossless CONTEXT_SUMMARIZE_THRESHOLD=2000`.
+
 ## What it does (steps)
 
 From `instructions/core/plan-product.md`:

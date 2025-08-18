@@ -7,7 +7,7 @@ context_notes: This is a token-efficient hybrid approach for agent operations, c
 
 ## Additional Notes
 
-This file provides input parameters for the analyze-product.sh script. The script will use these parameters to analyze the existing product codebase and generate documentation.
+This file provides input parameters for the run-analyze-product.sh script. The script will use these parameters to analyze the existing product codebase and generate documentation.
 
 The documentation will be placed in the docs directory by default, and can include:
 

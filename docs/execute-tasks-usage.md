@@ -63,6 +63,16 @@ Use the same instruction block as a slash-command message. Claude Code will read
   - Set `debug_subagents: true` to emit NDJSON events under `debug/exec-trace/` for the current spec
   - Optional redaction and body inclusion via `debug_trace_redact_secrets`, `debug_trace_include_bodies`
 
+Claude environment settings (recommended):
+
+- Export `CLAUDE_CODE=1` (or `RUNNING_IN_CLAUDE=1`) in your Claude terminal or shell init for this workspace.
+- Keep pre-LLM optimization off by default to avoid double summarization: do not set `CONTEXT_OPTIMIZE` (or set `CONTEXT_OPTIMIZE=0`).
+- If you must pre-trim very large reference files before subagents see them, prefer safe settings:
+  - `CONTEXT_OPTIMIZE=1` `CONTEXT_OPTIMIZE_FORCE=1`
+  - `CONTEXT_OPTIMIZE_MODE=lossless`
+  - `CONTEXT_SUMMARIZE_THRESHOLD=2000`
+  - This reduces tokens without interfering with subagents’ own chunking/summarization.
+
 TDD loop note (script-mode only): If you prefer the script implementation while in Claude Code, open the integrated terminal and run the per-task runner with environment flags:
 
 - `ENABLE_TDD_LOOP=1` to enable focused test runs

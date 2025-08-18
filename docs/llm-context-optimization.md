@@ -173,3 +173,9 @@ Planned enhancements to further improve context efficiency:
 5. **Incremental context updates**: Only send changed sections to the LLM
 
 By implementing these techniques, Agent OS achieves significant token reduction while maintaining or improving output quality.
+
+## Runtime configuration and auto-detection
+
+- Enable optimization: set CONTEXT_OPTIMIZE=1 (default off)
+- Modes and thresholds: CONTEXT_OPTIMIZE_MODE, CONTEXT_SUMMARIZE_THRESHOLD, CONTEXT_MAX_CHUNK_TOKENS
+- Claude Code auto-disable: set CLAUDE_CODE=1 (or RUNNING_IN_CLAUDE=1) to automatically disable optimization (avoid double-summarization). Override with CONTEXT_OPTIMIZE_FORCE=1 if needed (recommend lossless mode).

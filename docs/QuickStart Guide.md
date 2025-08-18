@@ -37,6 +37,11 @@ Optional editor integrations (run from your local clone):
 bash ./setup-claude-code.sh
 ```
 
+Claude environment tip
+----------------------
+
+If you run inside Claude Code, export `CLAUDE_CODE=1` (or `RUNNING_IN_CLAUDE=1`) in your terminal for this repo. Pre-LLM optimization is auto-disabled there to avoid double summarization; see the “Run inside Claude Code” sections in the usage docs for safe override flags and thresholds.
+
 - Cursor (run inside a project repo to add .cursor rules)
 
 ```bash

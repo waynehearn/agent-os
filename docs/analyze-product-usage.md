@@ -66,6 +66,11 @@ Paste the Basic usage block into Claude Code. It reads `@~/.agent-os/instruction
 - Required: none (but inputs improve quality)
 - Optional inputs: `context_notes`, `auto_init_product` (see above)
 
+Claude environment settings (recommended):
+
+- Export `CLAUDE_CODE=1` (or `RUNNING_IN_CLAUDE=1`).
+- Keep pre-LLM optimization off (`CONTEXT_OPTIMIZE=0` or unset). If you need to pre-trim large reference files: use `CONTEXT_OPTIMIZE=1 CONTEXT_OPTIMIZE_FORCE=1 CONTEXT_OPTIMIZE_MODE=lossless CONTEXT_SUMMARIZE_THRESHOLD=2000`.
+
 ## What it does (steps)
 
 From `instructions/core/analyze-product.md`:
@@ -87,7 +92,6 @@ From `instructions/core/analyze-product.md`:
 - `.agent-os/product/`
    - From analyze-product (via plan-product): `mission.md`, `mission-lite.md`, `tech-stack.md`, `roadmap.md`, `decisions.md`
    - From discovery `--init-product` (only if content exists): subset of `tech-stack.md`, `roadmap.md`, `decisions.md`, and `context/facts.md`
-- `.agent-os/product/context/context.json` (discovery cache, only if missing)
 
 ## Inputs and flags
 
