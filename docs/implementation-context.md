@@ -28,6 +28,7 @@ Keep Phase 2 “Execute Tasks” moving with a token-efficient, script-first wor
 - [x] Shared context cache with TTL + dedup across commands
 - [x] Front-matter-only extension scanning
 - [x] Extension discovery + compatibility checks + paths
+- [x] Execute extension steps at numeric boundaries during create-spec run
 - [ ] CI bundle for cross-platform test runs (local mini-CI script acceptable as first step)
 - [ ] Advanced context optimizations (compression, semantic chunking, summarization)
 
@@ -42,12 +43,14 @@ bash test/test-execute-tasks.sh
 2) Per-parent runner with optional TDD loop
 
 Environment flags:
+
 - ENABLE_TDD_LOOP=1 to invoke tests
 - TEST_CMD: your test command
 - TEST_PATTERN: focus pattern (auto-inferred from parent title if not set)
 - TEST_RETRIES: retry count (default 1)
 
 Expected artifacts per parent spec folder:
+
 - context/current-task.md, context/tasks-summary.json, context/tasks-heuristics.json
 - context/selected-technical.md, context/selected-api.md (if gated), context/selected-db.md (if gated)
 - context/test-run-summary.json (when TDD flag is enabled)
@@ -73,11 +76,13 @@ bash tools/section-hash.sh "c:/Users/Wayne.Hearn/data/code/github/myagentos/exam
 ## Minimal run recipes
 
 - Analyze (non-destructive; honors discovery’s write-if-missing):
+
 ```bash
 bash tools/analyze-product.sh --output-dir docs/analysis6 analyze-inputs.md
 ```
 
 - Focused TDD for a parent task (example):
+
 ```bash
 ENABLE_TDD_LOOP=1 TEST_CMD="npm test --silent" TEST_RETRIES=1 bash tools/run-execute-task.sh
 ```
@@ -85,6 +90,7 @@ ENABLE_TDD_LOOP=1 TEST_CMD="npm test --silent" TEST_RETRIES=1 bash tools/run-exe
 ## Quick verification suite
 
 Run high-value checks after changes:
+
 - CRLF portability: `bash test/test-crlf-portability.sh`
 - Retries behavior: `bash test/test-test-runner-retries.sh`
 - Selective reading: `bash test/test-run-execute-task.sh`
@@ -118,6 +124,7 @@ Run high-value checks after changes:
     - Includes a "Merged step order (preview)" combining core and loaded extension steps.
     - Performance: reduced to a single scanner call by capturing stdout (JSON) and stderr (human lines) concurrently.
     - Usage doc updated: `docs/create-spec-usage.md` section “Extensions discovery (debug)”.
+  - Extension steps now execute during the run at numeric boundaries (placeholders logged per step); honored env: `EXTENSIONS_ENABLED`, `EXTENSION_SCOPE`, `RUNTIME_CAPABILITIES`, `EXTENSION_EXTRA_ROOTS`. Usage doc updated with a new "Runtime: Extension step execution" section.
 
 ---
 
