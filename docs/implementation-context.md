@@ -5,6 +5,46 @@ Last updated: Aug 17, 2025 • Branch: scriptbased-optimized • Default: main �
 ## What’s the goal
 Keep Phase 2 “Execute Tasks” moving with a token-efficient, script-first workflow that’s cross-platform and restartable from this file alone.
 
+## Restart checklist (next step)
+
+- Check latest spec and context size (tokens estimate and freshness):
+
+```bash
+bash tools/context-size.sh
+```
+
+- If CHARS=0 or context is stale for your needs, refresh minimal context for the latest spec:
+
+```bash
+LATEST=$(bash tools/context-size.sh | sed -n 's/^LATEST=//p')
+SPEC_DIR=".agent-os/specs/$LATEST"
+mkdir -p "$SPEC_DIR/context"
+bash tools/context-gatherer.sh product "$SPEC_DIR/context/product-context.md"
+bash tools/context-gatherer.sh repo "$SPEC_DIR/context/repo-context.md"
+```
+
+- Resume execution: pick one
+- Quick smoke (validates core artifacts and manifest refresh):
+
+```bash
+bash test/test-execute-tasks.sh
+```
+
+- Per-parent runner with optional TDD loop (set your test command):
+
+```bash
+ENABLE_TDD_LOOP=1 TEST_CMD="npm test --silent" TEST_RETRIES=1 bash tools/run-execute-task.sh
+```
+
+Notes
+
+- Windows Git Bash is supported; scripts are CRLF-hardened.
+- You can enable profiling to capture context size and timing:
+
+```bash
+ENABLE_PROFILING=1 bash tools/execute-tasks.sh
+```
+
 ## Single plan list — Done vs. Outstanding
 
 - [x] Execute main loop writes artifacts and refreshes manifest
