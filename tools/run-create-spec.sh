@@ -139,7 +139,7 @@ if [[ $DEBUG_EXTENSIONS -eq 1 && ! "$EXTENSIONS_ENABLED_ENV" =~ ^(0|false|False|
     mkdir -p "$REPORT_DIR"
     REPORT_FILE="$REPORT_DIR/extensions-discovery.txt"
 
-    # Run scanner with debug lines; capture human-readable lines from stderr
+  # Run scanner with debug lines; capture human-readable lines from stderr
     # Build args
     SCOPE_ARG=(--scope "$EXTENSION_SCOPE_ENV")
     CAP_ARGS=()
@@ -154,6 +154,89 @@ if [[ $DEBUG_EXTENSIONS -eq 1 && ! "$EXTENSIONS_ENABLED_ENV" =~ ^(0|false|False|
 
     scan_lines=$( { bash "$SCANNER" --flow create-spec "${SCOPE_ARG[@]}" "${CAP_ARGS[@]}" "${EXTRA_ARGS[@]}" --debug-lines 1>/dev/null; } 2>&1 )
 
+    # Also capture JSON (stdout) without debug lines
+    scan_json=$(bash "$SCANNER" --flow create-spec "${SCOPE_ARG[@]}" "${CAP_ARGS[@]}" "${EXTRA_ARGS[@]}")
+
+    # Helper: resolve @-logical paths to real paths
+    resolve_logical_path() {
+      local lp="$1"
+      case "$lp" in
+        @~/*)
+          echo "$HOME${lp#@~}"
+          ;;
+        @.*)
+          echo "$ROOT_DIR${lp#@.}"
+          ;;
+        @instructions/*)
+          echo "$ROOT_DIR/instructions${lp#@instructions}"
+          ;;
+        *)
+          echo "$lp"
+          ;;
+      esac
+    }
+
+    # Extract loaded logical paths from JSON without jq
+    loaded_paths=()
+    in_loaded=0
+    while IFS= read -r line; do
+      # Detect start/end of loaded array
+      if [[ $in_loaded -eq 0 && $line == *'"loaded": ['* ]]; then
+        in_loaded=1
+        continue
+      fi
+      if [[ $in_loaded -eq 1 && $line == *']'* ]]; then
+        # This may catch the end of loaded or other arrays; stop at first closing when we already started
+        in_loaded=2
+      fi
+      if [[ $in_loaded -eq 1 ]]; then
+        if [[ $line == *'"path":'* ]]; then
+          lp=$(echo "$line" | sed -n 's/.*"path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
+          if [[ -n "$lp" ]]; then
+            loaded_paths+=("$lp")
+          fi
+        fi
+      fi
+      [[ $in_loaded -eq 2 ]] && break
+    done <<< "$scan_json"
+
+    # Collect core steps from instructions/core/create-spec.md
+    core_steps=()
+    core_file="$ROOT_DIR/instructions/core/create-spec.md"
+    if [[ -f "$core_file" ]]; then
+      while IFS= read -r line; do
+        if [[ $line == "<step number="* ]]; then
+          num=$(echo "$line" | sed -n 's/^<step number="\([0-9.]*\)".*$/\1/p')
+          name=$(echo "$line" | sed -n 's/^<step number="[0-9.]*"[^>]*name="\([^"]*\)".*/\1/p')
+          if [[ -n "$num" ]]; then
+            core_steps+=("$num|core|${name:-}")
+          fi
+        fi
+      done < "$core_file"
+    fi
+
+    # Collect extension steps by reading loaded files
+    ext_steps=()
+    for lp in "${loaded_paths[@]}"; do
+      realp=$(resolve_logical_path "$lp")
+      [[ -f "$realp" ]] || continue
+      while IFS= read -r line; do
+        if [[ $line == "<step number="* ]]; then
+          num=$(echo "$line" | sed -n 's/^<step number="\([0-9.]*\)".*$/\1/p')
+          name=$(echo "$line" | sed -n 's/^<step number="[0-9.]*"[^>]*name="\([^"]*\)".*/\1/p')
+          if [[ -n "$num" ]]; then
+            ext_steps+=("$num|ext:${lp}|${name:-}")
+          fi
+        fi
+      done < "$realp"
+    done
+
+    # Merge and sort by numeric step number
+    merged=$( {
+      for s in "${core_steps[@]}"; do echo "$s"; done
+      for s in "${ext_steps[@]}"; do echo "$s"; done
+    } | sort -t '|' -g -k1,1 )
+
     loaded_cnt=$(echo "$scan_lines" | grep -c '^LOADED  |' || true)
     skipped_cnt=$(echo "$scan_lines" | grep -c '^SKIPPED |' || true)
 
@@ -166,6 +249,13 @@ if [[ $DEBUG_EXTENSIONS -eq 1 && ! "$EXTENSIONS_ENABLED_ENV" =~ ^(0|false|False|
       echo "$scan_lines"
       echo "---"
       echo "Summary: loaded: $loaded_cnt, skipped: $skipped_cnt"
+      echo ""
+      echo "Merged step order (preview):"
+      echo "number | name | source"
+      while IFS='|' read -r num src nm; do
+        [[ -z "$num" ]] && continue
+        echo "$num | ${nm:-} | [$src]"
+      done <<< "$merged"
     } | tee "$REPORT_FILE" >/dev/null
 
     log "Extensions discovery report saved to $REPORT_FILE"
