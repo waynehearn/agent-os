@@ -113,6 +113,11 @@ log "========== Starting create-spec workflow (hybrid mode) =========="
 #===============================================================
 # STEP 0.9: EXTENSIONS DISCOVERY REPORT (DEBUG OPTIONAL)
 #===============================================================
+# Honor extension toggles/paths from environment
+EXTENSIONS_ENABLED_ENV=${EXTENSIONS_ENABLED:-true}
+EXTENSION_SCOPE_ENV=${EXTENSION_SCOPE:-all}
+EXTENSION_EXTRA_ROOTS_ENV=${EXTENSION_EXTRA_ROOTS:-}
+
 DEBUG_EXTENSIONS_ENV=${DEBUG_EXTENSIONS:-}
 # Read from inputs if present (expects a line like: debug_extensions: true)
 DEBUG_EXTENSIONS_INPUT=$(grep -i '^debug_extensions:' "$SPEC_INPUTS_FILE" 2>/dev/null | awk -F ':' '{gsub(/ /,"",$2); print tolower($2)}' || true)
@@ -123,7 +128,7 @@ elif [[ "$DEBUG_EXTENSIONS_INPUT" == "true" ]]; then
   DEBUG_EXTENSIONS=1
 fi
 
-if [[ $DEBUG_EXTENSIONS -eq 1 ]]; then
+if [[ $DEBUG_EXTENSIONS -eq 1 && ! "$EXTENSIONS_ENABLED_ENV" =~ ^(0|false|False|FALSE)$ ]]; then
   log "Step 0.9: Extensions Discovery Report (debug)"
 
   SCANNER="$SCRIPT_DIR/extensions/extension-scanner.sh"
@@ -135,11 +140,19 @@ if [[ $DEBUG_EXTENSIONS -eq 1 ]]; then
     REPORT_FILE="$REPORT_DIR/extensions-discovery.txt"
 
     # Run scanner with debug lines; capture human-readable lines from stderr
-    if [[ -n "$CAPS" ]]; then
-      scan_lines=$( { bash "$SCANNER" --flow create-spec --scope all --capabilities "$CAPS" --debug-lines 1>/dev/null; } 2>&1 )
-    else
-      scan_lines=$( { bash "$SCANNER" --flow create-spec --scope all --debug-lines 1>/dev/null; } 2>&1 )
+    # Build args
+    SCOPE_ARG=(--scope "$EXTENSION_SCOPE_ENV")
+    CAP_ARGS=()
+    [[ -n "$CAPS" ]] && CAP_ARGS=(--capabilities "$CAPS")
+    EXTRA_ARGS=()
+    if [[ -n "$EXTENSION_EXTRA_ROOTS_ENV" ]]; then
+      IFS=',' read -r -a roots <<< "$EXTENSION_EXTRA_ROOTS_ENV"
+      for r in "${roots[@]}"; do
+        [[ -n "$r" ]] && EXTRA_ARGS+=(--extra-root "$r")
+      done
     fi
+
+    scan_lines=$( { bash "$SCANNER" --flow create-spec "${SCOPE_ARG[@]}" "${CAP_ARGS[@]}" "${EXTRA_ARGS[@]}" --debug-lines 1>/dev/null; } 2>&1 )
 
     loaded_cnt=$(echo "$scan_lines" | grep -c '^LOADED  |' || true)
     skipped_cnt=$(echo "$scan_lines" | grep -c '^SKIPPED |' || true)
@@ -147,7 +160,8 @@ if [[ $DEBUG_EXTENSIONS -eq 1 ]]; then
     {
       echo "Extensions Discovery Report"
       echo "Capabilities: ${CAPS:-[]}"
-      echo "Scanned roots: @~/.agent-os/instructions/extensions/create-spec, @.agent-os/instructions/extensions/create-spec, @instructions/extensions/create-spec"
+      echo "Scope: $EXTENSION_SCOPE_ENV"
+      echo "Extra roots: ${EXTENSION_EXTRA_ROOTS_ENV:-<none>}"
       echo "---"
       echo "$scan_lines"
       echo "---"
