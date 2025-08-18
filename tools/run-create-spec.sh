@@ -274,7 +274,7 @@ if [[ $DEBUG_EXTENSIONS -eq 1 && ! "$EXTENSIONS_ENABLED_ENV" =~ ^(0|false|False|
 
     log "Extensions discovery report saved to $REPORT_FILE"
   else
-    warning "Extension scanner not found; skipping discovery report"
+    log "[warn] Extension scanner not found; skipping discovery report"
   fi
 fi
 
@@ -440,8 +440,9 @@ log "Running in $MODE mode"
 mkdir -p "$CONTEXT_PATH"
 success "Created specification directory structure"
 
-# Run extension steps numbered < 1
+# Run extension steps numbered < 1 and 1.x (immediately after Step 1)
 run_extension_bucket 0 1
+run_extension_bucket 1 1
 
 #===============================================================
 # STEP 2: CONTEXT GATHERING (SCRIPT-BASED)
@@ -462,9 +463,6 @@ success "Product context saved to $CONTEXT_PATH/product-context.json"
 
 # End operation tracking
 ce_end_operation "$op_id"
-
-# Run extension steps numbered 1.x
-run_extension_bucket 1 1
 
 #===============================================================
 # STEP 2: CONTEXT GATHERING (SCRIPT-BASED)
@@ -690,11 +688,17 @@ log "Step 6: Hashing golden example sections"
   # Don't exit on this error, continue with validation
 }
 
+# Run extension steps numbered 6.x
+run_extension_bucket 6 1
+
 log "Step 7: Final validation"
 "$SCRIPT_DIR/spec-validator.sh" "$SPEC_FOLDER_PATH/spec.md" || {
   error "Spec validation failed but continuing"
   # Don't exit on validation failure, mark as warning instead
 }
+
+# Run extension steps numbered 7.x
+run_extension_bucket 7 1
 
 #===============================================================
 # STEP 8: CREATE AI ENHANCEMENT PLACEHOLDER (HYBRID APPROACH)
@@ -737,9 +741,7 @@ EOL
 
 success "AI enhancement placeholder created"
 
-# Run extension steps numbered 6.x, 7.x, 8.x (post-step buckets)
-run_extension_bucket 6 1
-run_extension_bucket 7 1
+# Run extension steps numbered 8.x
 run_extension_bucket 8 1
 
 # End operation tracking for the last step
@@ -749,6 +751,8 @@ ce_end_operation "$op_id"
 # CONCLUSION
 #===============================================================
 if [ -f "$SPEC_FOLDER_PATH/spec.md" ] && [ -f "$SPEC_FOLDER_PATH/tasks.md" ]; then
+  # Run any remaining extension steps (> last core step) before exiting
+  run_extension_remaining
   success "========== create-spec workflow completed successfully =========="
   log "Specification created at: $SPEC_FOLDER_PATH/"
   log "Files created:"
@@ -779,8 +783,7 @@ else
     log "Profiling report generated despite errors."
   fi
   
+  # Run any remaining extension steps even on error
+  run_extension_remaining
   exit 1
 fi
-
-# Run any remaining extension steps (e.g., numbered beyond last core step)
-run_extension_remaining
