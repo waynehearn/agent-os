@@ -114,6 +114,24 @@ All paths are referred to as `[spec_folder_path]` in downstream flows.
 
 Authoritative schema: `docs/schemas/spec-input.schema.json`.
 
+## Extensions discovery (debug)
+
+Enable a concise Extensions Discovery Report before Step 1 to see which extensions are considered and why they load/skip.
+
+- Turn on via either:
+  - In inputs: `debug_extensions: true`
+  - Or env: `DEBUG_EXTENSIONS=1`
+- Optional env variables:
+  - `RUNTIME_CAPABILITIES` — comma-separated capabilities (e.g., `mcp:atlassian`) used to satisfy `requires` in extension front matter.
+  - `EXTENSIONS_ENABLED` — set to `false`/`0` to skip discovery entirely.
+  - `EXTENSION_SCOPE` — `home|project|repo|all|none` to control lookup roots.
+  - `EXTENSION_EXTRA_ROOTS` — comma-separated absolute paths for additional roots.
+- Output: report saved to `@[spec_folder_path]/debug/extensions-discovery.txt` containing:
+  - LOADED/SKIPPED lines with reasons (e.g., `requires mcp:atlassian not available`).
+  - Summary counts loaded vs skipped.
+  - A "Merged step order (preview)" showing core and extension steps in execution order.
+- Efficiency: discovery uses front‑matter‑only scanning; bodies are not read unless loaded.
+
 ## Modes: Express vs Standard
 
 Express focuses on speed; Standard maximizes validation and traceability.
