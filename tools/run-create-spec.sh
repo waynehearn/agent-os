@@ -152,10 +152,15 @@ if [[ $DEBUG_EXTENSIONS -eq 1 && ! "$EXTENSIONS_ENABLED_ENV" =~ ^(0|false|False|
       done
     fi
 
-    scan_lines=$( { bash "$SCANNER" --flow create-spec "${SCOPE_ARG[@]}" "${CAP_ARGS[@]}" "${EXTRA_ARGS[@]}" --debug-lines 1>/dev/null; } 2>&1 )
-
-    # Also capture JSON (stdout) without debug lines
-    scan_json=$(bash "$SCANNER" --flow create-spec "${SCOPE_ARG[@]}" "${CAP_ARGS[@]}" "${EXTRA_ARGS[@]}")
+    # Single invocation: capture JSON (stdout) to temp file and human lines (stderr) into variable
+    mkdir -p "$TEMP_DIR"
+    SCAN_JSON_FILE="$TEMP_DIR/extension-scan-$(date +%s)-$$.json"
+    scan_lines=$( { bash "$SCANNER" --flow create-spec "${SCOPE_ARG[@]}" "${CAP_ARGS[@]}" "${EXTRA_ARGS[@]}" --debug-lines 1>"$SCAN_JSON_FILE"; } 2>&1 )
+    scan_json=""
+    if [[ -f "$SCAN_JSON_FILE" ]]; then
+      scan_json=$(cat "$SCAN_JSON_FILE" 2>/dev/null || echo "")
+      rm -f "$SCAN_JSON_FILE" || true
+    fi
 
     # Helper: resolve @-logical paths to real paths
     resolve_logical_path() {
