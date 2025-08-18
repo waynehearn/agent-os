@@ -110,6 +110,15 @@ fi
 
 log "========== Starting create-spec workflow (hybrid mode) =========="
 
+# Pre-compute spec folder variables so early steps (e.g., debug reports) have a stable location
+# Note: These will be computed again in Step 1, but values should be identical.
+MAIN_IDEA_PRE=$(grep -A 3 'main_idea:' "$SPEC_INPUTS_FILE" | tail -n 1 | sed 's/^[[:space:]]*//g' || true)
+SPEC_NAME_OVERRIDE_PRE=$(grep 'spec_name_override:' "$SPEC_INPUTS_FILE" | cut -d'"' -f2 | sed 's/^[[:space:]]*//g' || true)
+SPEC_NAME_PRE=$(normalize_spec_name "$MAIN_IDEA_PRE" "$SPEC_NAME_OVERRIDE_PRE")
+CURRENT_DATE_PRE=$(date '+%Y-%m-%d')
+SPEC_FOLDER_PATH="${ROOT_DIR}/.agent-os/specs/${CURRENT_DATE_PRE}-${SPEC_NAME_PRE}"
+CONTEXT_PATH="${SPEC_FOLDER_PATH}/context"
+
 #===============================================================
 # STEP 0.9: EXTENSIONS DISCOVERY REPORT (DEBUG OPTIONAL)
 #===============================================================
@@ -270,6 +279,125 @@ if [[ $DEBUG_EXTENSIONS -eq 1 && ! "$EXTENSIONS_ENABLED_ENV" =~ ^(0|false|False|
 fi
 
 #===============================================================
+# EXTENSIONS: DISCOVERY FOR EXECUTION (ALWAYS WHEN ENABLED)
+#===============================================================
+EXT_EXEC_ENABLED=1
+if [[ "$EXTENSIONS_ENABLED_ENV" =~ ^(0|false|False|FALSE)$ ]]; then
+  EXT_EXEC_ENABLED=0
+fi
+
+EXT_LOADED_STEPS=()   # entries: "num|ext:<logicalPath>|name"
+EXT_EXEC_DONE=()
+
+scan_extensions_for_execution() {
+  [[ $EXT_EXEC_ENABLED -eq 1 ]] || return 0
+
+  SCANNER="$SCRIPT_DIR/extensions/extension-scanner.sh"
+  [[ -f "$SCANNER" ]] || return 0
+
+  CAPS=${RUNTIME_CAPABILITIES:-}
+  SCOPE_ARG=(--scope "${EXTENSION_SCOPE_ENV:-all}")
+  CAP_ARGS=()
+  [[ -n "$CAPS" ]] && CAP_ARGS=(--capabilities "$CAPS")
+  EXTRA_ARGS=()
+  if [[ -n "${EXTENSION_EXTRA_ROOTS_ENV:-}" ]]; then
+    IFS=',' read -r -a roots <<< "${EXTENSION_EXTRA_ROOTS_ENV}"
+    for r in "${roots[@]}"; do
+      [[ -n "$r" ]] && EXTRA_ARGS+=(--extra-root "$r")
+    done
+  fi
+
+  # Use cache-friendly JSON scan
+  local json
+  json=$(bash "$SCANNER" --flow create-spec "${SCOPE_ARG[@]}" "${CAP_ARGS[@]}" "${EXTRA_ARGS[@]}") || json=""
+  [[ -z "$json" ]] && return 0
+
+  # Extract loaded logical paths
+  local loaded_paths=()
+  local in_loaded=0
+  while IFS= read -r line; do
+    if [[ $in_loaded -eq 0 && $line == *'"loaded": ['* ]]; then in_loaded=1; continue; fi
+    if [[ $in_loaded -eq 1 && $line == *']'* ]]; then in_loaded=2; fi
+    if [[ $in_loaded -eq 1 && $line == *'"path"'* ]]; then
+      lp=$(echo "$line" | sed -n 's/.*"path"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
+      [[ -n "$lp" ]] && loaded_paths+=("$lp")
+    fi
+    [[ $in_loaded -eq 2 ]] && break
+  done <<< "$json"
+
+  # Resolve logical path helper
+  resolve_logical_path() {
+    local lp="$1"
+    case "$lp" in
+      @~/*) echo "$HOME${lp#@~}" ;;
+      @.*) echo "$ROOT_DIR${lp#@.}" ;;
+      @instructions/*) echo "$ROOT_DIR/instructions${lp#@instructions}" ;;
+      *) echo "$lp" ;;
+    esac
+  }
+
+  # Parse steps from each extension file
+  EXT_LOADED_STEPS=()
+  for lp in "${loaded_paths[@]}"; do
+    realp=$(resolve_logical_path "$lp")
+    [[ -f "$realp" ]] || continue
+    while IFS= read -r line; do
+      if [[ $line == "<step number="* ]]; then
+        num=$(echo "$line" | sed -n 's/^<step number="\([0-9.]*\)".*$/\1/p')
+        name=$(echo "$line" | sed -n 's/^<step number="[0-9.]*"[^>]*name="\([^"]*\)".*/\1/p')
+        [[ -n "$num" ]] && EXT_LOADED_STEPS+=("$num|ext:${lp}|${name:-}")
+      fi
+    done < "$realp"
+  done
+}
+
+# Execute an extension step placeholder
+execute_extension_step() {
+  local num="$1"; local src="$2"; local nm="$3"
+  log "[ext] Executing step $num '${nm:-}' from [$src] (placeholder)"
+  # Future: dispatch subagent based on extension metadata
+}
+
+# Helper to run steps in a bucket (integer part) with optional range
+run_extension_bucket() {
+  local bucket_int="$1"; local before_next="$2" # 1 means run < bucket+1, else run == bucket+post
+  local new_list=()
+  for entry in "${EXT_LOADED_STEPS[@]}"; do
+    IFS='|' read -r num src nm <<< "$entry"
+    # integer part
+    int_part=${num%%.*}
+    # Handle numbers like '2' without decimal
+    [[ -z "$int_part" ]] && int_part="$num"
+    if [[ "$int_part" =~ ^[0-9]+$ ]]; then
+      if [[ "$int_part" -eq "$bucket_int" ]]; then
+        # Determine if to run now
+        if [[ "$before_next" -eq 1 ]]; then
+          # Run if num > bucket_int and < bucket_int+1 OR when bucket_int=0, also allow <1
+          if awk "BEGIN{exit !($num>$bucket_int && $num<($bucket_int+1))}"; then
+            execute_extension_step "$num" "$src" "$nm"
+            continue
+          fi
+        fi
+      fi
+    fi
+    new_list+=("$entry")
+  done
+  EXT_LOADED_STEPS=("${new_list[@]}")
+}
+
+# Run any remaining extension steps (post-run)
+run_extension_remaining() {
+  for entry in "${EXT_LOADED_STEPS[@]}"; do
+    IFS='|' read -r num src nm <<< "$entry"
+    execute_extension_step "$num" "$src" "$nm"
+  done
+  EXT_LOADED_STEPS=()
+}
+
+# Perform scan if enabled
+scan_extensions_for_execution
+
+#===============================================================
 # STEP 1: EXTRACT INPUTS (SCRIPT-BASED)
 #===============================================================
 log "Step 1: Extracting and validating inputs"
@@ -312,6 +440,9 @@ log "Running in $MODE mode"
 mkdir -p "$CONTEXT_PATH"
 success "Created specification directory structure"
 
+# Run extension steps numbered < 1
+run_extension_bucket 0 1
+
 #===============================================================
 # STEP 2: CONTEXT GATHERING (SCRIPT-BASED)
 #===============================================================
@@ -331,6 +462,9 @@ success "Product context saved to $CONTEXT_PATH/product-context.json"
 
 # End operation tracking
 ce_end_operation "$op_id"
+
+# Run extension steps numbered 1.x
+run_extension_bucket 1 1
 
 #===============================================================
 # STEP 2: CONTEXT GATHERING (SCRIPT-BASED)
@@ -367,6 +501,9 @@ else
     ce_track_file "$CONTEXT_PATH/repo-context.md" "context_output"
   fi
 fi
+
+# Run extension steps numbered 2.x
+run_extension_bucket 2 1
 
 #===============================================================
 # STEP 3: EXTRACT SPECIFICATION COMPONENTS (SCRIPT-BASED)
@@ -408,6 +545,9 @@ REQUIRES_API_CHANGES=$(grep 'requires_api_changes:' "$SPEC_INPUTS_FILE" | cut -d
 } > "$CONTEXT_PATH/extracted-components.md"
 
 success "Specification components extracted and saved"
+
+# Run extension steps numbered 3.x
+run_extension_bucket 3 1
 
 #===============================================================
 # STEP 4: GENERATE SPECIFICATION FILE (HYBRID APPROACH)
@@ -462,6 +602,9 @@ EOL
 fi
 
 success "spec.md created at $SPEC_FOLDER_PATH/spec.md"
+
+# Run extension steps numbered 4.x
+run_extension_bucket 4 1
 
 #===============================================================
 # STEP 5: GENERATE TASKS (AI-ASSISTED BUT SCRIPT-CREATED)
@@ -535,6 +678,9 @@ fi
 
 success "tasks.md created at $SPEC_FOLDER_PATH/tasks.md"
 
+# Run extension steps numbered 5.x
+run_extension_bucket 5 1
+
 #===============================================================
 # STEP 6: HASH AND VALIDATE (SCRIPT-BASED)
 #===============================================================
@@ -591,6 +737,11 @@ EOL
 
 success "AI enhancement placeholder created"
 
+# Run extension steps numbered 6.x, 7.x, 8.x (post-step buckets)
+run_extension_bucket 6 1
+run_extension_bucket 7 1
+run_extension_bucket 8 1
+
 # End operation tracking for the last step
 ce_end_operation "$op_id"
 
@@ -630,3 +781,6 @@ else
   
   exit 1
 fi
+
+# Run any remaining extension steps (e.g., numbered beyond last core step)
+run_extension_remaining
