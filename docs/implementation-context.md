@@ -27,7 +27,7 @@ Keep Phase 2 “Execute Tasks” moving with a token-efficient, script-first wor
 - [ ] Pattern-to-glob mapping: improve inference to common frameworks (Jest, Mocha, PyTest, JUnit)
 - [x] Shared context cache with TTL + dedup across commands
 - [x] Front-matter-only extension scanning
-- [ ] Extension discovery + compatibility checks + paths
+- [x] Extension discovery + compatibility checks + paths
 - [ ] CI bundle for cross-platform test runs (local mini-CI script acceptable as first step)
 - [ ] Advanced context optimizations (compression, semantic chunking, summarization)
 
@@ -113,6 +113,11 @@ Run high-value checks after changes:
   - Integrates with shared TTL cache; emits JSON with `loaded`/`skipped` arrays and reasons.
   - Minimal test added: `test/test-extension-scanner.sh` (validates capability gating via temp roots).
   - Docs updated: `docs/extensions-quickstart.md` (scanner usage), `docs/shared-context-management.md` (registry note).
+  - Integrated into create-spec Step 0.9 (debug report): `tools/run-create-spec.sh` now emits an Extensions Discovery Report when `debug_extensions: true` or `DEBUG_EXTENSIONS=1`.
+    - Honors `RUNTIME_CAPABILITIES`, `EXTENSIONS_ENABLED`, `EXTENSION_SCOPE`, `EXTENSION_EXTRA_ROOTS`.
+    - Includes a "Merged step order (preview)" combining core and loaded extension steps.
+    - Performance: reduced to a single scanner call by capturing stdout (JSON) and stderr (human lines) concurrently.
+    - Usage doc updated: `docs/create-spec-usage.md` section “Extensions discovery (debug)”.
 
 ---
 
