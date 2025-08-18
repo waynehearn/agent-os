@@ -111,6 +111,56 @@ fi
 log "========== Starting create-spec workflow (hybrid mode) =========="
 
 #===============================================================
+# STEP 0.9: EXTENSIONS DISCOVERY REPORT (DEBUG OPTIONAL)
+#===============================================================
+DEBUG_EXTENSIONS_ENV=${DEBUG_EXTENSIONS:-}
+# Read from inputs if present (expects a line like: debug_extensions: true)
+DEBUG_EXTENSIONS_INPUT=$(grep -i '^debug_extensions:' "$SPEC_INPUTS_FILE" 2>/dev/null | awk -F ':' '{gsub(/ /,"",$2); print tolower($2)}' || true)
+DEBUG_EXTENSIONS=0
+if [[ "$DEBUG_EXTENSIONS_ENV" == "1" || "$DEBUG_EXTENSIONS_ENV" == "true" ]]; then
+  DEBUG_EXTENSIONS=1
+elif [[ "$DEBUG_EXTENSIONS_INPUT" == "true" ]]; then
+  DEBUG_EXTENSIONS=1
+fi
+
+if [[ $DEBUG_EXTENSIONS -eq 1 ]]; then
+  log "Step 0.9: Extensions Discovery Report (debug)"
+
+  SCANNER="$SCRIPT_DIR/extensions/extension-scanner.sh"
+  if [[ -f "$SCANNER" ]]; then
+    # Capabilities can be provided via env var (comma-separated), e.g., RUNTIME_CAPABILITIES="mcp:atlassian"
+    CAPS=${RUNTIME_CAPABILITIES:-}
+    REPORT_DIR="$SPEC_FOLDER_PATH/debug"
+    mkdir -p "$REPORT_DIR"
+    REPORT_FILE="$REPORT_DIR/extensions-discovery.txt"
+
+    # Run scanner with debug lines; capture human-readable lines from stderr
+    if [[ -n "$CAPS" ]]; then
+      scan_lines=$( { bash "$SCANNER" --flow create-spec --scope all --capabilities "$CAPS" --debug-lines 1>/dev/null; } 2>&1 )
+    else
+      scan_lines=$( { bash "$SCANNER" --flow create-spec --scope all --debug-lines 1>/dev/null; } 2>&1 )
+    fi
+
+    loaded_cnt=$(echo "$scan_lines" | grep -c '^LOADED  |' || true)
+    skipped_cnt=$(echo "$scan_lines" | grep -c '^SKIPPED |' || true)
+
+    {
+      echo "Extensions Discovery Report"
+      echo "Capabilities: ${CAPS:-[]}"
+      echo "Scanned roots: @~/.agent-os/instructions/extensions/create-spec, @.agent-os/instructions/extensions/create-spec, @instructions/extensions/create-spec"
+      echo "---"
+      echo "$scan_lines"
+      echo "---"
+      echo "Summary: loaded: $loaded_cnt, skipped: $skipped_cnt"
+    } | tee "$REPORT_FILE" >/dev/null
+
+    log "Extensions discovery report saved to $REPORT_FILE"
+  else
+    warning "Extension scanner not found; skipping discovery report"
+  fi
+fi
+
+#===============================================================
 # STEP 1: EXTRACT INPUTS (SCRIPT-BASED)
 #===============================================================
 log "Step 1: Extracting and validating inputs"

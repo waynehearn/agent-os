@@ -21,11 +21,12 @@ REPO_ROOT=$(cd "$SCRIPT_DIR/../.." && pwd)
 
 # Defaults
 FLOW=""
-SCOPE="all"           # home|project|repo|all
+SCOPE="all"           # none|home|project|repo|all
 CAPABILITIES=""       # comma-separated
 USE_CACHE=1
 CACHE_TTL=3600
 DEBUG_LINES=0
+EXTRA_ROOTS=()
 
 # Optional shared cache manager
 CACHE_MANAGER="$REPO_ROOT/tools/context-cache-manager.sh"
@@ -46,6 +47,7 @@ Options:
   --capabilities LIST   Comma-separated capabilities, e.g. mcp:atlassian,foo
   --no-cache            Disable cache usage
   --cache-ttl SEC       TTL seconds for cache (default: 3600)
+  --extra-root PATH     Additional search root (can be repeated). Use with --scope none for custom-only scans.
   --debug-lines         Also print human lines about decisions to stderr
   -h|--help             Show help
 EOF
@@ -71,6 +73,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     --cache-ttl)
       CACHE_TTL=${2:-3600}
+      shift 2
+      ;;
+    --extra-root)
+      EXTRA_ROOTS+=("${2:-}")
       shift 2
       ;;
     --debug-lines)
@@ -173,6 +179,9 @@ collect_search_paths() {
   local flow="$1"
   local -a paths=()
   case "$SCOPE" in
+    none)
+      : # no default paths; rely on EXTRA_ROOTS
+      ;;
     home)
       paths+=("$HOME/.agent-os/instructions/extensions/$flow")
       ;;
@@ -190,6 +199,10 @@ collect_search_paths() {
       )
       ;;
   esac
+  # Append any extra roots (treated as direct roots; caller should include flow segment if desired)
+  for er in "${EXTRA_ROOTS[@]:-}"; do
+    [[ -n "$er" ]] && paths+=("$er")
+  done
   printf '%s\n' "${paths[@]}"
 }
 

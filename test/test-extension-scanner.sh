@@ -16,8 +16,8 @@ TMPDIR=$(mktemp -d 2>/dev/null || mktemp -d -t extscan)
 cleanup() { rm -rf "$TMPDIR"; }
 trap cleanup EXIT
 
-# Create mock layout under repo instructions (repo scope)
-BASE="$ROOT_DIR/instructions/extensions/create-spec"
+# Create mock layout under a temp root and scan it only
+BASE="$TMPDIR/instructions/extensions/create-spec"
 mkdir -p "$BASE"
 
 echo "---
@@ -38,7 +38,7 @@ vendor: atlassian
 # body not read" > "$BASE/requires-atlassian.md"
 
 # 1) No capabilities: should load repo-a, skip requires-atlassian
-out1=$(bash "$SCANNER" --flow create-spec --scope repo --no-cache)
+out1=$(bash "$SCANNER" --flow create-spec --scope none --extra-root "$BASE" --no-cache)
 loaded1=$(echo "$out1" | grep -c 'repo-a.md') || true
 skipped1=$(echo "$out1" | grep -c 'requires-atlassian.md') || true
 
@@ -52,7 +52,7 @@ if [[ "$skipped1" -lt 1 ]]; then
 fi
 
 # 2) With capability mcp:atlassian: both should load
-out2=$(bash "$SCANNER" --flow create-spec --scope repo --capabilities mcp:atlassian --no-cache)
+out2=$(bash "$SCANNER" --flow create-spec --scope none --extra-root "$BASE" --capabilities mcp:atlassian --no-cache)
 loaded2a=$(echo "$out2" | grep -c 'repo-a.md') || true
 loaded2b=$(echo "$out2" | grep -c 'requires-atlassian.md') || true
 
