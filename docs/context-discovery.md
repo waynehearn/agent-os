@@ -60,6 +60,14 @@ Integration notes
 - Other flows (create-spec, execute-tasks) can consult the cache for tech stack and overview, but remain independent.
 
 Windows
--------
 
+
+## Troubleshooting
+
+- **Missing context output**: Ensure you ran the script from the project root and used the correct flags (`--write`, `--write-if-missing`).
+- **Cache not written**: Check file permissions and verify the target directory exists.
+- **Source file not found**: Confirm the path to your source file is correct and accessible.
+- **Discovery order issues**: Review the discovery order above and ensure your authoritative docs are in expected locations.
+
+For more help, see [troubleshooting.md](./troubleshooting.md) or ask in project discussions.
 Use Git Bash or WSL. PowerShell is not required for discovery.

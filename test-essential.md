@@ -1,4 +1,3 @@
 # Essential product Context
 
 ## Overview
-

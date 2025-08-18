@@ -109,5 +109,40 @@ Windows (PowerShell)
 Related
 -------
 
-- Architecture & customization: `./architecture.md`
-- Create-spec usage (skip-by-hash): `./create-spec-usage.md`
+
+## Troubleshooting
+
+
+### Manifest Not Updating
+
+If manifest files are not updating:
+
+- Ensure you are running the correct hash script for your OS (Bash or PowerShell).
+- Check for write permissions in the spec folder.
+- Verify `jq` is installed for Bash scripts.
+
+### Section Hashes Incorrect
+
+If section hashes do not match expected values:
+
+- Confirm line endings are normalized to LF.
+- Check for changes in section headings or content.
+- Rerun the hash script after editing files.
+
+### Context Budget Issues
+
+If context budget is exceeded or inaccurate:
+
+- Review token estimates and section sizes in the manifest.
+- Adjust context loading strategy to prioritize essential sections.
+
+### General Tips
+
+- Always update scripts after major changes.
+- Review logs and script output for errors or warnings.
+
+## Additional Resources
+
+- [Configuration](./configuration.md)
+- [Create Spec Usage](./create-spec-usage.md)
+- [Troubleshooting](./troubleshooting.md)

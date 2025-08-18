@@ -10,6 +10,7 @@ jira_comment_mode: "summary"
 cloud_id: "test-cloud-id"
 
 # Custom overrides
+
 title: "Test Specification from Jira"
 description: "This is a test specification created from Jira issue TEST-123"
 [/jira_inputs]

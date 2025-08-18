@@ -4,34 +4,70 @@ version: 1.0
 lastUpdated: 2025-08-14
 ---
 
+
 Welcome
 -------
 
 Spec Agent K is your system for spec‑driven agentic development. It gives AI coding agents structured workflows aligned to your standards, stack, and codebase context so they ship quality code on the first try—not the fifth.
 
-Navigation
-----------
+---
 
-- QuickStart Guide: [QuickStart](QuickStart%20Guide.md)
-- Installation: [installation.md](./installation.md)
-- Analyze Product – Usage: [analyze-product-usage.md](./analyze-product-usage.md)
-- Plan Product – Usage: [plan-product-usage.md](./plan-product-usage.md)
-- Create Spec – Usage: [create-spec-usage.md](./create-spec-usage.md)
-- Execute Tasks – Usage: [execute-tasks-usage.md](./execute-tasks-usage.md)
-- Jira Extension (optional): [jira-extension.md](./jira-extension.md)
-- Extensions QuickStart: [extensions-quickstart.md](./extensions-quickstart.md)
-- Configuration: [configuration.md](./configuration.md)
-- Architecture & customization: [architecture.md](./architecture.md)
-- Task creation details: [create-spec-tasks.md](./create-spec-tasks.md)
-- How modes/settings shape tasks: [tasks-derivation.md](./tasks-derivation.md)
-- Create-spec steps: [create-spec-steps.md](./create-spec-steps.md)
-- Section hashing: [section-hashing.md](./section-hashing.md)
-- Manifest spec: [manifest-spec.md](./manifest-spec.md)
-- Schemas: [schemas/](./schemas/)
-- Copilot usage (GitHub Copilot Chat): [copilot-usage.md](./copilot-usage.md)
-- Smoke tests: [smoke-tests.md](./smoke-tests.md)
-- Troubleshooting: [troubleshooting.md](./troubleshooting.md)
-- Glossary: [glossary.md](./glossary.md)
+## Documentation Table of Contents
+
+### Getting Started
+
+- [QuickStart Guide](../QuickStart%20Guide.md)
+- [Installation](./installation.md)
+- [Glossary](./glossary.md)
+
+### Core Concepts
+
+- [Context Discovery](./context-discovery.md)
+- [Context Profiling](./context-profiling.md)
+- [Context Gatherer Implementation](./context-gatherer-implementation.md)
+- [Context Gatherer Enhancement](./context-gatherer-enhancement.md)
+- [Command Router Implementation](./command-router-implementation.md)
+- [Command Router Enhancement Summary](./command-router-enhancement-summary.md)
+
+### Usage & Workflows
+
+- [Analyze Product – Usage](./analyze-product-usage.md)
+- [Plan Product – Usage](./plan-product-usage.md)
+- [Create Spec – Usage](./create-spec-usage.md)
+- [Create Spec Steps](./create-spec-steps.md)
+- [Create Spec Tasks](./create-spec-tasks.md)
+- [Create Spec Script Plan](./create-spec-script-plan.md)
+- [Execute Tasks – Usage](./execute-tasks-usage.md)
+- [Copilot Usage](./copilot-usage.md)
+- [Running Without Claude Code](./running-without-claude-code.md)
+
+### Features & Extensions
+
+- [Section Hashing](./section-hashing.md)
+- [Context Optimization](./llm-context-optimization.md)
+- [Extensions QuickStart](./extensions-quickstart.md)
+- [Shared Context Management](./shared-context-management.md)
+- [Jira Extension](./jira-extension.md)
+- [Jira Token Efficiency](./jira-token-efficiency.md)
+- [Optional Jira Integration Design](./optional-jira-integration-design.md)
+
+### Reference & Advanced
+
+- [Configuration](./configuration.md)
+- [Manifest Spec](./manifest-spec.md)
+- [Documentation Standards](./documentation-standards.md)
+- [Troubleshooting](./troubleshooting.md)
+- [Schemas](./schemas/README.md)
+- [Smoke Tests](./smoke-tests.md)
+- [Task Organization Hints](./task-organization-hints.md)
+- [Tasks Derivation](./tasks-derivation.md)
+- [Token Efficiency Doc Update](./token-efficiency-doc-update.md)
+- [Token Efficiency User Guide](./token-efficiency-user-guide.md)
+- [Token Efficient Hybrid Approach](./token-efficient-hybrid-approach.md)
+- [Roadmap](../roadmap.md)
+- [Changelog](../CHANGELOG.md)
+
+---
 
 Typical flow
 ------------

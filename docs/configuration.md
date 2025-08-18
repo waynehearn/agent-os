@@ -125,6 +125,42 @@ Related docs
 Caches & manifests (advanced)
 -----------------------------
 
-- Extension Registry Cache: front‑matter discovery results are cached for 1 hour in `templates/extension-registry.json`. Cache invalidates when file mtimes or front‑matter hashes change.
-- Section‑Aware Manifest: per‑spec `context/manifest.json` tracks hashes and token estimates per section (e.g., `spec.md:overview`) to enable selective reloads.
-- Details and schema: see [manifest-spec.md](./manifest-spec.md) and [schemas/manifest.schema.json](./schemas/manifest.schema.json)
+
+## Troubleshooting
+
+
+### Path Aliases Not Resolving
+
+If path aliases like `@~/.agent-os/instructions/` do not resolve:
+
+- Check for typos and correct prefix usage.
+- Ensure folders exist and are accessible.
+- Restart your editor if changes were made to folder structure.
+
+### Extension Not Loaded
+
+If extensions are not loaded:
+
+- Confirm extension files are in the correct folder.
+- Check front matter for correct `targets` value.
+- Verify cache is not stale (delete `templates/extension-registry.json` to force refresh).
+
+### Jira Integration Issues
+
+If Jira integration does not work:
+
+- Ensure Atlassian MCP is configured and available.
+- Check input files for correct `[jira_inputs]` block and flags.
+- Review authentication setup in your editor.
+
+### General Tips
+
+- Always update scripts and extensions after major changes.
+- Review logs and verification tool output for errors or warnings.
+
+## Additional Resources
+
+- [Installation](./installation.md)
+- [Troubleshooting](./troubleshooting.md)
+- [Manifest Spec](./manifest-spec.md)
+

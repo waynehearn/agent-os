@@ -536,8 +536,42 @@ The Command Router integrates with the Context Gatherer by:
 
 ## Next Steps
 
-1. Implement the intelligent operation type detection algorithm
-2. Create the operation caching system
-3. Develop the Jira integration handler
-4. Write automated tests for all components
-5. Update the documentation with real-world usage patterns
+
+## Troubleshooting
+
+
+### Routing Not Working as Expected
+
+If commands are not routed correctly:
+
+- Check for correct use of `--script-first` or `--ai-first` flags.
+- Review decision tree logic in `route_command()`.
+- Ensure script implementations are available and executable.
+
+### Caching Issues
+
+If cache is not used or invalidated too often:
+
+- Verify `.agent-os/cache/operations/` exists and is writable.
+- Check TTL settings and input file hashes.
+- Ensure `jq` is installed for cache management.
+
+### Jira Integration Problems
+
+If Jira integration does not activate:
+
+- Confirm `use_jira_mcp: true` is set in the input file.
+- Check Atlassian MCP availability.
+- Review input file for correct `[jira_inputs]` block formatting.
+
+### General Tips
+
+- Always update scripts after major changes.
+- Review logs for errors or warnings.
+
+## Additional Resources
+
+- [Context Gatherer Implementation](./context-gatherer-implementation.md)
+- [Context Profiling](./context-profiling.md)
+- [Troubleshooting](./troubleshooting.md)
+

@@ -38,6 +38,11 @@ tech_stack_preferences: >
 project_initialized: no
 [/plan_inputs]
 ```
+## Advanced Features & Debugging
+- [Debugging and Execution Trace](./execute-tasks-usage.md#debugging-and-execution-trace)
+- [Manifest and Context Management](./manifest-spec.md)
+- [Heuristics and Task Validation](./tasks-derivation.md)
+- [Troubleshooting](./troubleshooting.md)
 
 ## Try it (bash)
 
@@ -124,4 +129,12 @@ tech_stack_preferences: >
 
 project_initialized: yes
 [/plan_inputs]
+
+## Troubleshooting
+
+- **Missing required fields**: Ensure `main_idea`, at least 3 `key_features`, and at least 1 `target_user` are provided.
+- **Validation errors**: Check for typos or formatting issues in the input block.
+- **Artifacts not generated**: Verify prerequisites and rerun the workflow; check for errors in the terminal output.
+
+For more help, see [Documentation Standards](./documentation-standards.md) or ask in project discussions.
 ```

@@ -3,6 +3,7 @@
 This document tracks the progress of creating a set of bash scripts to replicate the `create-spec` command locally.
 
 ## Context Summary (as of August 16, 2025)
+
 - Workspace: agent-os (branch: jira)
 - Goal: Replicate the Claude Code `create-spec` workflow using bash scripts for use in VS Code and other environments.
 - Scripts created:
@@ -32,6 +33,7 @@ This document tracks the progress of creating a set of bash scripts to replicate
 | 9 | Refine and Test `create-spec.sh` | ⬜ To Do | `tools/create-spec.sh` | Test the end-to-end workflow. |
 
 ## Next Steps
+
 - Finish implementation of `discover-product-context.sh`.
 - Implement and test `spec-validator.sh`.
 - Refine and test the orchestrator script.

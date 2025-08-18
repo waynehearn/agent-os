@@ -213,4 +213,44 @@ When extracting and hashing markdown sections, the gatherers normalize Windows-s
 - Section extraction strips trailing carriage returns per line during sed piping.
 - Section hashing removes any remaining "\r" before computing SHA-256.
 
+
+## Troubleshooting
+
+
+### Cache Not Working
+
+If context cache is not being used or updated:
+
+- Ensure `jq` is installed and available in your PATH.
+- Check that `.agent-os/cache/operations/` exists and is writable.
+- Use `--no-cache` and `--use-cache` flags to test cache behavior.
+
+### Section Hashes Not Detected
+
+If section changes are not tracked:
+
+- Confirm section headers are formatted consistently (e.g., `## Section Name`).
+- Check for CRLF/LF line ending mismatches.
+- Update scripts to latest version for improved normalization.
+
+### Token Usage Unexpected
+
+If token estimates seem off:
+
+- Review context composition for duplicate or irrelevant data.
+- Use context-estimator.sh for more accurate profiling.
+
+### General Tips
+
+- Always update scripts after major changes.
+- Review logs for errors or warnings.
+
+## Additional Resources
+
+- [Context Profiling](./context-profiling.md)
+- [Context Discovery](./context-discovery.md)
+- [Troubleshooting](./troubleshooting.md)
+
+---
+
 This ensures the same section content yields identical hashes on Windows (Git Bash) and Unix-like environments, and prevents parsing quirks where header matching or token estimates could be affected by CR characters.

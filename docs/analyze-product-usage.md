@@ -22,6 +22,11 @@ context_notes: >
 auto_init_product: false
 [/analyze_inputs]
 ```
+## Advanced Features & Debugging
+- [Debugging and Execution Trace](./execute-tasks-usage.md#debugging-and-execution-trace)
+- [Manifest and Context Management](./manifest-spec.md)
+- [Heuristics and Task Validation](./tasks-derivation.md)
+- [Troubleshooting](./troubleshooting.md)
 
 Tip: You can pre‑run discovery to populate a cache without creating docs:
 
@@ -90,8 +95,8 @@ From `instructions/core/analyze-product.md`:
 ## Artifacts produced
 
 - `.agent-os/product/`
-   - From analyze-product (via plan-product): `mission.md`, `mission-lite.md`, `tech-stack.md`, `roadmap.md`, `decisions.md`
-   - From discovery `--init-product` (only if content exists): subset of `tech-stack.md`, `roadmap.md`, `decisions.md`, and `context/facts.md`
+  - From analyze-product (via plan-product): `mission.md`, `mission-lite.md`, `tech-stack.md`, `roadmap.md`, `decisions.md`
+  - From discovery `--init-product` (only if content exists): subset of `tech-stack.md`, `roadmap.md`, `decisions.md`, and `context/facts.md`
 
 ## Inputs and flags
 

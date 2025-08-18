@@ -111,6 +111,29 @@ echo "📁 Creating directories..."
 mkdir -p "$HOME/.claude/commands"
 mkdir -p "$HOME/.claude/agents"
 
+# Ensure ~/.claude/settings.json contains RUNNING_IN_CLAUDE=1
+SETTINGS_JSON="$HOME/.claude/settings.json"
+if [ -f "$SETTINGS_JSON" ]; then
+        # If file exists, update or add RUNNING_IN_CLAUDE in env
+        if grep -q '"env"' "$SETTINGS_JSON"; then
+                # Update RUNNING_IN_CLAUDE if env exists
+                tmpfile=$(mktemp)
+                jq '.env["RUNNING_IN_CLAUDE"] = "1"' "$SETTINGS_JSON" > "$tmpfile" && mv "$tmpfile" "$SETTINGS_JSON"
+        else
+                # Add env section if missing
+                tmpfile=$(mktemp)
+                jq '. + {env: {RUNNING_IN_CLAUDE: "1"}}' "$SETTINGS_JSON" > "$tmpfile" && mv "$tmpfile" "$SETTINGS_JSON"
+        fi
+else
+        # Create new settings.json with env
+        mkdir -p "$HOME/.claude"
+        echo '{
+    "env": {
+        "RUNNING_IN_CLAUDE": "1"
+    }
+}' > "$SETTINGS_JSON"
+fi
+
 # Copy command files for Claude Code
 echo
 echo "📥 Installing Claude Code command files to ~/.claude/commands/"
@@ -157,4 +180,5 @@ echo "  /plan-product       (new product)"
 echo "  /analyze-product    (existing codebase)"
 echo "  /create-spec        (start a new feature)"
 echo "  /execute-task       (implement a single task)"
+
 echo

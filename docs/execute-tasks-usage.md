@@ -30,6 +30,12 @@ debug_trace_redact_secrets: true
 debug_trace_include_bodies: false
 [/execution_context]
 ```
+## Advanced Features & Debugging
+- [Debugging and Execution Trace](./execute-tasks-usage.md#debugging-and-execution-trace)
+- [Extension Loader and Task Organization Hints](./create-spec-tasks.md)
+- [Manifest and Context Management](./manifest-spec.md)
+- [Heuristics and Task Validation](./tasks-derivation.md)
+- [Troubleshooting](./troubleshooting.md)
 
 ## Try it (bash)
 

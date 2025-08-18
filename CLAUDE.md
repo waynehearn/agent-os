@@ -111,7 +111,6 @@ When working with Spec Agent K projects, use these defaults unless overridden in
   - `TEST_PATTERN` (auto-inferred from parent title if omitted)
   - `TEST_RETRIES` (default 0/1)
 
-
 ### Direct Setup (compact)
 
 ```bash

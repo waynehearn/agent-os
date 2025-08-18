@@ -116,4 +116,41 @@ Files Tracked:
 - **Progressive Loading**: Load context only when needed
 - **Context Compression**: Remove duplicate or unnecessary information
 
+
+## Troubleshooting
+
+
+### Profiling Data Not Generated
+
+If profiling reports are missing:
+
+- Ensure profiling is enabled via environment variable or command flag.
+- Check script permissions and paths.
+- Verify `.agent-os/logs/profiling/` exists and is writable.
+
+### Unexpected Token Counts
+
+If token estimates seem inaccurate:
+
+- Confirm you are using the latest version of the profiling scripts.
+- Review context composition for duplicate or irrelevant data.
+
+### Performance Issues
+
+If profiling slows down operations:
+
+- Limit context size with `--max-size`.
+- Profile only critical operations.
+
+### General Tips
+
+- Always update scripts after major changes.
+- Review logs for errors or warnings.
+
+## Additional Resources
+
+- [Context Discovery](./context-discovery.md)
+- [Token Efficiency User Guide](./token-efficiency-user-guide.md)
+- [Troubleshooting](./troubleshooting.md)
+
 By applying these strategies based on profiling data, you can significantly reduce token usage while maintaining powerful AI capabilities for reasoning tasks.

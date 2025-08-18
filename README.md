@@ -17,6 +17,7 @@ Spec Agent K is a system for spec‑driven agentic development. It gives AI codi
 - Any language or framework
 
 ---
+
 ## Reviews
 
 > _“Spec Agent K has matured from a strong spec‑first framework into a fast, investigation‑capable system with real, measurable context‑cost reductions. Investigation mode, section‑aware manifests, and lite‑first artifacts make day‑to‑day work both cheaper and more reliable.  Overall Rating: 8.5/10.”_ — GitHub Copilot
@@ -24,6 +25,7 @@ Spec Agent K is a system for spec‑driven agentic development. It gives AI codi
 > _“Spec Agent K is a sophisticated LLM‑driven framework that transforms minimal prompting into structured specifications and implementation plans. It excels at greenfield and structured enhancements, while investigation‑heavy work and emergencies benefit from complementary approaches. Overall Rating: 7.5/10.”_ — Claude Code
 
 ---
+
 ## Get Started
 
 - [QuickStart](QuickStart%20Guide.md)

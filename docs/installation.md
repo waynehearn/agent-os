@@ -380,7 +380,6 @@ Next steps
 - Troubleshooting: [troubleshooting.md](./troubleshooting.md)
 
 Verify installation
--------------------
 
 Run from the repo root:
 
@@ -405,3 +404,11 @@ command -v section-hash.sh >/dev/null && echo "tools on PATH" || echo "tools not
 ```powershell
 Get-Command section-hash.sh -ErrorAction SilentlyContinue | ForEach-Object { "tools on PATH" }
 ```
+
+## Troubleshooting
+
+- **Install script fails**: Use Git Bash, WSL, or a Unix-like shell. Avoid PowerShell for install scripts on Windows.
+- **Missing dependencies**: Run `bash ./tools/verify-install.sh` to check for required tools (e.g., jq).
+- **PATH issues**: Confirm your shell profile includes the tools directory and restart your terminal if needed.
+- **Demo outputs missing**: Verify you ran the correct commands and check for errors in the terminal output.
+- **Spec or tasks validation errors**: See [troubleshooting.md](./troubleshooting.md) for common issues and fixes.

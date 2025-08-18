@@ -7,7 +7,6 @@ lastUpdated: 2025-08-14
 
 Works on macOS, Linux, and Windows. On Windows, use Git Bash or WSL. Remote one‑liners are no longer supported; install from a local clone.  [Full installation docs](./installation.md)
 
-
 Clone this repository:
 
 ```bash
@@ -63,7 +62,6 @@ bash ./tools/verify-install.sh
 bash ./tools/verify-install.sh --check-claude
 bash ./tools/verify-install.sh --check-cursor   # run inside a project with .cursor
 ```
-
 
 Start here if you’re new. In ~10 minutes you’ll create a spec from a simple example, verify outputs, and run targeted tasks.
 
@@ -178,6 +176,22 @@ Next steps
 - Architecture & customization: [architecture.md](./architecture.md)
 - After running execute-tasks, check `context/tasks-summary.json` for a compact run summary.
 
+See details: [context-discovery.md](./context-discovery.md)
+
+## Advanced Features & Debugging
+
+- [Debugging and Execution Trace](./execute-tasks-usage.md#debugging-and-execution-trace)
+- [Manifest and Context Management](./manifest-spec.md)
+- [Heuristics and Task Validation](./tasks-derivation.md)
+- [Extension Loader and Task Organization Hints](./create-spec-tasks.md)
+- [Troubleshooting](./troubleshooting.md)
+
+## Troubleshooting
+
+- **Install script fails**: Ensure you are using Git Bash, WSL, or a Unix-like shell. On Windows, avoid PowerShell for install scripts.
+- **Missing dependencies**: Run `bash ./tools/verify-install.sh` to check for required tools (e.g., jq).
+- **Demo outputs missing**: Verify you ran the correct commands and check for errors in the terminal output.
+- **Spec or tasks validation errors**: See [troubleshooting.md](./troubleshooting.md) for common issues and fixes.
 Using Jira? See: [Jira Extension Guide](./jira-extension.md)
 
 Existing Project Quickstart (Analyze Product)
@@ -216,4 +230,3 @@ Notes:
 - Discovery reads `.agent-os/product/*`, `CLAUDE.md`,  `README.md`, and build files to infer stack.
 - On Windows, use Git Bash or WSL. The script can use `jq.exe` under WSL and accepts Windows paths like `C:/path/...`.
 - See details: [context-discovery.md](./context-discovery.md)
-

@@ -100,6 +100,18 @@ Creates a folder: `@.agent-os/specs/YYYY-MM-DD-<spec-name>/` with:
 - `sub-specs/technical-spec.md` (+ `api-spec.md`, `database-schema.md` when applicable)
 - `context/facts.md`, `context/manifest.json`, `context/meta.json`
 
+| Artifact | Description |
+|---|---|
+| spec.md | Full feature specification |
+| spec-lite.md | Condensed spec for context loading |
+| tasks.md | Implementation, testing, documentation, deployment tasks |
+| sub-specs/technical-spec.md | Technical details (created in standard mode) |
+| sub-specs/api-spec.md | API specification (if applicable) |
+| sub-specs/database-schema.md | Database schema (if applicable) |
+| context/facts.md | Lite context facts for downstream flows |
+| context/manifest.json | Manifest with hashes, flags, and metadata |
+| context/meta.json | Meta information for execution flows |
+
 All paths are referred to as `[spec_folder_path]` in downstream flows.
 
 ## Inputs and flags
@@ -182,6 +194,9 @@ requires_db_changes: false
 
 Manual – Express:
 
+
+### Spec input fields (authoritative list)
+
 ```text
 @~/.agent-os/instructions/core/create-spec.md
 
@@ -189,6 +204,24 @@ Manual – Express:
 mode: express
 non_interactive: true
 main_idea: >
+
+## Troubleshooting
+
+- **Missing required fields**: Ensure `main_idea`, at least 1–3 `initial_user_stories`, 1–5 `in_scope`, and 1–3 `expected_deliverables` are provided.
+- **Validation errors**: Check for typos, formatting issues, or missing required fields in the input block.
+- **Artifacts not generated**: Verify prerequisites and rerun the workflow; check for errors in the terminal output.
+- **Extension loader issues**: If extensions do not load, check environment variables and extension configuration.
+
+For more help, see [Documentation Standards](./documentation-standards.md) or ask in project discussions.
+
+## See also
+
+## Advanced Features & Debugging
+- [Debugging and Execution Trace](./execute-tasks-usage.md#debugging-and-execution-trace)
+- [Extension Loader and Task Organization Hints](./create-spec-tasks.md)
+- [Manifest and Context Management](./manifest-spec.md)
+- [Heuristics and Task Validation](./tasks-derivation.md)
+- [Troubleshooting](./troubleshooting.md)
   Add export‑to‑CSV to Reports page using existing filters.
 
 initial_user_stories:

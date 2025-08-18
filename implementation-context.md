@@ -3,6 +3,7 @@
 Last updated: Aug 17, 2025 • Branch: scriptbased-optimized • Default: main • Target shell: Windows Git Bash
 
 ## What’s the goal
+
 Keep Phase 2 “Execute Tasks” moving with a token-efficient, script-first workflow that’s cross-platform and restartable from this file alone.
 
 ## Copy-paste resume prompt
